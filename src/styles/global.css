@@ -1,0 +1,624 @@
+@import './variables.css';
+
+/* Reset basico */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* Documento */
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-family);
+  font-size: var(--font-size-md);
+  line-height: 1.5;
+  color: var(--color-text-primary);
+  background-color: var(--color-bg-darker);
+  min-height: 100vh;
+}
+
+/* Links */
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+a:hover {
+  color: var(--color-primary-hover);
+}
+
+/* Imagenes */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Listas */
+ul, ol {
+  list-style: none;
+}
+
+/* Botones base */
+button {
+  font-family: inherit;
+  font-size: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+/* Inputs base */
+input,
+textarea,
+select {
+  font-family: inherit;
+  font-size: inherit;
+}
+
+/* Foco accesible */
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Scrollbar personalizada */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-bg-dark);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: var(--radius-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-border-light);
+}
+
+/* Seleccion de texto */
+::selection {
+  background-color: var(--color-primary);
+  color: var(--color-text-dark);
+}
+
+/* Contenedor principal */
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Utilidades de texto */
+.text-primary {
+  color: var(--color-primary);
+}
+
+.text-success {
+  color: var(--color-success);
+}
+
+.text-error {
+  color: var(--color-error);
+}
+
+.text-warning {
+  color: var(--color-warning);
+}
+
+.text-muted {
+  color: var(--color-text-muted);
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-right {
+  text-align: right;
+}
+
+/* Utilidades de display */
+.hidden {
+  display: none !important;
+}
+
+.flex {
+  display: flex;
+}
+
+.flex-col {
+  flex-direction: column;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.gap-sm {
+  gap: var(--spacing-sm);
+}
+
+.gap-md {
+  gap: var(--spacing-md);
+}
+
+.gap-lg {
+  gap: var(--spacing-lg);
+}
+
+/* Utilidades de espaciado */
+.mt-sm { margin-top: var(--spacing-sm); }
+.mt-md { margin-top: var(--spacing-md); }
+.mt-lg { margin-top: var(--spacing-lg); }
+
+.mb-sm { margin-bottom: var(--spacing-sm); }
+.mb-md { margin-bottom: var(--spacing-md); }
+.mb-lg { margin-bottom: var(--spacing-lg); }
+
+.p-sm { padding: var(--spacing-sm); }
+.p-md { padding: var(--spacing-md); }
+.p-lg { padding: var(--spacing-lg); }
+
+/* Animaciones */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn var(--transition-normal);
+}
+
+.animate-slideUp {
+  animation: slideUp var(--transition-normal);
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+.animate-pulse {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+/* ===========================================
+   ACCESSIBILITY STYLES
+   =========================================== */
+
+/* Screen reader only - visually hidden but accessible */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Make sr-only focusable */
+.sr-only-focusable:focus,
+.sr-only-focusable:active {
+  position: static;
+  width: auto;
+  height: auto;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
+}
+
+/* Skip to main content link */
+.skip-to-content {
+  position: absolute;
+  top: -100%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  padding: 1rem 2rem;
+  background: var(--color-primary);
+  color: var(--color-text-dark);
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: var(--radius-md);
+  transition: top 0.2s;
+}
+
+.skip-to-content:focus {
+  top: 1rem;
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(255, 215, 0, 0.5);
+}
+
+/* Enhanced focus styles for interactive elements */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Remove focus outline for mouse users */
+a:focus:not(:focus-visible),
+button:focus:not(:focus-visible),
+input:focus:not(:focus-visible),
+select:focus:not(:focus-visible),
+textarea:focus:not(:focus-visible),
+[tabindex]:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Focus within for composite components */
+.focus-within:focus-within {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* ===========================================
+   REDUCED MOTION PREFERENCES
+   =========================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* Disable specific animations */
+  .animate-fadeIn,
+  .animate-slideUp,
+  .animate-spin,
+  .animate-pulse {
+    animation: none !important;
+  }
+
+  /* Keep essential visual feedback */
+  .animate-spin {
+    opacity: 0.7;
+  }
+}
+
+/* ===========================================
+   HIGH CONTRAST MODE SUPPORT
+   =========================================== */
+
+@media (prefers-contrast: more) {
+  :root {
+    --color-text-primary: #ffffff;
+    --color-text-secondary: #e0e0e0;
+    --color-text-muted: #cccccc;
+    --color-border: #666666;
+    --color-border-light: #888888;
+  }
+
+  /* Increase border visibility */
+  button,
+  input,
+  select,
+  textarea,
+  .card,
+  .modal,
+  .alert {
+    border-width: 2px;
+  }
+
+  /* Ensure links are distinguishable */
+  a {
+    text-decoration: underline;
+  }
+
+  a:hover,
+  a:focus {
+    text-decoration: underline double;
+  }
+
+  /* Make focus outlines more visible */
+  :focus-visible {
+    outline-width: 3px;
+    outline-offset: 3px;
+  }
+}
+
+/* ===========================================
+   FORCED COLORS (WINDOWS HIGH CONTRAST)
+   =========================================== */
+
+@media (forced-colors: active) {
+  /* Let system colors take over */
+  :root {
+    --color-primary: LinkText;
+    --color-success: LinkText;
+    --color-error: LinkText;
+    --color-warning: LinkText;
+  }
+
+  /* Ensure buttons are visible */
+  button {
+    border: 2px solid ButtonText;
+  }
+
+  /* Focus indicators */
+  :focus-visible {
+    outline: 3px solid Highlight;
+    outline-offset: 2px;
+  }
+
+  /* Ensure form elements have borders */
+  input,
+  select,
+  textarea {
+    border: 2px solid ButtonText;
+  }
+
+  /* Badge and status indicators */
+  .status-dot,
+  .network-dot {
+    forced-color-adjust: none;
+  }
+}
+
+/* ===========================================
+   DARK MODE PREFERENCE (already dark by default)
+   =========================================== */
+
+@media (prefers-color-scheme: light) {
+  /* Platform is designed dark-first, but add light mode overrides if needed */
+  /* Currently intentionally left minimal - dark theme is the brand */
+}
+
+/* ===========================================
+   TOUCH TARGET SIZES (WCAG 2.5.5)
+   =========================================== */
+
+/* Ensure minimum touch target of 44x44px */
+@media (pointer: coarse) {
+  button,
+  a,
+  input[type="checkbox"],
+  input[type="radio"],
+  select,
+  .clickable {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Add padding to smaller inline links */
+  a:not([class]) {
+    padding: 0.25rem;
+    margin: -0.25rem;
+  }
+}
+
+/* ===========================================
+   PRINT STYLES
+   =========================================== */
+
+@media print {
+  /* Remove backgrounds for printing */
+  body {
+    background: white !important;
+    color: black !important;
+  }
+
+  /* Hide non-essential elements */
+  header,
+  footer,
+  nav,
+  .no-print,
+  button,
+  .modal {
+    display: none !important;
+  }
+
+  /* Ensure links show URLs */
+  a[href]::after {
+    content: " (" attr(href) ")";
+    font-size: 0.8em;
+    color: #666;
+  }
+
+  /* Don't break inside important elements */
+  .card,
+  .table,
+  .bet-slip {
+    break-inside: avoid;
+  }
+
+  /* Remove shadows and borders for cleaner print */
+  * {
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+}
+
+/* ===========================================
+   ARIA LIVE REGIONS
+   =========================================== */
+
+/* Ensure live regions are properly positioned */
+[aria-live="polite"],
+[aria-live="assertive"] {
+  position: relative;
+}
+
+/* Status messages styling */
+[role="status"],
+[role="alert"] {
+  position: relative;
+}
+
+/* ===========================================
+   LOADING STATES ACCESSIBILITY
+   =========================================== */
+
+/* Indicate loading state visually and semantically */
+[aria-busy="true"] {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+[aria-busy="true"]::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  margin: -10px 0 0 -10px;
+  border: 2px solid var(--color-primary);
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [aria-busy="true"]::after {
+    animation: none;
+    border-style: dotted;
+  }
+}
+
+/* ===========================================
+   DISABLED STATE STYLING
+   =========================================== */
+
+[disabled],
+[aria-disabled="true"],
+.disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* ===========================================
+   ERROR STATE STYLING
+   =========================================== */
+
+[aria-invalid="true"],
+.has-error {
+  border-color: var(--color-error) !important;
+}
+
+[aria-invalid="true"]:focus-visible,
+.has-error:focus-visible {
+  outline-color: var(--color-error);
+}
+
+/* ===========================================
+   LINK DISTINCTION
+   =========================================== */
+
+/* Ensure links in body text are distinguishable */
+p a,
+li a,
+td a {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+p a:hover,
+li a:hover,
+td a:hover {
+  text-decoration-thickness: 2px;
+}
+
+/* External link indicator */
+a[target="_blank"]::after {
+  content: " \2197"; /* ↗ */
+  font-size: 0.75em;
+  vertical-align: super;
+}
+
+/* Don't add indicator for buttons styled as links or icon links */
+a[target="_blank"].btn::after,
+a[target="_blank"].button::after,
+a[target="_blank"].icon-link::after,
+a[target="_blank"][aria-label]::after {
+  content: none;
+}
+
+/* ===========================================
+   TEXT RESIZING SUPPORT
+   =========================================== */
+
+/* Ensure text can scale up to 200% without breaking */
+html {
+  font-size: 100%; /* Respect user's browser font size setting */
+}
+
+/* Use relative units for containers */
+.container {
+  max-width: 80rem; /* 1280px at default, scales with font */
+}
+
+/* Prevent text overflow */
+h1, h2, h3, h4, h5, h6,
+p, li, td, th, label {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  hyphens: auto;
+}

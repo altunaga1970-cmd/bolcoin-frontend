@@ -1,0 +1,611 @@
+/* ============ LA FORTUNA - Lottery Page ============ */
+
+.lottery-page {
+  min-height: 100vh;
+  background-color: var(--color-bg-darker);
+}
+
+.lottery-main {
+  max-width: var(--max-width-lg);
+  margin: 0 auto;
+  padding: var(--spacing-xl);
+}
+
+/* Jackpot Banner */
+.jackpot-banner {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  border: 2px solid var(--color-primary);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-xl);
+  margin-bottom: var(--spacing-lg);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.jackpot-banner::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255, 215, 0, 0.1) 0%, transparent 50%);
+  animation: pulse-jackpot 3s ease-in-out infinite;
+}
+
+@keyframes pulse-jackpot {
+  0%, 100% { transform: scale(1); opacity: 0.5; }
+  50% { transform: scale(1.1); opacity: 0.8; }
+}
+
+.jackpot-content {
+  position: relative;
+  z-index: 1;
+}
+
+.jackpot-label {
+  display: block;
+  font-size: var(--font-size-sm);
+  color: var(--color-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  margin-bottom: var(--spacing-sm);
+}
+
+.jackpot-amount {
+  display: block;
+  font-size: 3rem;
+  font-weight: bold;
+  color: var(--color-primary);
+  text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+  margin-bottom: var(--spacing-sm);
+}
+
+.jackpot-next {
+  display: block;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+/* Schedule Info */
+.schedule-info {
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-xl);
+  padding: var(--spacing-md);
+  background: var(--color-bg-card);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--spacing-xl);
+  border: 1px solid var(--color-border);
+}
+
+.schedule-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.schedule-icon {
+  font-size: 1.2rem;
+}
+
+.schedule-item strong {
+  color: var(--color-primary);
+}
+
+/* Layout */
+.lottery-layout {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: var(--spacing-xl);
+}
+
+.lottery-form-section {
+  background: var(--color-bg-card);
+  padding: var(--spacing-xl);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+}
+
+.lottery-info-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+/* Balance Display */
+.balance-display-inline {
+  display: flex;
+  justify-content: space-between;
+  padding: var(--spacing-md);
+  background: var(--color-bg-darker);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+.balance-display-inline .label {
+  color: var(--color-text-muted);
+}
+
+.balance-display-inline .amount {
+  color: var(--color-primary);
+  font-weight: bold;
+}
+
+/* Form Group */
+.form-group {
+  margin-bottom: var(--spacing-lg);
+}
+
+.form-group label {
+  display: block;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--spacing-sm);
+  font-weight: 500;
+}
+
+/* Select Input */
+.select-input {
+  width: 100%;
+  padding: var(--spacing-md);
+  background: var(--color-bg-input);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-md);
+}
+
+.select-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+/* Number Grid - Main (1-49) */
+.number-grid.main-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+}
+
+.number-btn {
+  aspect-ratio: 1;
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-input);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-sm);
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.15s;
+  min-width: 36px;
+}
+
+.number-btn:hover:not(:disabled) {
+  border-color: var(--color-primary);
+  background: rgba(255, 215, 0, 0.1);
+}
+
+.number-btn.selected {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-text-dark);
+}
+
+.number-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/* Key Number Grid (0-9) */
+.number-grid.key-grid {
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-sm);
+}
+
+.number-btn.key-btn {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  font-size: var(--font-size-md);
+}
+
+.number-btn.key-btn:hover:not(:disabled) {
+  border-color: #00d4ff;
+  background: rgba(0, 212, 255, 0.1);
+}
+
+.number-btn.key-btn.selected {
+  background: #00d4ff;
+  border-color: #00d4ff;
+  color: #000;
+}
+
+/* Current Selection Preview */
+.current-selection {
+  background: var(--color-bg-darker);
+  padding: var(--spacing-md);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+.selection-numbers {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+}
+
+.selection-ball {
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-primary);
+  color: var(--color-text-dark);
+  border-radius: var(--radius-sm);
+  font-weight: bold;
+  font-size: var(--font-size-md);
+}
+
+.selection-ball.empty {
+  background: var(--color-bg-input);
+  color: var(--color-text-muted);
+  border: 2px dashed var(--color-border);
+}
+
+.selection-ball.key {
+  border-radius: 50%;
+  background: #00d4ff;
+  color: #000;
+}
+
+.selection-ball.key.empty {
+  background: var(--color-bg-input);
+  border-radius: 50%;
+}
+
+.selection-divider {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xl);
+  font-weight: bold;
+  margin: 0 var(--spacing-xs);
+}
+
+/* Selection Actions */
+.selection-actions {
+  display: flex;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+}
+
+/* Ticket Card */
+.ticket-card {
+  background: var(--color-bg-card);
+  border: 2px solid var(--color-primary);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.ticket-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-md);
+  background: rgba(255, 215, 0, 0.1);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.ticket-header h3 {
+  margin: 0;
+  color: var(--color-primary);
+  font-size: var(--font-size-md);
+}
+
+.ticket-empty {
+  padding: var(--spacing-xl);
+  text-align: center;
+  color: var(--color-text-muted);
+}
+
+.ticket-empty .hint {
+  font-size: var(--font-size-sm);
+  margin-top: var(--spacing-sm);
+}
+
+.ticket-bets {
+  padding: var(--spacing-md);
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.ticket-bet-row {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm);
+  background: var(--color-bg-darker);
+  border-radius: var(--radius-sm);
+  margin-bottom: var(--spacing-sm);
+}
+
+.ticket-bet-row:last-child {
+  margin-bottom: 0;
+}
+
+.bet-index {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  width: 24px;
+}
+
+.bet-numbers {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+}
+
+.mini-ball {
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-primary);
+  color: var(--color-text-dark);
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: bold;
+}
+
+.mini-ball.key {
+  background: #00d4ff;
+  color: #000;
+  border-radius: 50%;
+}
+
+.mini-plus {
+  color: var(--color-text-muted);
+  font-size: 12px;
+  margin: 0 2px;
+}
+
+.remove-bet-btn {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 100, 100, 0.2);
+  border: none;
+  border-radius: 50%;
+  color: #ff6464;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.remove-bet-btn:hover {
+  background: #ff6464;
+  color: white;
+}
+
+.ticket-footer {
+  padding: var(--spacing-md);
+  border-top: 1px solid var(--color-border);
+}
+
+.ticket-total {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-md);
+  font-size: var(--font-size-md);
+}
+
+.ticket-total .total-amount {
+  color: var(--color-primary);
+  font-weight: bold;
+  font-size: var(--font-size-lg);
+}
+
+/* Ticket Receipt */
+.ticket-receipt {
+  background: linear-gradient(135deg, #1a3a1a 0%, #0d200d 100%);
+  border: 2px solid #4caf50;
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  text-align: center;
+}
+
+.receipt-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+}
+
+.receipt-icon {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #4caf50;
+  color: white;
+  border-radius: 50%;
+  font-size: 18px;
+}
+
+.receipt-header h4 {
+  margin: 0;
+  color: #4caf50;
+}
+
+.receipt-body p {
+  margin: var(--spacing-xs) 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.receipt-id {
+  font-family: monospace;
+  color: var(--color-primary) !important;
+  font-weight: bold;
+}
+
+/* Info Cards */
+.info-card {
+  background: var(--color-bg-card);
+  padding: var(--spacing-lg);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+}
+
+.info-card h3 {
+  color: var(--color-primary);
+  margin-bottom: var(--spacing-md);
+  font-size: var(--font-size-md);
+}
+
+.how-to-play {
+  padding-left: var(--spacing-lg);
+  margin: 0;
+}
+
+.how-to-play li {
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-sm);
+  font-size: var(--font-size-sm);
+}
+
+/* Prizes Table */
+.prizes-table {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.prize-row {
+  display: flex;
+  justify-content: space-between;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-input);
+}
+
+.prize-row.jackpot {
+  background: rgba(255, 215, 0, 0.15);
+  border: 1px solid var(--color-primary);
+}
+
+.prize-row.jackpot .prize-category,
+.prize-row.jackpot .prize-amount {
+  color: var(--color-primary);
+  font-weight: bold;
+}
+
+.prize-category {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.prize-amount {
+  color: var(--color-text-primary);
+  font-weight: 500;
+  font-size: var(--font-size-sm);
+}
+
+/* Connect Prompt */
+.connect-prompt {
+  text-align: center;
+  padding: var(--spacing-3xl);
+  background: var(--color-bg-card);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+}
+
+.connect-prompt h3 {
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.connect-prompt p {
+  color: var(--color-text-muted);
+  margin-bottom: var(--spacing-lg);
+}
+
+/* Loading */
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: var(--spacing-3xl);
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .lottery-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .lottery-info-section {
+    order: -1;
+  }
+
+  .schedule-info {
+    flex-direction: column;
+    gap: var(--spacing-sm);
+  }
+}
+
+@media (max-width: 600px) {
+  .lottery-main {
+    padding: var(--spacing-md);
+  }
+
+  .jackpot-amount {
+    font-size: 2rem;
+  }
+
+  .number-grid.main-grid {
+    grid-template-columns: repeat(5, 1fr);
+  }
+
+  .number-btn {
+    min-width: 32px;
+    font-size: 12px;
+  }
+
+  .number-btn.key-btn {
+    width: 38px;
+    height: 38px;
+  }
+
+  .selection-ball {
+    width: 36px;
+    height: 36px;
+    font-size: var(--font-size-sm);
+  }
+
+  .mini-ball {
+    width: 22px;
+    height: 22px;
+    font-size: 10px;
+  }
+
+  .selection-actions {
+    flex-wrap: wrap;
+  }
+
+  .selection-actions button {
+    flex: 1 1 45%;
+  }
+}

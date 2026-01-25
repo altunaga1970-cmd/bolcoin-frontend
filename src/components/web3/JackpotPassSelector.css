@@ -1,0 +1,182 @@
+.jackpot-pass-selector {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border: 1px solid #2a2a4a;
+  border-radius: 12px;
+  padding: 16px;
+  margin: 16px 0;
+  transition: all 0.3s ease;
+}
+
+.jackpot-pass-selector.active {
+  border-color: #ffd700;
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
+}
+
+.jackpot-pass-selector.disabled {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.pass-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.pass-icon {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, #ffd700, #ff8c00);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.pass-star {
+  font-size: 24px;
+  color: #1a1a2e;
+  font-weight: bold;
+}
+
+.pass-info {
+  flex: 1;
+}
+
+.pass-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #ffd700;
+}
+
+.pass-subtitle {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: #aaa;
+}
+
+/* Toggle Switch */
+.pass-toggle {
+  width: 50px;
+  height: 28px;
+  background: #2a2a4a;
+  border: none;
+  border-radius: 14px;
+  cursor: pointer;
+  position: relative;
+  transition: background 0.3s ease;
+}
+
+.pass-toggle.enabled {
+  background: linear-gradient(135deg, #ffd700, #ff8c00);
+}
+
+.toggle-slider {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 22px;
+  height: 22px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform 0.3s ease;
+}
+
+.pass-toggle.enabled .toggle-slider {
+  transform: translateX(22px);
+}
+
+.pass-toggle:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* Details when enabled */
+.pass-details {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #2a2a4a;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.pass-pool {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.pool-label {
+  font-size: 14px;
+  color: #888;
+}
+
+.pool-amount {
+  font-size: 18px;
+  font-weight: 700;
+  color: #ffd700;
+}
+
+.pass-benefits {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.benefit-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #ccc;
+}
+
+.benefit-icon {
+  width: 18px;
+  height: 18px;
+  background: rgba(255, 215, 0, 0.2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: #ffd700;
+}
+
+.pass-cta {
+  margin: 12px 0 0;
+  font-size: 13px;
+  color: #888;
+  text-align: center;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .jackpot-pass-selector {
+    padding: 12px;
+  }
+
+  .pass-icon {
+    width: 36px;
+    height: 36px;
+  }
+
+  .pass-star {
+    font-size: 20px;
+  }
+
+  .pass-title {
+    font-size: 14px;
+  }
+
+  .pass-subtitle {
+    font-size: 12px;
+  }
+}
