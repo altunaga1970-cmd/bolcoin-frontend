@@ -350,14 +350,35 @@ export function getWinningOdds() {
 }
 
 // =================================
-// BOLITA CALCULATIONS
+// BOLITA CALCULATIONS - CONFIGURACIÓN CENTRALIZADA
 // =================================
 
-export const BOLITA_MULTIPLIERS = {
-    fijos: { multiplier: 80, maxPayout: 80000 },
-    centenas: { multiplier: 500, maxPayout: 100000 },
-    parles: { multiplier: 900, maxPayout: 100000 }
+export const BOLITA_CONFIG = {
+    // Multiplicadores oficiales confirmados
+    MULTIPLIERS: {
+        fijos: { multiplier: 65, maxPayout: 65000 },
+        centenas: { multiplier: 300, maxPayout: 300000 },
+        parles: { multiplier: 1000, maxPayout: 1000000 }
+    },
+    
+    // Sistema de límites progresivos
+    LIMITS: {
+        initialMaxPerNumber: 2, // USDT iniciales por número
+        feePercentage: 5, // 5% fee
+        poolPercentage: 30, // 30% para expansión
+        payoutPercentage: 65 // 65% para pagos (calculado dinámicamente)
+    },
+    
+    // Distribución de ingresos (BPS - Basis Points)
+    REVENUE_DISTRIBUTION: {
+        payout: 6500,    // 65%
+        fee: 500,       // 5%
+        pool: 3000       // 30%
+    }
 };
+
+// Mantener compatibilidad con código existente
+export const BOLITA_MULTIPLIERS = BOLITA_CONFIG.MULTIPLIERS;
 
 /**
  * Calculate potential payout for La Bolita bet

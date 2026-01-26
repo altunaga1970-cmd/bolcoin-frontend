@@ -4,7 +4,11 @@ import api from './index';
  * Realizar apuestas
  */
 export async function placeBets(drawId, bets) {
-  const response = await api.post('/bets/place', { draw_id: drawId, bets });
+  const response = await api.post('/bets/place', {
+    draw_id: drawId,
+    bets
+  });
+
   return response.data.data;
 }
 
@@ -13,6 +17,7 @@ export async function placeBets(drawId, bets) {
  */
 export async function getMyBets(page = 1, limit = 10, status = null, drawId = null) {
   const params = { page, limit };
+
   if (status) params.status = status;
   if (drawId) params.draw_id = drawId;
 
@@ -21,7 +26,7 @@ export async function getMyBets(page = 1, limit = 10, status = null, drawId = nu
 }
 
 /**
- * Obtener estadisticas de apuestas del usuario
+ * Obtener estadísticas
  */
 export async function getBetStats() {
   const response = await api.get('/bets/stats');
@@ -29,7 +34,7 @@ export async function getBetStats() {
 }
 
 /**
- * Obtener una apuesta por ID
+ * Obtener apuesta por ID
  */
 export async function getBetById(id) {
   const response = await api.get(`/bets/${id}`);
