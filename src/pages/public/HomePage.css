@@ -1,3 +1,7 @@
+/* ===========================================
+   HOME PAGE - Mobile First Design
+   =========================================== */
+
 .home-page {
   min-height: 100vh;
   display: flex;
@@ -5,106 +9,76 @@
   background: linear-gradient(135deg, var(--color-bg-darker) 0%, var(--color-bg-dark) 100%);
 }
 
-/* Header */
-.home-header {
-  padding: var(--spacing-md) var(--spacing-lg);
-  border-bottom: 1px solid var(--color-border);
-  background-color: rgba(0, 0, 0, 0.3);
-}
+/* ===========================================
+   HERO SECTION
+   =========================================== */
 
-.home-header-content {
-  max-width: var(--max-width-xl);
-  margin: 0 auto;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.home-logo {
-  font-size: var(--font-size-2xl);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-primary);
-  text-shadow: var(--shadow-glow);
-}
-
-.home-nav {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-md);
-}
-
-.home-nav a {
-  color: var(--color-text-secondary);
-}
-
-.home-nav a:hover {
-  color: var(--color-primary);
-}
-
-.wallet-address {
-  background-color: var(--color-bg-card);
-  padding: var(--spacing-xs) var(--spacing-sm);
-  border-radius: var(--radius-md);
-  font-family: var(--font-mono);
-  font-size: var(--font-size-sm);
-  color: var(--color-primary);
-  border: 1px solid var(--color-border);
-}
-
-/* Hero */
 .home-hero {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: var(--spacing-3xl) var(--spacing-2xl);
+  padding: var(--spacing-xl) var(--spacing-md);
   text-align: center;
-  min-height: 50vh;
+  min-height: 45vh;
 }
 
 .home-hero-content {
   max-width: 700px;
+  width: 100%;
 }
 
 .home-hero-title {
-  font-size: var(--font-size-4xl);
+  font-size: var(--font-size-2xl);
   font-weight: var(--font-weight-bold);
   color: var(--color-primary);
-  margin-bottom: var(--spacing-md);
+  margin-bottom: var(--spacing-sm);
   text-shadow: var(--shadow-glow);
+  line-height: 1.2;
 }
 
 .home-hero-subtitle {
-  font-size: var(--font-size-lg);
+  font-size: var(--font-size-sm);
   color: var(--color-text-secondary);
-  margin-bottom: var(--spacing-xl);
+  margin-bottom: var(--spacing-lg);
   line-height: 1.6;
+  padding: 0 var(--spacing-sm);
 }
 
 .home-hero-actions {
   display: flex;
-  justify-content: center;
-  gap: var(--spacing-md);
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  padding: 0 var(--spacing-md);
 }
 
-/* Games section */
+.home-hero-actions button,
+.home-hero-actions a {
+  width: 100%;
+  min-height: var(--touch-target-comfortable);
+}
+
+/* ===========================================
+   GAMES SECTION
+   =========================================== */
+
 .home-games {
-  padding: var(--spacing-3xl) var(--spacing-2xl);
+  padding: var(--spacing-xl) var(--spacing-md);
   background-color: var(--color-bg-dark);
 }
 
 .game-section-header {
   text-align: center;
-  margin-bottom: var(--spacing-xl);
+  margin-bottom: var(--spacing-lg);
 }
 
 .home-section-title {
-  font-size: var(--font-size-2xl);
+  font-size: var(--font-size-xl);
   color: var(--color-primary);
-  margin-bottom: var(--spacing-sm);
+  margin-bottom: var(--spacing-xs);
 }
 
 .home-section-subtitle {
-  font-size: var(--font-size-md);
+  font-size: var(--font-size-sm);
   color: var(--color-text-muted);
 }
 
@@ -112,120 +86,95 @@
   max-width: var(--max-width-lg);
   margin: 0 auto;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: var(--spacing-lg);
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing-sm);
 }
 
-/* Game cards with tooltip */
+/* ===========================================
+   GAME CARDS
+   =========================================== */
+
 .home-game-card {
   background-color: var(--color-bg-card);
-  padding: var(--spacing-lg);
+  padding: var(--spacing-md);
   border-radius: var(--radius-lg);
   text-align: center;
   border: 1px solid var(--color-border);
   transition: all var(--transition-normal);
   position: relative;
   cursor: pointer;
+  min-height: 120px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
-.home-game-card:hover {
+.home-game-card:hover,
+.home-game-card:active {
   border-color: var(--color-primary);
-  transform: translateY(-4px);
+  transform: translateY(-2px);
   box-shadow: var(--shadow-glow);
 }
 
-/* Tooltip icon */
+/* Tooltip icon - hidden on mobile, shown on desktop */
 .game-tooltip-icon {
   position: absolute;
-  top: 8px;
-  right: 8px;
-  width: 20px;
-  height: 20px;
+  top: 6px;
+  right: 6px;
+  width: 18px;
+  height: 18px;
   background-color: var(--color-border);
   color: var(--color-text-muted);
   border-radius: 50%;
-  font-size: 12px;
-  display: flex;
+  font-size: 10px;
+  display: none;
   align-items: center;
   justify-content: center;
   opacity: 0.6;
   transition: opacity var(--transition-fast);
 }
 
-.home-game-card:hover .game-tooltip-icon {
-  opacity: 1;
-  background-color: var(--color-primary);
-  color: var(--color-bg-dark);
-}
-
-/* Tooltip on hover */
-.home-game-card::after {
-  content: attr(data-tooltip);
-  position: absolute;
-  bottom: 100%;
-  left: 50%;
-  transform: translateX(-50%) translateY(-8px);
-  background-color: var(--color-bg-darker);
-  color: var(--color-text-primary);
-  padding: var(--spacing-sm) var(--spacing-md);
-  border-radius: var(--radius-md);
-  font-size: var(--font-size-sm);
-  line-height: 1.4;
-  width: 250px;
-  text-align: left;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
-  border: 1px solid var(--color-border);
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity var(--transition-fast), visibility var(--transition-fast);
-  z-index: 100;
-  pointer-events: none;
-}
-
+/* Tooltip - hidden on mobile */
+.home-game-card::after,
 .home-game-card::before {
-  content: '';
-  position: absolute;
-  bottom: 100%;
-  left: 50%;
-  transform: translateX(-50%) translateY(4px);
-  border: 8px solid transparent;
-  border-top-color: var(--color-bg-darker);
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity var(--transition-fast), visibility var(--transition-fast);
-  z-index: 101;
-}
-
-.home-game-card:hover::after,
-.home-game-card:hover::before {
-  opacity: 1;
-  visibility: visible;
+  display: none;
 }
 
 .home-game-multiplier {
-  font-size: var(--font-size-3xl);
+  font-size: var(--font-size-2xl);
   font-weight: var(--font-weight-bold);
   color: var(--color-primary);
-  margin-bottom: var(--spacing-sm);
-}
-
-.home-game-card h4 {
-  font-size: var(--font-size-lg);
-  color: var(--color-text-primary);
   margin-bottom: var(--spacing-xs);
 }
 
+.home-game-card h4 {
+  font-size: var(--font-size-md);
+  color: var(--color-text-primary);
+  margin-bottom: 2px;
+}
+
 .home-game-card p {
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-xs);
   color: var(--color-text-muted);
+  display: none;
 }
 
 .game-section-cta {
   text-align: center;
-  margin-top: var(--spacing-xl);
+  margin-top: var(--spacing-lg);
 }
 
-/* La Fortuna section */
+.game-section-cta button,
+.game-section-cta a {
+  min-height: var(--touch-target-comfortable);
+  width: 100%;
+  max-width: 280px;
+}
+
+/* ===========================================
+   LA FORTUNA SECTION
+   =========================================== */
+
 .fortuna-section {
   background: linear-gradient(135deg, #1a1a2e 0%, #0d0d15 100%);
   border-top: 1px solid var(--color-border);
@@ -239,20 +188,22 @@
 .fortuna-description {
   text-align: center;
   max-width: 600px;
-  margin: 0 auto var(--spacing-xl);
+  margin: 0 auto var(--spacing-lg);
   color: var(--color-text-secondary);
-  font-size: var(--font-size-md);
+  font-size: var(--font-size-sm);
+  padding: 0 var(--spacing-sm);
 }
 
 .fortuna-grid {
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  grid-template-columns: repeat(2, 1fr);
 }
 
 .fortuna-card {
   border-color: rgba(0, 212, 255, 0.2);
 }
 
-.fortuna-card:hover {
+.fortuna-card:hover,
+.fortuna-card:active {
   border-color: #00d4ff;
   box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
 }
@@ -262,7 +213,7 @@
 }
 
 .fortuna-card .home-game-multiplier.jackpot {
-  font-size: var(--font-size-xl);
+  font-size: var(--font-size-lg);
   background: linear-gradient(135deg, #FFD700, #FFA500);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -275,48 +226,53 @@
   50% { opacity: 0.7; }
 }
 
-/* Features section */
+/* ===========================================
+   FEATURES SECTION
+   =========================================== */
+
 .home-features {
-  padding: var(--spacing-3xl) var(--spacing-2xl);
+  padding: var(--spacing-xl) var(--spacing-md);
   background-color: var(--color-bg-darker);
 }
 
 .home-features .home-section-title {
   color: var(--color-text-primary);
-  margin-bottom: var(--spacing-xl);
+  margin-bottom: var(--spacing-lg);
+  text-align: center;
 }
 
 .features-grid {
   max-width: var(--max-width-lg);
   margin: 0 auto;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: var(--spacing-lg);
+  grid-template-columns: 1fr;
+  gap: var(--spacing-md);
 }
 
 .feature-card {
   background-color: var(--color-bg-card);
-  padding: var(--spacing-xl);
+  padding: var(--spacing-lg);
   border-radius: var(--radius-lg);
   text-align: center;
   border: 1px solid var(--color-border);
   transition: all var(--transition-normal);
 }
 
-.feature-card:hover {
+.feature-card:hover,
+.feature-card:active {
   border-color: var(--color-primary);
   transform: translateY(-2px);
 }
 
 .feature-icon {
-  font-size: 2.5rem;
-  margin-bottom: var(--spacing-md);
+  font-size: 2rem;
+  margin-bottom: var(--spacing-sm);
 }
 
 .feature-card h4 {
-  font-size: var(--font-size-lg);
+  font-size: var(--font-size-md);
   color: var(--color-text-primary);
-  margin-bottom: var(--spacing-sm);
+  margin-bottom: var(--spacing-xs);
 }
 
 .feature-card p {
@@ -325,9 +281,12 @@
   line-height: 1.5;
 }
 
-/* Footer */
+/* ===========================================
+   FOOTER
+   =========================================== */
+
 .home-footer {
-  padding: var(--spacing-xl) var(--spacing-lg);
+  padding: var(--spacing-lg) var(--spacing-md);
   text-align: center;
   color: var(--color-text-muted);
   font-size: var(--font-size-sm);
@@ -338,62 +297,225 @@
 .footer-links {
   display: flex;
   justify-content: center;
-  gap: var(--spacing-lg);
-  margin-bottom: var(--spacing-md);
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-sm);
   flex-wrap: wrap;
 }
 
 .footer-links a {
   color: var(--color-text-secondary);
   transition: color var(--transition-fast);
+  padding: var(--spacing-xs);
+  min-height: var(--touch-target-min);
+  display: flex;
+  align-items: center;
 }
 
 .footer-links a:hover {
   color: var(--color-primary);
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-  .home-header-content {
-    flex-direction: column;
-    gap: var(--spacing-md);
-  }
+/* ===========================================
+   TABLET (480px+)
+   =========================================== */
 
+@media (min-width: 480px) {
   .home-hero {
-    padding: var(--spacing-xl);
-    min-height: auto;
+    padding: var(--spacing-2xl) var(--spacing-lg);
   }
 
   .home-hero-title {
     font-size: var(--font-size-3xl);
   }
 
-  .home-nav {
-    flex-wrap: wrap;
+  .home-hero-subtitle {
+    font-size: var(--font-size-md);
+  }
+
+  .home-hero-actions {
+    flex-direction: row;
     justify-content: center;
   }
 
-  .home-games,
-  .home-features {
-    padding: var(--spacing-xl);
+  .home-hero-actions button,
+  .home-hero-actions a {
+    width: auto;
+    min-width: 150px;
   }
 
-  .home-game-card::after {
-    width: 200px;
-    font-size: var(--font-size-xs);
+  .home-games-grid {
+    gap: var(--spacing-md);
+  }
+
+  .home-game-card p {
+    display: block;
   }
 
   .fortuna-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .features-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
-@media (max-width: 480px) {
+/* ===========================================
+   TABLET (768px+)
+   =========================================== */
+
+@media (min-width: 768px) {
+  .home-hero {
+    padding: var(--spacing-3xl) var(--spacing-2xl);
+    min-height: 50vh;
+  }
+
+  .home-hero-title {
+    font-size: var(--font-size-4xl);
+  }
+
+  .home-hero-subtitle {
+    margin-bottom: var(--spacing-xl);
+  }
+
+  .home-games,
+  .home-features {
+    padding: var(--spacing-3xl) var(--spacing-2xl);
+  }
+
+  .home-section-title {
+    font-size: var(--font-size-2xl);
+  }
+
+  .game-section-header {
+    margin-bottom: var(--spacing-xl);
+  }
+
+  .home-games-grid {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--spacing-lg);
+  }
+
+  .home-game-card {
+    padding: var(--spacing-lg);
+    min-height: 140px;
+  }
+
+  .home-game-multiplier {
+    font-size: var(--font-size-3xl);
+  }
+
+  .home-game-card h4 {
+    font-size: var(--font-size-lg);
+  }
+
+  /* Show tooltips on desktop */
+  .game-tooltip-icon {
+    display: flex;
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
+  }
+
+  .home-game-card:hover .game-tooltip-icon {
+    opacity: 1;
+    background-color: var(--color-primary);
+    color: var(--color-bg-dark);
+  }
+
+  .home-game-card::after {
+    display: block;
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-8px);
+    background-color: var(--color-bg-darker);
+    color: var(--color-text-primary);
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-sm);
+    line-height: 1.4;
+    width: 250px;
+    text-align: left;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    border: 1px solid var(--color-border);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity var(--transition-fast), visibility var(--transition-fast);
+    z-index: 100;
+    pointer-events: none;
+  }
+
+  .home-game-card::before {
+    display: block;
+    content: '';
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%) translateY(4px);
+    border: 8px solid transparent;
+    border-top-color: var(--color-bg-darker);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity var(--transition-fast), visibility var(--transition-fast);
+    z-index: 101;
+  }
+
+  .home-game-card:hover::after,
+  .home-game-card:hover::before {
+    opacity: 1;
+    visibility: visible;
+  }
+
   .fortuna-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
   }
 
   .features-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: var(--spacing-lg);
+  }
+
+  .feature-card {
+    padding: var(--spacing-xl);
+  }
+
+  .feature-icon {
+    font-size: 2.5rem;
+    margin-bottom: var(--spacing-md);
+  }
+
+  .feature-card h4 {
+    font-size: var(--font-size-lg);
+  }
+
+  .game-section-cta button,
+  .game-section-cta a {
+    width: auto;
+    max-width: none;
+  }
+
+  .footer-links {
+    gap: var(--spacing-lg);
+  }
+}
+
+/* ===========================================
+   DESKTOP (1024px+)
+   =========================================== */
+
+@media (min-width: 1024px) {
+  .home-hero {
+    min-height: 55vh;
+  }
+
+  .home-games,
+  .home-features {
+    padding: var(--spacing-3xl);
+  }
+
+  .home-footer {
+    padding: var(--spacing-xl) var(--spacing-lg);
   }
 }

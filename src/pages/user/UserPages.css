@@ -1,19 +1,24 @@
+/* ===========================================
+   USER PAGES - Mobile First Design
+   =========================================== */
+
 .user-page {
   min-height: 100vh;
   background-color: var(--color-bg-darker);
 }
 
 .user-header {
-  padding: var(--spacing-md) var(--spacing-lg);
+  padding: var(--spacing-sm) var(--spacing-md);
   background-color: var(--color-bg-dark);
   border-bottom: 1px solid var(--color-border);
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  gap: var(--spacing-sm);
   align-items: center;
 }
 
 .user-logo {
-  font-size: var(--font-size-xl);
+  font-size: var(--font-size-lg);
   font-weight: var(--font-weight-bold);
   color: var(--color-primary);
 }
@@ -21,7 +26,9 @@
 .user-nav {
   display: flex;
   align-items: center;
-  gap: var(--spacing-md);
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 .user-nav a {
@@ -30,6 +37,9 @@
   padding: var(--spacing-xs) var(--spacing-sm);
   border-radius: var(--radius-sm);
   transition: all var(--transition-fast);
+  min-height: var(--touch-target-min);
+  display: flex;
+  align-items: center;
 }
 
 .user-nav a:hover {
@@ -40,23 +50,26 @@
 .user-main {
   max-width: var(--max-width-lg);
   margin: 0 auto;
-  padding: var(--spacing-xl);
+  padding: var(--spacing-md);
 }
 
-/* Dashboard */
+/* ===========================================
+   DASHBOARD
+   =========================================== */
+
 .dashboard-welcome {
   text-align: center;
-  margin-bottom: var(--spacing-xl);
+  margin-bottom: var(--spacing-lg);
 }
 
 .dashboard-welcome h1 {
-  font-size: var(--font-size-2xl);
+  font-size: var(--font-size-xl);
   color: var(--color-text-primary);
-  margin-bottom: var(--spacing-sm);
+  margin-bottom: var(--spacing-xs);
 }
 
 .user-balance {
-  font-size: var(--font-size-lg);
+  font-size: var(--font-size-md);
   color: var(--color-text-secondary);
 }
 
@@ -67,13 +80,13 @@
 
 .dashboard-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: var(--spacing-lg);
+  grid-template-columns: 1fr;
+  gap: var(--spacing-md);
 }
 
 .dashboard-card {
   background-color: var(--color-bg-card);
-  padding: var(--spacing-lg);
+  padding: var(--spacing-md);
   border-radius: var(--radius-lg);
   border: 1px solid var(--color-border);
 }
@@ -81,6 +94,7 @@
 .dashboard-card h3 {
   color: var(--color-text-primary);
   margin-bottom: var(--spacing-xs);
+  font-size: var(--font-size-md);
 }
 
 .dashboard-card p {
@@ -89,32 +103,44 @@
   margin-bottom: var(--spacing-md);
 }
 
-/* Page title */
+/* ===========================================
+   PAGE TITLE
+   =========================================== */
+
 .page-title {
-  font-size: var(--font-size-2xl);
+  font-size: var(--font-size-xl);
   color: var(--color-primary);
-  margin-bottom: var(--spacing-lg);
+  margin-bottom: var(--spacing-md);
 }
 
-/* Placeholder */
+/* ===========================================
+   PLACEHOLDER
+   =========================================== */
+
 .page-placeholder {
   background-color: var(--color-bg-card);
-  padding: var(--spacing-2xl);
+  padding: var(--spacing-xl);
   border-radius: var(--radius-lg);
   text-align: center;
 }
 
 .page-placeholder p {
   color: var(--color-text-muted);
-  margin-bottom: var(--spacing-lg);
+  margin-bottom: var(--spacing-md);
 }
 
-/* Filters */
+/* ===========================================
+   FILTERS
+   =========================================== */
+
 .bets-filters {
   display: flex;
-  gap: var(--spacing-sm);
-  margin-bottom: var(--spacing-lg);
+  gap: var(--spacing-xs);
+  margin-bottom: var(--spacing-md);
   flex-wrap: wrap;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: var(--spacing-xs);
 }
 
 .filter-btn {
@@ -126,6 +152,9 @@
   cursor: pointer;
   font-size: var(--font-size-sm);
   transition: all var(--transition-fast);
+  min-height: var(--touch-target-min);
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .filter-btn:hover {
@@ -139,62 +168,99 @@
   border-color: var(--color-primary);
 }
 
-/* Load more */
+/* ===========================================
+   LOAD MORE
+   =========================================== */
+
 .load-more {
   text-align: center;
   margin-top: var(--spacing-lg);
 }
 
-/* ============ Web3 Betting Page ============ */
+/* ===========================================
+   BETTING LAYOUT - Mobile First
+   =========================================== */
+
 .betting-layout {
-  display: grid;
-  grid-template-columns: 1fr 350px;
-  gap: var(--spacing-xl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
 }
 
 .betting-form-section {
   background: var(--color-bg-card);
-  padding: var(--spacing-xl);
+  padding: var(--spacing-md);
   border-radius: var(--radius-lg);
   border: 1px solid var(--color-border);
+  order: 1;
 }
 
 .draw-info-section {
   background: var(--color-bg-card);
-  padding: var(--spacing-lg);
+  padding: var(--spacing-md);
   border-radius: var(--radius-lg);
   border: 1px solid var(--color-border);
-  height: fit-content;
+  order: 2;
+}
+
+/* ===========================================
+   BALANCE DISPLAY
+   =========================================== */
+
+.balance-section {
+  background: var(--color-bg-darker);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+  border: 1px solid var(--color-border);
 }
 
 .balance-display-inline {
   display: flex;
-  justify-content: space-between;
-  padding: var(--spacing-md);
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm);
   background: rgba(255, 215, 0, 0.1);
   border-radius: var(--radius-md);
-  margin-bottom: var(--spacing-lg);
+  margin-bottom: var(--spacing-sm);
 }
 
 .balance-display-inline .label {
   color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
 }
 
 .balance-display-inline .amount {
-  color: var(--color-primary);
-  font-weight: bold;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-success);
+  font-size: var(--font-size-lg);
 }
 
+.balance-hint {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  display: block;
+  text-align: center;
+}
+
+/* ===========================================
+   FORM GROUP
+   =========================================== */
+
 .form-group {
-  margin-bottom: var(--spacing-lg);
+  margin-bottom: var(--spacing-md);
 }
 
 .form-group label {
   display: block;
   color: var(--color-text-secondary);
-  margin-bottom: var(--spacing-sm);
+  margin-bottom: var(--spacing-xs);
   font-size: var(--font-size-sm);
 }
+
+/* ===========================================
+   SELECT INPUT
+   =========================================== */
 
 .select-input {
   width: 100%;
@@ -204,6 +270,7 @@
   border-radius: var(--radius-md);
   color: var(--color-text-primary);
   font-size: var(--font-size-md);
+  min-height: var(--touch-target-comfortable);
 }
 
 .select-input:focus {
@@ -211,37 +278,43 @@
   outline: none;
 }
 
-/* Bet Type Selector */
+/* ===========================================
+   BET TYPE SELECTOR - Mobile First
+   =========================================== */
+
 .bet-type-selector {
-  display: flex;
-  gap: var(--spacing-sm);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-xs);
 }
 
 .bet-type-btn {
-  flex: 1;
-  padding: var(--spacing-md);
+  padding: var(--spacing-sm);
   background: var(--color-bg-input);
   border: 2px solid var(--color-border);
   border-radius: var(--radius-md);
   cursor: pointer;
   transition: all 0.2s;
   text-align: center;
+  min-height: var(--touch-target-comfortable);
 }
 
 .bet-type-btn .type-name {
   display: block;
   color: var(--color-text-primary);
   font-weight: bold;
-  margin-bottom: var(--spacing-xs);
+  font-size: var(--font-size-sm);
+  margin-bottom: 2px;
 }
 
 .bet-type-btn .type-multiplier {
   display: block;
   color: var(--color-primary);
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-xs);
 }
 
-.bet-type-btn:hover {
+.bet-type-btn:hover,
+.bet-type-btn:active {
   border-color: var(--color-primary);
 }
 
@@ -250,18 +323,26 @@
   background: rgba(255, 215, 0, 0.1);
 }
 
+/* ===========================================
+   NUMBER INPUT
+   =========================================== */
+
 .number-input {
   font-size: var(--font-size-xl) !important;
   text-align: center;
   letter-spacing: 0.5rem;
+  min-height: var(--touch-target-comfortable);
 }
 
-/* Bet Summary */
+/* ===========================================
+   BET SUMMARY
+   =========================================== */
+
 .bet-summary {
   background: var(--color-bg-darker);
   padding: var(--spacing-md);
   border-radius: var(--radius-md);
-  margin-bottom: var(--spacing-lg);
+  margin-bottom: var(--spacing-md);
 }
 
 .summary-row {
@@ -269,6 +350,7 @@
   justify-content: space-between;
   padding: var(--spacing-xs) 0;
   color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
 }
 
 .summary-row.highlight {
@@ -279,24 +361,35 @@
   padding-top: var(--spacing-sm);
 }
 
-.blockchain-notice {
-  margin-top: var(--spacing-md);
-  font-size: var(--font-size-sm);
-  color: var(--color-text-muted);
-  text-align: center;
+.summary-row.total-cost {
+  font-weight: 600;
+  color: var(--color-text-primary);
 }
 
-/* Draw Info */
+.blockchain-notice {
+  margin-top: var(--spacing-md);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  text-align: center;
+  line-height: 1.5;
+}
+
+/* ===========================================
+   DRAW INFO
+   =========================================== */
+
 .draw-info-section h3 {
   color: var(--color-primary);
   margin-bottom: var(--spacing-md);
+  font-size: var(--font-size-md);
 }
 
 .draw-card {
   background: var(--color-bg-darker);
   padding: var(--spacing-md);
   border-radius: var(--radius-md);
-  margin-bottom: var(--spacing-lg);
+  margin-bottom: var(--spacing-md);
+  border: 1px solid var(--color-border);
 }
 
 .draw-header {
@@ -304,11 +397,14 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: var(--spacing-md);
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
 }
 
 .draw-number {
   font-weight: bold;
   color: var(--color-text-primary);
+  font-size: var(--font-size-md);
 }
 
 .draw-status {
@@ -325,18 +421,34 @@
 
 .draw-details .detail-row {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  gap: 2px;
   padding: var(--spacing-xs) 0;
   font-size: var(--font-size-sm);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.draw-details .detail-row:last-child {
+  border-bottom: none;
 }
 
 .draw-details .label {
   color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
 }
 
 .draw-details .value {
   color: var(--color-text-primary);
+  font-weight: 500;
 }
+
+.draw-details .detail-row.highlight .value {
+  color: var(--color-success);
+}
+
+/* ===========================================
+   MULTIPLIERS INFO
+   =========================================== */
 
 .multipliers-info h4 {
   color: var(--color-text-secondary);
@@ -357,10 +469,13 @@
   font-weight: bold;
 }
 
-/* Connect Prompt */
+/* ===========================================
+   CONNECT PROMPT
+   =========================================== */
+
 .connect-prompt {
   text-align: center;
-  padding: var(--spacing-2xl);
+  padding: var(--spacing-xl);
   background: var(--color-bg-card);
   border-radius: var(--radius-lg);
 }
@@ -368,17 +483,22 @@
 .connect-prompt h3 {
   color: var(--color-text-primary);
   margin-bottom: var(--spacing-sm);
+  font-size: var(--font-size-lg);
 }
 
 .connect-prompt p {
   color: var(--color-text-muted);
   margin-bottom: var(--spacing-lg);
+  font-size: var(--font-size-sm);
 }
 
-/* Empty state */
+/* ===========================================
+   EMPTY STATE
+   =========================================== */
+
 .empty-state {
   text-align: center;
-  padding: var(--spacing-2xl);
+  padding: var(--spacing-xl);
   color: var(--color-text-muted);
 }
 
@@ -387,7 +507,18 @@
   margin-top: var(--spacing-sm);
 }
 
-/* Loading and No Draws Messages */
+/* ===========================================
+   LOADING
+   =========================================== */
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: var(--spacing-2xl);
+  min-height: 200px;
+}
+
 .loading-draws {
   padding: var(--spacing-md);
   text-align: center;
@@ -415,7 +546,9 @@
   margin-top: var(--spacing-sm);
 }
 
-
+/* ===========================================
+   CART STYLES
+   =========================================== */
 
 .bet-cart-content {
   background: var(--color-bg-dark);
@@ -431,13 +564,14 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--spacing-lg);
+  padding: var(--spacing-md);
   border-bottom: 1px solid var(--color-border);
 }
 
 .cart-header h3 {
   margin: 0;
   color: var(--color-primary);
+  font-size: var(--font-size-md);
 }
 
 .close-cart {
@@ -449,6 +583,11 @@
   padding: var(--spacing-xs);
   border-radius: var(--radius-sm);
   transition: all var(--transition-fast);
+  min-width: var(--touch-target-min);
+  min-height: var(--touch-target-min);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .close-cart:hover {
@@ -457,8 +596,8 @@
 }
 
 .cart-items {
-  padding: var(--spacing-lg);
-  max-height: 300px;
+  padding: var(--spacing-md);
+  max-height: 250px;
   overflow-y: auto;
 }
 
@@ -480,6 +619,7 @@
 .cart-draw {
   font-weight: var(--font-weight-semibold);
   color: var(--color-primary);
+  font-size: var(--font-size-sm);
 }
 
 .remove-bet {
@@ -490,6 +630,11 @@
   padding: var(--spacing-xs);
   border-radius: var(--radius-sm);
   transition: all var(--transition-fast);
+  min-width: var(--touch-target-min);
+  min-height: var(--touch-target-min);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .remove-bet:hover {
@@ -513,7 +658,7 @@
 }
 
 .cart-summary {
-  padding: var(--spacing-lg);
+  padding: var(--spacing-md);
   border-top: 1px solid var(--color-border);
   background: var(--color-bg-darker);
 }
@@ -523,104 +668,84 @@
   display: flex;
   justify-content: space-between;
   margin-bottom: var(--spacing-xs);
+  font-size: var(--font-size-sm);
 }
 
 .total-amount {
   font-weight: var(--font-weight-bold);
   color: var(--color-success);
-  font-size: var(--font-size-lg);
+  font-size: var(--font-size-md);
 }
 
 .cart-actions {
-  padding: var(--spacing-lg);
+  padding: var(--spacing-md);
   border-top: 1px solid var(--color-border);
   display: flex;
   gap: var(--spacing-sm);
 }
 
+.cart-actions button {
+  flex: 1;
+}
+
 .cart-notice {
-  padding: 0 var(--spacing-lg) var(--spacing-lg);
+  padding: 0 var(--spacing-md) var(--spacing-md);
   text-align: center;
 }
 
 .cart-notice small {
   color: var(--color-text-muted);
   line-height: 1.4;
-}
-
-/* ============ BALANCE & DEPOSIT STYLES ============ */
-
-.balance-section {
-  background: var(--color-bg-darker);
-  border-radius: var(--radius-md);
-  padding: var(--spacing-md);
-  margin-bottom: var(--spacing-lg);
-  border: 1px solid var(--color-border);
-}
-
-.balance-display-inline {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: var(--spacing-sm);
-}
-
-.balance-display-inline .label {
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-sm);
-}
-
-.balance-display-inline .amount {
-  font-weight: var(--font-weight-bold);
-  color: var(--color-success);
-  font-size: var(--font-size-lg);
-}
-
-.balance-hint {
-  color: var(--color-text-muted);
   font-size: var(--font-size-xs);
-  display: block;
-  text-align: center;
-  margin-top: var(--spacing-xs);
 }
 
-/* ============ SIMPLE CART STYLES ============ */
+/* ===========================================
+   SIMPLE CART (Floating)
+   =========================================== */
 
 .bet-cart-simple {
   position: fixed;
-  bottom: var(--spacing-lg);
-  left: 50%;
-  transform: translateX(-50%);
+  bottom: calc(var(--spacing-md) + var(--safe-area-bottom));
+  left: var(--spacing-md);
+  right: var(--spacing-md);
   background: var(--color-bg-dark);
   border: 2px solid var(--color-primary);
   border-radius: var(--radius-lg);
   padding: var(--spacing-md);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.4);
   z-index: 100;
-  min-width: 300px;
 }
 
 .cart-simple-header {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  text-align: center;
   margin-bottom: var(--spacing-sm);
   font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-sm);
 }
 
 .cart-simple-actions {
   display: flex;
   gap: var(--spacing-sm);
-  justify-content: flex-end;
 }
 
-/* Floating Cart Indicator */
+.cart-simple-actions button {
+  flex: 1;
+  min-height: var(--touch-target-comfortable);
+}
+
+/* ===========================================
+   FLOATING CART INDICATOR
+   =========================================== */
+
 .floating-cart {
   position: fixed;
-  bottom: var(--spacing-xl);
-  right: var(--spacing-xl);
+  bottom: calc(var(--spacing-lg) + var(--safe-area-bottom));
+  right: var(--spacing-md);
   background: var(--color-primary);
-  color: white;
+  color: var(--color-text-dark);
   padding: var(--spacing-sm) var(--spacing-md);
   border-radius: var(--radius-lg);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
@@ -630,9 +755,11 @@
   gap: var(--spacing-sm);
   z-index: 100;
   transition: all var(--transition-fast);
+  min-height: var(--touch-target-comfortable);
 }
 
-.floating-cart:hover {
+.floating-cart:hover,
+.floating-cart:active {
   transform: translateY(-2px);
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
 }
@@ -650,41 +777,126 @@
   font-size: var(--font-size-sm);
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-  .user-main {
-    padding: var(--spacing-md);
+/* ===========================================
+   TABLET (480px+)
+   =========================================== */
+
+@media (min-width: 480px) {
+  .user-header {
+    flex-direction: row;
+    justify-content: space-between;
+    padding: var(--spacing-md) var(--spacing-lg);
+  }
+
+  .dashboard-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .balance-display-inline {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
   }
 
   .bet-cart-simple {
-    bottom: var(--spacing-md);
-    min-width: 280px;
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+    min-width: 320px;
+    max-width: 400px;
   }
 
   .cart-simple-header {
-    flex-direction: column;
-    gap: var(--spacing-xs);
-    text-align: center;
+    flex-direction: row;
+    justify-content: space-between;
+    text-align: left;
   }
 
-  .cart-simple-actions {
-    justify-content: center;
+  .draw-details .detail-row {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
   }
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-  .user-header {
-    flex-direction: column;
-    gap: var(--spacing-md);
-  }
+/* ===========================================
+   TABLET (768px+)
+   =========================================== */
 
-  .user-nav {
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-
+@media (min-width: 768px) {
   .user-main {
+    padding: var(--spacing-xl);
+  }
+
+  .dashboard-welcome h1 {
+    font-size: var(--font-size-2xl);
+  }
+
+  .dashboard-grid {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  }
+
+  .dashboard-card {
+    padding: var(--spacing-lg);
+  }
+
+  .page-title {
+    font-size: var(--font-size-2xl);
+    margin-bottom: var(--spacing-lg);
+  }
+
+  /* Two column layout on tablet */
+  .betting-layout {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: var(--spacing-xl);
+  }
+
+  .betting-form-section {
+    order: 1;
+    padding: var(--spacing-xl);
+  }
+
+  .draw-info-section {
+    order: 2;
+    padding: var(--spacing-lg);
+    height: fit-content;
+    position: sticky;
+    top: calc(var(--header-height) + var(--spacing-md));
+  }
+
+  .bet-type-btn {
     padding: var(--spacing-md);
+  }
+
+  .bet-type-btn .type-name {
+    font-size: var(--font-size-md);
+    margin-bottom: var(--spacing-xs);
+  }
+
+  .bet-type-btn .type-multiplier {
+    font-size: var(--font-size-sm);
+  }
+
+  .cart-items {
+    max-height: 300px;
+  }
+}
+
+/* ===========================================
+   DESKTOP (1024px+)
+   =========================================== */
+
+@media (min-width: 1024px) {
+  .betting-layout {
+    grid-template-columns: 1fr 350px;
+  }
+
+  .bet-cart-simple {
+    min-width: 350px;
+  }
+
+  .floating-cart {
+    right: var(--spacing-xl);
   }
 }

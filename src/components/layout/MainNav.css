@@ -1,11 +1,17 @@
+/* ===========================================
+   MAIN NAVIGATION - Mobile First
+   =========================================== */
+
 .main-nav {
   background-color: rgba(13, 13, 13, 0.95);
   border-bottom: 1px solid var(--color-border);
-  padding: 0.75rem 1.5rem;
+  padding: 0 var(--spacing-md);
   position: sticky;
   top: 0;
-  z-index: 100;
+  z-index: var(--z-sticky);
   backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  height: var(--header-height);
 }
 
 .main-nav-content {
@@ -14,62 +20,245 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 2rem;
+  height: 100%;
 }
 
 .nav-logo {
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   font-weight: 700;
   color: var(--color-primary);
   text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
   text-decoration: none;
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
-.nav-links {
+/* ===========================================
+   DESKTOP NAVIGATION - Hidden on Mobile
+   =========================================== */
+
+.desktop-nav,
+.desktop-wallet {
+  display: none;
+}
+
+/* ===========================================
+   MOBILE HEADER ACTIONS
+   =========================================== */
+
+.mobile-header-actions {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  flex-wrap: wrap;
+  gap: var(--spacing-sm);
 }
 
-.nav-links a {
+.mobile-wallet-indicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  background-color: rgba(0, 200, 100, 0.1);
+  border: 1px solid rgba(0, 200, 100, 0.3);
+  border-radius: var(--radius-full);
+}
+
+/* ===========================================
+   HAMBURGER BUTTON
+   =========================================== */
+
+.hamburger-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--touch-target-min);
+  height: var(--touch-target-min);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: var(--radius-md);
+  transition: background-color var(--transition-fast);
+}
+
+.hamburger-btn:hover {
+  background-color: var(--color-bg-hover);
+}
+
+.hamburger-btn:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.hamburger-icon {
+  width: 24px;
+  height: 18px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.hamburger-icon span {
+  display: block;
+  width: 100%;
+  height: 2px;
+  background-color: var(--color-text-primary);
+  border-radius: 2px;
+  transition: all var(--transition-normal);
+  transform-origin: center;
+}
+
+.hamburger-icon.open span:nth-child(1) {
+  transform: translateY(8px) rotate(45deg);
+}
+
+.hamburger-icon.open span:nth-child(2) {
+  opacity: 0;
+  transform: scaleX(0);
+}
+
+.hamburger-icon.open span:nth-child(3) {
+  transform: translateY(-8px) rotate(-45deg);
+}
+
+/* ===========================================
+   MOBILE MENU OVERLAY
+   =========================================== */
+
+.mobile-menu-overlay {
+  position: fixed;
+  top: var(--header-height);
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--transition-normal), visibility var(--transition-normal);
+  z-index: var(--z-mobile-nav);
+}
+
+.mobile-menu-overlay.open {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* ===========================================
+   MOBILE MENU PANEL
+   =========================================== */
+
+.mobile-menu {
+  position: fixed;
+  top: var(--header-height);
+  right: 0;
+  bottom: 0;
+  width: 85%;
+  max-width: 320px;
+  background-color: var(--color-bg-dark);
+  border-left: 1px solid var(--color-border);
+  transform: translateX(100%);
+  transition: transform var(--transition-normal);
+  z-index: calc(var(--z-mobile-nav) + 1);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  padding-bottom: var(--safe-area-bottom);
+}
+
+.mobile-menu.open {
+  transform: translateX(0);
+}
+
+/* ===========================================
+   MOBILE WALLET SECTION
+   =========================================== */
+
+.mobile-wallet-section {
+  padding: var(--spacing-lg);
+  border-bottom: 1px solid var(--color-border);
+  background-color: var(--color-bg-darker);
+}
+
+.mobile-wallet-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+}
+
+.mobile-wallet-address {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-family: monospace;
+  font-size: var(--font-size-sm);
+  color: var(--color-primary);
+}
+
+/* ===========================================
+   MOBILE NAVIGATION LINKS
+   =========================================== */
+
+.mobile-nav-links {
+  display: flex;
+  flex-direction: column;
+  padding: var(--spacing-md) 0;
+  flex: 1;
+}
+
+.mobile-nav-link {
+  display: flex;
+  align-items: center;
+  padding: var(--spacing-md) var(--spacing-lg);
   color: var(--color-text-secondary);
   text-decoration: none;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  font-size: 0.9rem;
-  transition: all 0.2s ease;
-  white-space: nowrap;
+  font-size: var(--font-size-md);
+  font-weight: 500;
+  transition: all var(--transition-fast);
+  min-height: var(--touch-target-comfortable);
+  border-left: 3px solid transparent;
 }
 
-.nav-links a:hover {
-  color: var(--color-primary);
+.mobile-nav-link:hover {
+  background-color: var(--color-bg-hover);
+  color: var(--color-text-primary);
+}
+
+.mobile-nav-link.active {
   background-color: rgba(255, 215, 0, 0.1);
-}
-
-.nav-links a.active {
   color: var(--color-primary);
-  background-color: rgba(255, 215, 0, 0.15);
+  border-left-color: var(--color-primary);
 }
 
-/* Wallet section */
-.nav-wallet {
+/* ===========================================
+   MOBILE FOOTER LINKS
+   =========================================== */
+
+.mobile-footer-links {
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-top: 1px solid var(--color-border);
   display: flex;
-  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--spacing-md);
 }
 
-.wallet-connected-nav {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
+.mobile-footer-links a {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  text-decoration: none;
 }
 
-.wallet-info {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
+.mobile-footer-links a:hover {
+  color: var(--color-primary);
 }
+
+/* ===========================================
+   NETWORK BADGE (Shared)
+   =========================================== */
 
 .network-badge {
   display: flex;
@@ -81,6 +270,7 @@
   border-radius: 20px;
   font-size: 0.75rem;
   color: #00c864;
+  width: fit-content;
 }
 
 .network-dot {
@@ -96,67 +286,138 @@
   50% { opacity: 0.5; }
 }
 
-.wallet-address-nav {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.35rem 0.75rem;
-  background-color: var(--color-bg-card);
-  border: 1px solid var(--color-border);
-  border-radius: 6px;
-  font-family: monospace;
-  font-size: 0.85rem;
-  color: var(--color-primary);
-}
+/* ===========================================
+   DESKTOP STYLES (768px and up)
+   =========================================== */
 
-.metamask-icon {
-  width: 18px;
-  height: 18px;
-  flex-shrink: 0;
-}
-
-.disconnect-btn {
-  font-size: 0.8rem !important;
-  padding: 0.35rem 0.75rem !important;
-}
-
-/* Connect button */
-.connect-btn {
-  display: flex !important;
-  align-items: center;
-  gap: 0.5rem;
-  white-space: nowrap;
-}
-
-.connect-btn .metamask-icon {
-  width: 20px;
-  height: 20px;
-}
-
-/* Responsive */
-@media (max-width: 1024px) {
-  .main-nav-content {
-    flex-wrap: wrap;
-    gap: 1rem;
-  }
-
-  .nav-links {
-    order: 3;
-    width: 100%;
-    justify-content: center;
-    padding-top: 0.5rem;
-    border-top: 1px solid var(--color-border);
-  }
-}
-
-@media (max-width: 768px) {
+@media (min-width: 768px) {
   .main-nav {
-    padding: 0.5rem 1rem;
+    padding: 0 var(--spacing-lg);
+  }
+
+  .nav-logo {
+    font-size: 1.5rem;
+  }
+
+  /* Show desktop elements */
+  .desktop-nav,
+  .desktop-wallet {
+    display: flex;
+  }
+
+  /* Hide mobile elements */
+  .mobile-header-actions,
+  .mobile-menu-overlay,
+  .mobile-menu {
+    display: none !important;
+  }
+
+  /* Desktop Navigation Links */
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
   }
 
   .nav-links a {
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+  }
+
+  .nav-links a:hover {
+    color: var(--color-primary);
+    background-color: rgba(255, 215, 0, 0.1);
+  }
+
+  .nav-links a.active {
+    color: var(--color-primary);
+    background-color: rgba(255, 215, 0, 0.15);
+  }
+
+  /* Desktop Wallet section */
+  .nav-wallet {
+    display: flex;
+    align-items: center;
+  }
+
+  .wallet-connected-nav {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .wallet-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .wallet-address-nav {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.35rem 0.75rem;
+    background-color: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    font-family: monospace;
+    font-size: 0.85rem;
+    color: var(--color-primary);
+  }
+
+  .metamask-icon {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+  }
+
+  .disconnect-btn {
+    font-size: 0.8rem !important;
+    padding: 0.35rem 0.75rem !important;
+  }
+
+  /* Connect button */
+  .connect-btn {
+    display: flex !important;
+    align-items: center;
+    gap: 0.5rem;
+    white-space: nowrap;
+  }
+
+  .connect-btn .metamask-icon {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+/* ===========================================
+   LARGE DESKTOP (1024px and up)
+   =========================================== */
+
+@media (min-width: 1024px) {
+  .main-nav {
+    padding: 0 2rem;
+  }
+
+  .nav-links {
+    gap: 0.75rem;
+  }
+}
+
+/* ===========================================
+   RESPONSIVE ADJUSTMENTS FOR DESKTOP
+   =========================================== */
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .nav-links a {
     padding: 0.4rem 0.6rem;
-    font-size: 0.8rem;
+    font-size: 0.85rem;
   }
 
   .network-badge {
@@ -166,24 +427,5 @@
   .wallet-address-nav {
     font-size: 0.75rem;
     padding: 0.25rem 0.5rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .nav-links {
-    gap: 0.25rem;
-  }
-
-  .nav-links a {
-    padding: 0.35rem 0.5rem;
-    font-size: 0.75rem;
-  }
-
-  .connect-btn span:not(.metamask-icon) {
-    display: none;
-  }
-
-  .connect-btn::after {
-    content: 'Conectar';
   }
 }

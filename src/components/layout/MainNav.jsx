@@ -1,12 +1,12 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useWeb3 } from '../../contexts/Web3Context';
 import { Button } from '../common';
 import './MainNav.css';
 
 // MetaMask Fox Icon SVG
-const MetaMaskIcon = () => (
-  <svg width="20" height="20" viewBox="0 0 318.6 318.6" className="metamask-icon">
+const MetaMaskIcon = ({ size = 20 }) => (
+  <svg width={size} height={size} viewBox="0 0 318.6 318.6" className="metamask-icon">
     <polygon fill="#E2761B" stroke="#E2761B" strokeLinecap="round" strokeLinejoin="round" points="274.1,35.5 174.6,109.4 193,65.8"/>
     <polygon fill="#E4761B" stroke="#E4761B" strokeLinecap="round" strokeLinejoin="round" points="44.4,35.5 143.1,110.1 125.6,65.8"/>
     <polygon fill="#E4761B" stroke="#E4761B" strokeLinecap="round" strokeLinejoin="round" points="238.3,206.8 211.8,247.4 268.5,263 284.8,207.7"/>
@@ -39,8 +39,18 @@ const MetaMaskIcon = () => (
   </svg>
 );
 
+// Hamburger Icon
+const HamburgerIcon = ({ isOpen }) => (
+  <div className={`hamburger-icon ${isOpen ? 'open' : ''}`}>
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+);
+
 function MainNav() {
   const location = useLocation();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const {
     isConnected,
     account,
@@ -53,21 +63,52 @@ function MainNav() {
 
   const isActive = (path) => location.pathname === path;
 
+  // Close mobile menu on route change
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [location.pathname]);
+
+  // Prevent body scroll when mobile menu is open
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [mobileMenuOpen]);
+
+  const navLinks = [
+    { to: '/', label: 'Inicio' },
+    { to: '/bet', label: 'La Bolita' },
+    { to: '/lottery', label: 'La Fortuna' },
+    { to: '/wallet', label: 'Billetera' },
+    { to: '/history', label: 'Historial' },
+    { to: '/results', label: 'Resultados' },
+  ];
+
   return (
     <header className="main-nav">
       <div className="main-nav-content">
         <Link to="/" className="nav-logo">LA BOLITA</Link>
 
-        <nav className="nav-links">
-          <Link to="/" className={isActive('/') ? 'active' : ''}>Inicio</Link>
-          <Link to="/bet" className={isActive('/bet') ? 'active' : ''}>La Bolita</Link>
-          <Link to="/lottery" className={isActive('/lottery') ? 'active' : ''}>La Fortuna</Link>
-          <Link to="/wallet" className={isActive('/wallet') ? 'active' : ''}>Billetera</Link>
-          <Link to="/history" className={isActive('/history') ? 'active' : ''}>Historial</Link>
-          <Link to="/results" className={isActive('/results') ? 'active' : ''}>Resultados</Link>
+        {/* Desktop Navigation */}
+        <nav className="nav-links desktop-nav">
+          {navLinks.map(link => (
+            <Link
+              key={link.to}
+              to={link.to}
+              className={isActive(link.to) ? 'active' : ''}
+            >
+              {link.label}
+            </Link>
+          ))}
         </nav>
 
-        <div className="nav-wallet">
+        {/* Desktop Wallet */}
+        <div className="nav-wallet desktop-wallet">
           {isConnected ? (
             <div className="wallet-connected-nav">
               <div className="wallet-info">
@@ -98,9 +139,99 @@ function MainNav() {
               className="connect-btn"
             >
               <MetaMaskIcon />
+              <span className="connect-text">{isConnecting ? 'Conectando...' : 'Conectar'}</span>
+            </Button>
+          )}
+        </div>
+
+        {/* Mobile: Wallet status indicator + Hamburger */}
+        <div className="mobile-header-actions">
+          {isConnected && (
+            <span className="mobile-wallet-indicator">
+              <span className="network-dot"></span>
+              <MetaMaskIcon size={18} />
+            </span>
+          )}
+          <button
+            className="hamburger-btn"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label={mobileMenuOpen ? 'Cerrar menu' : 'Abrir menu'}
+            aria-expanded={mobileMenuOpen}
+          >
+            <HamburgerIcon isOpen={mobileMenuOpen} />
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile Menu Overlay */}
+      <div
+        className={`mobile-menu-overlay ${mobileMenuOpen ? 'open' : ''}`}
+        onClick={() => setMobileMenuOpen(false)}
+      />
+
+      {/* Mobile Menu Panel */}
+      <div className={`mobile-menu ${mobileMenuOpen ? 'open' : ''}`}>
+        {/* Wallet Section in Mobile Menu */}
+        <div className="mobile-wallet-section">
+          {isConnected ? (
+            <>
+              <div className="mobile-wallet-info">
+                <span className="network-badge">
+                  <span className="network-dot"></span>
+                  {currentNetwork?.name || 'Red'}
+                </span>
+                <span className="mobile-wallet-address">
+                  <MetaMaskIcon size={18} />
+                  {formatAddress(account)}
+                </span>
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  disconnectWallet();
+                  setMobileMenuOpen(false);
+                }}
+                fullWidth
+              >
+                Desconectar Wallet
+              </Button>
+            </>
+          ) : (
+            <Button
+              variant="primary"
+              onClick={() => {
+                connectWallet();
+                setMobileMenuOpen(false);
+              }}
+              disabled={isConnecting}
+              fullWidth
+            >
+              <MetaMaskIcon />
               {isConnecting ? 'Conectando...' : 'Conectar MetaMask'}
             </Button>
           )}
+        </div>
+
+        {/* Mobile Navigation Links */}
+        <nav className="mobile-nav-links">
+          {navLinks.map(link => (
+            <Link
+              key={link.to}
+              to={link.to}
+              className={`mobile-nav-link ${isActive(link.to) ? 'active' : ''}`}
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              {link.label}
+            </Link>
+          ))}
+        </nav>
+
+        {/* Additional Links */}
+        <div className="mobile-footer-links">
+          <Link to="/how-it-works" onClick={() => setMobileMenuOpen(false)}>Como Funciona</Link>
+          <Link to="/faq" onClick={() => setMobileMenuOpen(false)}>FAQ</Link>
+          <Link to="/legal/rules" onClick={() => setMobileMenuOpen(false)}>Reglas</Link>
         </div>
       </div>
     </header>
