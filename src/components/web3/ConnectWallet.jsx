@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from 'react';
+import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useWeb3 } from '../../contexts/Web3Context';
 import { Button } from '../common';
 import './Web3.css';
@@ -9,7 +10,7 @@ const getExplorerUrl = (chainId) => {
     137: 'https://polygonscan.com',
     80002: 'https://amoy.polygonscan.com',
     80001: 'https://mumbai.polygonscan.com',
-    31337: 'http://localhost:8545' // Local hardhat
+    31337: 'http://localhost:8545'
   };
   return explorers[chainId] || 'https://polygonscan.com';
 };
@@ -18,21 +19,15 @@ function ConnectWallet({ variant = 'default', showBalance = false, showExplorerL
   const {
     account,
     isConnected,
-    isConnecting,
     isCorrectNetwork,
     currentNetwork,
     chainId,
-    connectWallet,
-    disconnectWallet,
-    switchNetwork,
     formatAddress,
     getNativeBalance,
-    error: web3Error
   } = useWeb3();
 
   const [balance, setBalance] = useState('0');
   const [copied, setCopied] = useState(false);
-  const [localError, setLocalError] = useState(null);
 
   // Load balance
   React.useEffect(() => {
@@ -55,295 +50,258 @@ function ConnectWallet({ variant = 'default', showBalance = false, showExplorerL
     }
   }, [account]);
 
-  // Agregar/Cambiar a red Hardhat Local
-  const addHardhatNetwork = useCallback(async () => {
-    if (!window.ethereum) {
-      setLocalError('MetaMask no detectado');
-      return;
-    }
-
-    try {
-      // Primero intentar cambiar a red existente
-      await window.ethereum.request({
-        method: 'wallet_switchEthereumChain',
-        params: [{ chainId: '0x7a69' }], // 31337 en hex
-      });
-      console.log('Switched to existing Hardhat network');
-      setLocalError(null);
-    } catch (switchError) {
-      console.log('Switch error:', switchError.code, switchError.message);
-
-      // Si no existe, agregarla
-      if (switchError.code === 4902) {
-        try {
-          await window.ethereum.request({
-            method: 'wallet_addEthereumChain',
-            params: [{
-              chainId: '0x7a69', // 31337 en hex
-              chainName: 'Hardhat Local',
-              nativeCurrency: {
-                name: 'ETH',
-                symbol: 'ETH',
-                decimals: 18
-              },
-              rpcUrls: ['http://127.0.0.1:8545'],
-              blockExplorerUrls: []
-            }]
-          });
-
-          // Ahora cambiar a ella
-          await window.ethereum.request({
-            method: 'wallet_switchEthereumChain',
-            params: [{ chainId: '0x7a69' }],
-          });
-
-          setLocalError(null);
-        } catch (addError) {
-          console.error('Error adding Hardhat network:', addError);
-          setLocalError('Error configurando red Hardhat: ' + addError.message);
-        }
-      } else {
-        setLocalError('Error cambiando a red Hardhat: ' + switchError.message);
-      }
-    }
-  }, []);
-
-  // Handle connect with error handling
-  const handleConnect = useCallback(async () => {
-    setLocalError(null);
-    try {
-      await connectWallet();
-    } catch (err) {
-      setLocalError(err.message || 'Failed to connect wallet');
-    }
-  }, [connectWallet]);
-
-  // Handle network switch with error handling
-  const handleSwitchNetwork = useCallback(async () => {
-    setLocalError(null);
-    try {
-      await switchNetwork();
-    } catch (err) {
-      setLocalError(err.message || 'Failed to switch network');
-    }
-  }, [switchNetwork]);
-
   // Get explorer URL for address
   const explorerUrl = `${getExplorerUrl(chainId)}/address/${account}`;
 
-  // Display error
-  const displayError = localError || web3Error;
-
-  // Not connected
-  if (!isConnected) {
-    return (
-      <div className="connect-wallet-container">
-        <Button
-          onClick={handleConnect}
-          loading={isConnecting}
-          variant={variant === 'header' ? 'secondary' : 'primary'}
-          size={variant === 'header' ? 'sm' : 'md'}
-          className="connect-wallet-btn"
-          aria-label="Connect cryptocurrency wallet"
-        >
-          {isConnecting ? 'Conectando...' : 'Conectar Wallet'}
-        </Button>
-
-        {displayError && variant !== 'header' && (
-          <div className="wallet-error" role="alert">
-            <span className="error-icon">!</span>
-            <span className="error-message">{displayError}</span>
-            <button
-              className="error-dismiss"
-              onClick={() => setLocalError(null)}
-              aria-label="Dismiss error"
-            >
-              x
-            </button>
-          </div>
-        )}
-
-        {variant !== 'header' && (
-          <>
-            <p className="wallet-help-text">
-              Conecta tu wallet de MetaMask para apostar en La Bolita.
-            </p>
-
-            <Button
-              onClick={addHardhatNetwork}
-              variant="outline"
-              size="sm"
-              className="add-network-btn"
-            >
-              🔧 Agregar Red Hardhat Local
-            </Button>
-          </>
-        )}
-      </div>
-    );
-  }
-
-  // Wrong network
-  if (!isCorrectNetwork) {
-    return (
-      <div className="connect-wallet-container wrong-network">
-        <div className="network-warning" role="alert">
-          <span className="warning-icon">!</span>
-          <span>Red incorrecta: {currentNetwork?.name || 'Desconocida'}</span>
-        </div>
-        <div className="network-buttons">
-          <Button
-            onClick={handleSwitchNetwork}
-            variant="danger"
-            size={variant === 'header' ? 'sm' : 'md'}
-            className="switch-network-btn"
-            aria-label="Switch to Polygon network"
-          >
-            Cambiar a Polygon
-          </Button>
-
-          <Button
-            onClick={addHardhatNetwork}
-            variant="outline"
-            size={variant === 'header' ? 'sm' : 'md'}
-            className="add-hardhat-btn"
-          >
-            🔧 Agregar Hardhat Local
-          </Button>
-        </div>
-        {displayError && (
-          <div className="wallet-error" role="alert">
-            <span className="error-message">{displayError}</span>
-          </div>
-        )}
-      </div>
-    );
-  }
-
-  // Connected - compact header version
+  // Variante header - usa ConnectButton.Custom para control total
   if (variant === 'header') {
     return (
-      <div className="wallet-connected-header">
-        {showBalance && (
-          <span className="wallet-balance" title="Balance MATIC">
-            {parseFloat(balance).toFixed(4)} MATIC
-          </span>
-        )}
-        <div className="wallet-info-header">
-          <span className="wallet-network-badge" title={`Connected to ${currentNetwork?.name}`}>
-            <span className="network-dot active"></span>
-            {currentNetwork?.name}
-          </span>
-          <button
-            className="wallet-address-btn"
-            onClick={copyAddress}
-            title={copied ? 'Copiado!' : 'Click para copiar direccion'}
-            aria-label={`Wallet address: ${account}. Click to copy.`}
-          >
-            {formatAddress(account)}
-            {copied && <span className="copied-badge">Copiado</span>}
-          </button>
-          {showExplorerLink && (
-            <a
-              href={explorerUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="explorer-link"
-              title="Ver en Polygonscan"
-              aria-label="View address on Polygonscan"
+      <ConnectButton.Custom>
+        {({
+          account: rkAccount,
+          chain,
+          openAccountModal,
+          openChainModal,
+          openConnectModal,
+          mounted,
+        }) => {
+          const ready = mounted;
+          const connected = ready && rkAccount && chain;
+
+          return (
+            <div
+              {...(!ready && {
+                'aria-hidden': true,
+                style: {
+                  opacity: 0,
+                  pointerEvents: 'none',
+                  userSelect: 'none',
+                },
+              })}
             >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-                <polyline points="15 3 21 3 21 9" />
-                <line x1="10" y1="14" x2="21" y2="3" />
-              </svg>
-            </a>
-          )}
-          <button
-            className="disconnect-btn-header"
-            onClick={disconnectWallet}
-            title="Desconectar wallet"
-            aria-label="Disconnect wallet"
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-              <polyline points="16 17 21 12 16 7" />
-              <line x1="21" y1="12" x2="9" y2="12" />
-            </svg>
-          </button>
-        </div>
-      </div>
+              {(() => {
+                if (!connected) {
+                  return (
+                    <Button
+                      onClick={openConnectModal}
+                      variant="secondary"
+                      size="sm"
+                      className="connect-wallet-btn"
+                    >
+                      Conectar Wallet
+                    </Button>
+                  );
+                }
+
+                if (chain.unsupported) {
+                  return (
+                    <Button
+                      onClick={openChainModal}
+                      variant="danger"
+                      size="sm"
+                      className="switch-network-btn"
+                    >
+                      Red incorrecta
+                    </Button>
+                  );
+                }
+
+                return (
+                  <div className="wallet-connected-header">
+                    {showBalance && rkAccount.balanceFormatted && (
+                      <span className="wallet-balance" title="Balance">
+                        {rkAccount.balanceFormatted}
+                      </span>
+                    )}
+                    <div className="wallet-info-header">
+                      <button
+                        className="wallet-network-badge"
+                        onClick={openChainModal}
+                        title={`Connected to ${chain.name}`}
+                      >
+                        <span className="network-dot active"></span>
+                        {chain.name}
+                      </button>
+                      <button
+                        className="wallet-address-btn"
+                        onClick={copyAddress}
+                        title={copied ? 'Copiado!' : 'Click para copiar direccion'}
+                      >
+                        {rkAccount.displayName}
+                        {copied && <span className="copied-badge">Copiado</span>}
+                      </button>
+                      {showExplorerLink && (
+                        <a
+                          href={explorerUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="explorer-link"
+                          title="Ver en Explorer"
+                        >
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                            <polyline points="15 3 21 3 21 9" />
+                            <line x1="10" y1="14" x2="21" y2="3" />
+                          </svg>
+                        </a>
+                      )}
+                      <button
+                        className="disconnect-btn-header"
+                        onClick={openAccountModal}
+                        title="Opciones de cuenta"
+                      >
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                          <polyline points="16 17 21 12 16 7" />
+                          <line x1="21" y1="12" x2="9" y2="12" />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                );
+              })()}
+            </div>
+          );
+        }}
+      </ConnectButton.Custom>
     );
   }
 
-  // Connected - full version
+  // Variante default - usa ConnectButton.Custom para mantener el estilo existente
   return (
-    <div className="wallet-connected" role="region" aria-label="Wallet information">
-      <div className="wallet-status">
-        <span className="status-dot connected" aria-hidden="true"></span>
-        <span className="status-text">Conectado</span>
-      </div>
+    <ConnectButton.Custom>
+      {({
+        account: rkAccount,
+        chain,
+        openAccountModal,
+        openChainModal,
+        openConnectModal,
+        mounted,
+      }) => {
+        const ready = mounted;
+        const connected = ready && rkAccount && chain;
 
-      <div className="wallet-details">
-        <div className="wallet-row">
-          <span className="label">Red:</span>
-          <span className="value network-value">
-            <span className="network-dot active" aria-hidden="true"></span>
-            {currentNetwork?.name}
-          </span>
-        </div>
-        <div className="wallet-row">
-          <span className="label">Direccion:</span>
-          <div className="address-container">
-            <button
-              className="address-value"
-              onClick={copyAddress}
-              title={copied ? 'Copiado!' : 'Click para copiar'}
-              aria-label={`Address: ${account}. Click to copy.`}
-            >
-              {formatAddress(account)}
-              {copied && <span className="copied-indicator">Copiado!</span>}
-            </button>
-            {showExplorerLink && (
-              <a
-                href={explorerUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="explorer-link-full"
-                title="Ver en Polygonscan"
-                aria-label="View on Polygonscan"
-              >
-                Ver en Explorer
-              </a>
-            )}
+        return (
+          <div
+            className="connect-wallet-container"
+            {...(!ready && {
+              'aria-hidden': true,
+              style: {
+                opacity: 0,
+                pointerEvents: 'none',
+                userSelect: 'none',
+              },
+            })}
+          >
+            {(() => {
+              if (!connected) {
+                return (
+                  <>
+                    <Button
+                      onClick={openConnectModal}
+                      variant="primary"
+                      size="md"
+                      className="connect-wallet-btn"
+                    >
+                      Conectar Wallet
+                    </Button>
+                    <p className="wallet-help-text">
+                      Conecta tu wallet para apostar en La Bolita.
+                      <br />
+                      <small>Soportamos MetaMask, WalletConnect, Coinbase y mas.</small>
+                    </p>
+                  </>
+                );
+              }
+
+              if (chain.unsupported) {
+                return (
+                  <div className="wrong-network">
+                    <div className="network-warning" role="alert">
+                      <span className="warning-icon">!</span>
+                      <span>Red incorrecta: {chain.name || 'Desconocida'}</span>
+                    </div>
+                    <Button
+                      onClick={openChainModal}
+                      variant="danger"
+                      size="md"
+                      className="switch-network-btn"
+                    >
+                      Cambiar Red
+                    </Button>
+                  </div>
+                );
+              }
+
+              // Connected and correct network
+              return (
+                <div className="wallet-connected" role="region" aria-label="Wallet information">
+                  <div className="wallet-status">
+                    <span className="status-dot connected"></span>
+                    <span className="status-text">Conectado</span>
+                  </div>
+
+                  <div className="wallet-details">
+                    <div className="wallet-row">
+                      <span className="label">Red:</span>
+                      <button
+                        className="value network-value"
+                        onClick={openChainModal}
+                        style={{ cursor: 'pointer', background: 'none', border: 'none', color: 'inherit' }}
+                      >
+                        <span className="network-dot active"></span>
+                        {chain.name}
+                      </button>
+                    </div>
+                    <div className="wallet-row">
+                      <span className="label">Direccion:</span>
+                      <div className="address-container">
+                        <button
+                          className="address-value"
+                          onClick={copyAddress}
+                          title={copied ? 'Copiado!' : 'Click para copiar'}
+                        >
+                          {rkAccount.displayName}
+                          {copied && <span className="copied-indicator">Copiado!</span>}
+                        </button>
+                        {showExplorerLink && (
+                          <a
+                            href={explorerUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="explorer-link-full"
+                            title="Ver en Explorer"
+                          >
+                            Ver en Explorer
+                          </a>
+                        )}
+                      </div>
+                    </div>
+                    {showBalance && rkAccount.balanceFormatted && (
+                      <div className="wallet-row">
+                        <span className="label">Balance:</span>
+                        <span className="value balance-value">{rkAccount.balanceFormatted}</span>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="wallet-actions">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={openAccountModal}
+                      className="disconnect-btn"
+                    >
+                      Desconectar
+                    </Button>
+                  </div>
+                </div>
+              );
+            })()}
           </div>
-        </div>
-        {showBalance && (
-          <div className="wallet-row">
-            <span className="label">Balance:</span>
-            <span className="value balance-value">{parseFloat(balance).toFixed(4)} MATIC</span>
-          </div>
-        )}
-      </div>
-
-      <div className="wallet-actions">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={disconnectWallet}
-          className="disconnect-btn"
-          aria-label="Disconnect wallet"
-        >
-          Desconectar
-        </Button>
-      </div>
-
-      {displayError && (
-        <div className="wallet-error" role="alert">
-          <span className="error-message">{displayError}</span>
-        </div>
-      )}
-    </div>
+        );
+      }}
+    </ConnectButton.Custom>
   );
 }
 

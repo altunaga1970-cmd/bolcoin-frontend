@@ -1,13 +1,27 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { WagmiProvider } from 'wagmi';
+import { RainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit';
+
+// Configuracion wagmi
+import { config } from './config/wagmi';
+
+// Contexts
 import { ToastProvider } from './contexts/ToastContext';
 import { Web3Provider } from './contexts/Web3Context';
 import { AdminAuthProvider } from './contexts/AdminAuthContext';
+
+// Components
 import { GeoBlock } from './components/common';
 import { AdminRoute, Web3Route } from './components/auth';
 
-// Estilos globales
+// Estilos
+import '@rainbow-me/rainbowkit/styles.css';
 import './styles/global.css';
+
+// Query client para react-query (requerido por wagmi v2)
+const queryClient = new QueryClient();
 
 // Paginas publicas
 const HomePage = React.lazy(() => import('./pages/public/HomePage'));
@@ -74,77 +88,92 @@ function GeoBlockWrapper({ children }) {
   return children;
 }
 
+// Tema personalizado de RainbowKit para coincidir con La Bolita
+const customTheme = darkTheme({
+  accentColor: '#FFD700', // Gold
+  accentColorForeground: '#0D0D0D',
+  borderRadius: 'medium',
+  fontStack: 'system',
+  overlayBlur: 'small',
+});
+
 function App() {
   return (
-    <GeoBlockWrapper>
-      <Router>
-        <ToastProvider>
-          <Web3Provider>
-            <AdminAuthProvider>
-              <React.Suspense fallback={<LoadingFallback />}>
-                <Routes>
-                  {/* Pagina principal */}
-                  <Route path="/" element={<HomePage />} />
+    <WagmiProvider config={config}>
+      <QueryClientProvider client={queryClient}>
+        <RainbowKitProvider theme={customTheme} locale="es">
+          <GeoBlockWrapper>
+            <Router>
+              <ToastProvider>
+                <Web3Provider>
+                  <AdminAuthProvider>
+                    <React.Suspense fallback={<LoadingFallback />}>
+                      <Routes>
+                        {/* Pagina principal */}
+                        <Route path="/" element={<HomePage />} />
 
-                  {/* Paginas de juego Web3 - Protegidas */}
-                  <Route path="/bet" element={<Web3Route><Web3BettingPage /></Web3Route>} />
-                  <Route path="/bet/:drawId" element={<Web3Route><Web3BettingPage /></Web3Route>} />
-                  <Route path="/wallet" element={<Web3Route><Web3WalletPage /></Web3Route>} />
-                  <Route path="/history" element={<Web3Route><HistoryPage /></Web3Route>} />
-                  <Route path="/referrals" element={<Web3Route><ReferralsPage /></Web3Route>} />
-                  <Route path="/lottery" element={<Web3Route><LotteryPage /></Web3Route>} />
-                  <Route path="/fortuna" element={<Web3Route><LotteryPage /></Web3Route>} />
-                  <Route path="/claims" element={<Web3Route><ClaimsPage /></Web3Route>} />
-                  <Route path="/results" element={<ResultsPage />} />
+                        {/* Paginas de juego Web3 - Protegidas */}
+                        <Route path="/bet" element={<Web3Route><Web3BettingPage /></Web3Route>} />
+                        <Route path="/bet/:drawId" element={<Web3Route><Web3BettingPage /></Web3Route>} />
+                        <Route path="/wallet" element={<Web3Route><Web3WalletPage /></Web3Route>} />
+                        <Route path="/history" element={<Web3Route><HistoryPage /></Web3Route>} />
+                        <Route path="/referrals" element={<Web3Route><ReferralsPage /></Web3Route>} />
+                        <Route path="/lottery" element={<Web3Route><LotteryPage /></Web3Route>} />
+                        <Route path="/fortuna" element={<Web3Route><LotteryPage /></Web3Route>} />
+                        <Route path="/claims" element={<Web3Route><ClaimsPage /></Web3Route>} />
+                        <Route path="/results" element={<ResultsPage />} />
 
-                  {/* Paginas de informacion */}
-                  <Route path="/how-it-works" element={<HowItWorksPage />} />
-                  <Route path="/transparency" element={<TransparencyPage />} />
-                  <Route path="/fairness" element={<FairnessPage />} />
-                  <Route path="/statistics" element={<StatisticsPage />} />
-                  <Route path="/faq" element={<FAQPage />} />
-                  <Route path="/contact" element={<ContactPage />} />
-                  <Route path="/official-links" element={<OfficialLinksPage />} />
+                        {/* Paginas de informacion */}
+                        <Route path="/how-it-works" element={<HowItWorksPage />} />
+                        <Route path="/transparency" element={<TransparencyPage />} />
+                        <Route path="/fairness" element={<FairnessPage />} />
+                        <Route path="/statistics" element={<StatisticsPage />} />
+                        <Route path="/faq" element={<FAQPage />} />
+                        <Route path="/contact" element={<ContactPage />} />
+                        <Route path="/official-links" element={<OfficialLinksPage />} />
 
-                  {/* Paginas legales */}
-                  <Route path="/legal/terms" element={<TermsPage />} />
-                  <Route path="/legal/rules" element={<RulesPage />} />
-                  <Route path="/legal/privacy" element={<PrivacyPage />} />
-                  <Route path="/legal/cookies" element={<CookiesPage />} />
-                  <Route path="/legal/responsible-gaming" element={<ResponsibleGamingPage />} />
-                  <Route path="/legal/jurisdictions" element={<JurisdictionsPage />} />
-                  <Route path="/legal/disclaimer" element={<DisclaimerPage />} />
+                        {/* Paginas legales */}
+                        <Route path="/legal/terms" element={<TermsPage />} />
+                        <Route path="/legal/rules" element={<RulesPage />} />
+                        <Route path="/legal/privacy" element={<PrivacyPage />} />
+                        <Route path="/legal/cookies" element={<CookiesPage />} />
+                        <Route path="/legal/responsible-gaming" element={<ResponsibleGamingPage />} />
+                        <Route path="/legal/jurisdictions" element={<JurisdictionsPage />} />
+                        <Route path="/legal/disclaimer" element={<DisclaimerPage />} />
 
-                  {/* Rutas de admin - protegidas con AdminRoute */}
-                  <Route path="/admin/login" element={<AdminLoginPage />} />
-                  <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
-                  <Route path="/admin/draws" element={<AdminRoute requiredPermission="draws:manage"><ManageDrawsPage /></AdminRoute>} />
-                  <Route path="/admin/users" element={<AdminRoute requiredPermission="users:read"><ManageUsersPage /></AdminRoute>} />
-                  <Route path="/admin/withdrawals" element={<AdminRoute requiredPermission="withdrawals:manage"><WithdrawalsPage /></AdminRoute>} />
-                  <Route path="/admin/audit-logs" element={<AdminRoute requiredPermission="audit:read"><AuditLogsPage /></AdminRoute>} />
-                  <Route path="/admin/web3" element={<AdminRoute><Web3AdminPage /></AdminRoute>} />
-                  <Route path="/admin/bankroll" element={<AdminRoute><BankrollDashboard /></AdminRoute>} />
+                        {/* Rutas de admin - protegidas con AdminRoute */}
+                        <Route path="/admin/login" element={<AdminLoginPage />} />
+                        <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
+                        <Route path="/admin/draws" element={<AdminRoute requiredPermission="draws:manage"><ManageDrawsPage /></AdminRoute>} />
+                        <Route path="/admin/users" element={<AdminRoute requiredPermission="users:read"><ManageUsersPage /></AdminRoute>} />
+                        <Route path="/admin/withdrawals" element={<AdminRoute requiredPermission="withdrawals:manage"><WithdrawalsPage /></AdminRoute>} />
+                        <Route path="/admin/audit-logs" element={<AdminRoute requiredPermission="audit:read"><AuditLogsPage /></AdminRoute>} />
+                        <Route path="/admin/web3" element={<AdminRoute><Web3AdminPage /></AdminRoute>} />
+                        <Route path="/admin/bankroll" element={<AdminRoute><BankrollDashboard /></AdminRoute>} />
 
-                  {/* Redirecciones de compatibilidad */}
-                  <Route path="/web3" element={<Navigate to="/bet" replace />} />
-                  <Route path="/web3/bet" element={<Navigate to="/bet" replace />} />
-                  <Route path="/web3/wallet" element={<Navigate to="/wallet" replace />} />
-                  <Route path="/web3-wallet" element={<Navigate to="/wallet" replace />} />
-                  <Route path="/dashboard" element={<Navigate to="/" replace />} />
-                  <Route path="/my-bets" element={<Navigate to="/history" replace />} />
-                  <Route path="/profile" element={<Navigate to="/wallet" replace />} />
-                  <Route path="/login" element={<Navigate to="/" replace />} />
-                  <Route path="/register" element={<Navigate to="/" replace />} />
+                        {/* Redirecciones de compatibilidad */}
+                        <Route path="/web3" element={<Navigate to="/bet" replace />} />
+                        <Route path="/web3/bet" element={<Navigate to="/bet" replace />} />
+                        <Route path="/web3/wallet" element={<Navigate to="/wallet" replace />} />
+                        <Route path="/web3-wallet" element={<Navigate to="/wallet" replace />} />
+                        <Route path="/dashboard" element={<Navigate to="/" replace />} />
+                        <Route path="/my-bets" element={<Navigate to="/history" replace />} />
+                        <Route path="/profile" element={<Navigate to="/wallet" replace />} />
+                        <Route path="/login" element={<Navigate to="/" replace />} />
+                        <Route path="/register" element={<Navigate to="/" replace />} />
 
-                  {/* Redireccion por defecto */}
-                  <Route path="*" element={<Navigate to="/" replace />} />
-                </Routes>
-              </React.Suspense>
-            </AdminAuthProvider>
-          </Web3Provider>
-        </ToastProvider>
-      </Router>
-    </GeoBlockWrapper>
+                        {/* Redireccion por defecto */}
+                        <Route path="*" element={<Navigate to="/" replace />} />
+                      </Routes>
+                    </React.Suspense>
+                  </AdminAuthProvider>
+                </Web3Provider>
+              </ToastProvider>
+            </Router>
+          </GeoBlockWrapper>
+        </RainbowKitProvider>
+      </QueryClientProvider>
+    </WagmiProvider>
   );
 }
 
