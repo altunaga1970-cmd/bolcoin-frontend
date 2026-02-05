@@ -1,0 +1,134 @@
+/**
+ * ComingSoon Component Styles
+ */
+
+.coming-soon-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 80vh;
+  padding: 2rem;
+  background: linear-gradient(135deg, #0D0D0D 0%, #1A1A2E 100%);
+}
+
+.coming-soon-content {
+  text-align: center;
+  max-width: 500px;
+  padding: 3rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 215, 0, 0.1);
+  border-radius: 16px;
+  backdrop-filter: blur(10px);
+}
+
+.coming-soon-icon {
+  margin-bottom: 1.5rem;
+  color: #FFD700;
+  opacity: 0.8;
+}
+
+.coming-soon-icon svg {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+}
+
+.coming-soon-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #FFD700;
+  margin: 0 0 1rem 0;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.coming-soon-subtitle {
+  font-size: 1.1rem;
+  color: #E5E5E5;
+  margin: 0 0 1.5rem 0;
+  line-height: 1.6;
+}
+
+.coming-soon-message {
+  font-size: 0.95rem;
+  color: #999;
+  margin: 0 0 2rem 0;
+}
+
+.coming-soon-message strong {
+  color: #22c55e;
+}
+
+.coming-soon-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.coming-soon-btn {
+  display: inline-block;
+  padding: 0.875rem 2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.coming-soon-btn-primary {
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  color: white;
+  border: none;
+}
+
+.coming-soon-btn-primary:hover {
+  background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+}
+
+.coming-soon-btn-secondary {
+  background: transparent;
+  color: #FFD700;
+  border: 1px solid rgba(255, 215, 0, 0.3);
+}
+
+.coming-soon-btn-secondary:hover {
+  background: rgba(255, 215, 0, 0.1);
+  border-color: rgba(255, 215, 0, 0.5);
+}
+
+/* Modo mantenimiento */
+.maintenance-mode .coming-soon-icon {
+  color: #f59e0b;
+}
+
+.maintenance-mode .coming-soon-title {
+  color: #f59e0b;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .coming-soon-content {
+    padding: 2rem 1.5rem;
+  }
+
+  .coming-soon-title {
+    font-size: 1.5rem;
+  }
+
+  .coming-soon-icon svg {
+    width: 60px;
+    height: 60px;
+  }
+}

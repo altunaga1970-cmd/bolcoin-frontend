@@ -1,0 +1,319 @@
+/* ============ Connect Wallet Button ============ */
+.connect-wallet-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.add-network-btn {
+  margin-top: 0.5rem;
+}
+
+.switch-network-btn {
+  animation: pulse 2s infinite;
+}
+
+.network-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+  max-width: 280px;
+}
+
+.network-buttons .switch-network-btn,
+.network-buttons .add-hardhat-btn {
+  width: 100%;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+/* ============ Wallet Connected - Header ============ */
+.wallet-connected-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.wallet-balance {
+  color: var(--gold);
+  font-weight: 500;
+  font-size: 0.875rem;
+}
+
+.wallet-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  padding: 0.375rem 0.75rem;
+  background: rgba(255, 215, 0, 0.1);
+  border: 1px solid var(--gold-dark);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.wallet-info:hover {
+  background: rgba(255, 215, 0, 0.2);
+}
+
+.wallet-network {
+  font-size: 0.625rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.wallet-address {
+  font-size: 0.875rem;
+  color: var(--gold);
+  font-family: monospace;
+}
+
+/* ============ Wallet Connected - Full ============ */
+.wallet-connected {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.wallet-status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--error);
+}
+
+.status-dot.connected {
+  background: var(--success);
+  box-shadow: 0 0 8px var(--success);
+}
+
+.status-text {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.wallet-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.wallet-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.wallet-row .label {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}
+
+.wallet-row .value {
+  color: var(--text-primary);
+  font-size: 0.875rem;
+}
+
+.wallet-row .value.address {
+  font-family: monospace;
+  color: var(--gold);
+}
+
+.disconnect-btn {
+  width: 100%;
+}
+
+/* ============ Web3 Wallet Page ============ */
+.web3-wallet-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.web3-wallet-section h3 {
+  color: var(--gold);
+  margin-bottom: 1rem;
+  font-size: 1.125rem;
+}
+
+.balance-display {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.balance-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+}
+
+.balance-item .label {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}
+
+.balance-item .amount {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.balance-item .amount.usdt {
+  color: var(--gold);
+}
+
+.balance-item .amount.wallet {
+  color: var(--text-primary);
+}
+
+/* ============ Deposit/Withdraw Forms ============ */
+.web3-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.web3-form .input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.web3-form .input-group label {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
+.web3-form .input-with-max {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.web3-form .input-with-max input {
+  flex: 1;
+}
+
+.web3-form .max-btn {
+  padding: 0.5rem 1rem;
+  background: var(--gold-dark);
+  border: none;
+  border-radius: 8px;
+  color: var(--black);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.web3-form .max-btn:hover {
+  background: var(--gold);
+}
+
+/* ============ Transaction List ============ */
+.tx-list {
+  margin-top: 1.5rem;
+}
+
+.tx-list h4 {
+  color: var(--text-secondary);
+  margin-bottom: 0.75rem;
+  font-size: 0.875rem;
+}
+
+.tx-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+}
+
+.tx-item .tx-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.tx-item .tx-type {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.tx-item .tx-hash {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-family: monospace;
+}
+
+.tx-item .tx-amount {
+  font-weight: 600;
+}
+
+.tx-item .tx-amount.deposit {
+  color: var(--success);
+}
+
+.tx-item .tx-amount.withdraw {
+  color: var(--error);
+}
+
+/* ============ Network Warning ============ */
+.network-warning {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: rgba(255, 193, 7, 0.1);
+  border: 1px solid rgba(255, 193, 7, 0.3);
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.network-warning .warning-icon {
+  font-size: 1.5rem;
+}
+
+.network-warning .warning-text {
+  flex: 1;
+  color: #ffc107;
+}
+
+/* ============ Responsive ============ */
+@media (max-width: 768px) {
+  .wallet-connected-header {
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.25rem;
+  }
+
+  .wallet-balance {
+    font-size: 0.75rem;
+  }
+
+  .wallet-info {
+    padding: 0.25rem 0.5rem;
+  }
+
+  .web3-wallet-section {
+    padding: 1rem;
+  }
+}

@@ -1,0 +1,172 @@
+/* GeoBlock - Pantalla de verificacion */
+.geo-checking {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, #0D0D0D 0%, #1a1a2e 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.geo-checking-content {
+  text-align: center;
+  color: #fff;
+}
+
+.geo-spinner {
+  width: 50px;
+  height: 50px;
+  border: 3px solid rgba(255, 215, 0, 0.2);
+  border-top-color: #FFD700;
+  border-radius: 50%;
+  animation: geo-spin 1s linear infinite;
+  margin: 0 auto 1rem;
+}
+
+@keyframes geo-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.geo-checking-content p {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* GeoBlock - Pantalla de bloqueo */
+.geo-blocked {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, #0D0D0D 0%, #1a1a2e 50%, #0D0D0D 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 2rem;
+}
+
+.geo-blocked-content {
+  max-width: 500px;
+  text-align: center;
+  animation: geo-fade-in 0.5s ease-out;
+}
+
+@keyframes geo-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.geo-blocked-icon {
+  width: 100px;
+  height: 100px;
+  margin: 0 auto 2rem;
+  color: #dc3545;
+  animation: geo-pulse 2s ease-in-out infinite;
+}
+
+.geo-blocked-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+@keyframes geo-pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.8;
+  }
+}
+
+.geo-blocked h1 {
+  font-size: 2rem;
+  color: #FFD700;
+  margin-bottom: 1rem;
+  font-weight: 700;
+}
+
+.geo-blocked-message {
+  font-size: 1.125rem;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.6;
+  margin-bottom: 2rem;
+}
+
+.geo-blocked-info {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.geo-blocked-info p {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+
+.geo-blocked-info p:last-child {
+  margin-bottom: 0;
+}
+
+.geo-blocked-country {
+  margin-top: 1rem !important;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.geo-blocked-country strong {
+  color: #FFD700;
+}
+
+.geo-blocked-footer {
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.geo-blocked-footer p {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.85rem;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .geo-blocked {
+    padding: 1rem;
+  }
+
+  .geo-blocked-icon {
+    width: 70px;
+    height: 70px;
+    margin-bottom: 1.5rem;
+  }
+
+  .geo-blocked h1 {
+    font-size: 1.5rem;
+  }
+
+  .geo-blocked-message {
+    font-size: 1rem;
+  }
+
+  .geo-blocked-info {
+    padding: 1rem;
+  }
+}

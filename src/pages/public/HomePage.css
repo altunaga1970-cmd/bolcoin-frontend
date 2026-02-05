@@ -1,0 +1,595 @@
+.home-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg-dark);
+}
+
+.home-main {
+  flex: 1;
+}
+
+/* Hero Section */
+.home-hero {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-3xl) var(--spacing-xl);
+  text-align: center;
+  background: linear-gradient(135deg, var(--color-bg-darker) 0%, var(--color-bg-dark) 100%);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.home-hero-content {
+  max-width: 600px;
+}
+
+.home-hero-title {
+  font-size: var(--font-size-4xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+  margin-bottom: var(--spacing-md);
+  text-shadow: var(--shadow-glow);
+  letter-spacing: 2px;
+}
+
+.home-hero-subtitle {
+  font-size: var(--font-size-lg);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-xl);
+  line-height: 1.6;
+}
+
+.home-hero-actions {
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+}
+
+/* Section Title */
+.section-title {
+  font-size: var(--font-size-2xl);
+  color: var(--color-text-primary);
+  text-align: center;
+  margin-bottom: var(--spacing-xl);
+}
+
+/* Results Section */
+.home-results {
+  padding: var(--spacing-2xl) var(--spacing-xl);
+  background-color: var(--color-bg-darker);
+}
+
+.results-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-2xl);
+  color: var(--color-text-muted);
+}
+
+.results-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--spacing-xl);
+  max-width: var(--max-width-lg);
+  margin: 0 auto;
+}
+
+.results-column {
+  background-color: var(--color-bg-card);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  border: 1px solid var(--color-border);
+}
+
+.results-column.fortuna {
+  border-color: rgba(0, 212, 255, 0.3);
+}
+
+.results-game-title {
+  font-size: var(--font-size-lg);
+  color: var(--color-primary);
+  margin-bottom: var(--spacing-md);
+  padding-bottom: var(--spacing-sm);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.results-game-title.fortuna-title {
+  color: #00d4ff;
+}
+
+.results-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+}
+
+.result-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-sm);
+  background-color: var(--color-bg-darker);
+  border-radius: var(--radius-md);
+}
+
+.result-date {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.result-numbers-bolita {
+  display: flex;
+  gap: var(--spacing-md);
+}
+
+.result-number-group {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.number-label {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.number-value {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+  background-color: var(--color-bg-card);
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+}
+
+.result-numbers-fortuna {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.fortuna-ball {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #00d4ff, #0099cc);
+  color: var(--color-bg-dark);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-sm);
+  border-radius: 50%;
+}
+
+.fortuna-ball.key {
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+}
+
+.fortuna-plus {
+  color: var(--color-text-muted);
+  margin: 0 4px;
+}
+
+.no-results {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  text-align: center;
+  padding: var(--spacing-lg);
+}
+
+.view-all-link {
+  display: block;
+  text-align: center;
+  color: var(--color-primary);
+  font-size: var(--font-size-sm);
+  margin-top: var(--spacing-sm);
+}
+
+.view-all-link:hover {
+  text-decoration: underline;
+}
+
+/* Jackpot Display */
+.jackpot-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--spacing-md);
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 165, 0, 0.1));
+  border-radius: var(--radius-md);
+  margin-bottom: var(--spacing-md);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+}
+
+.jackpot-label {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.jackpot-amount {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: #FFD700;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+/* Schedule Section */
+.home-schedule {
+  padding: var(--spacing-2xl) var(--spacing-xl);
+  background-color: var(--color-bg-dark);
+}
+
+.schedule-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: var(--spacing-lg);
+  max-width: var(--max-width-md);
+  margin: 0 auto;
+}
+
+.schedule-card {
+  background-color: var(--color-bg-card);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  text-align: center;
+  border: 1px solid var(--color-border);
+}
+
+.schedule-card.fortuna {
+  border-color: rgba(0, 212, 255, 0.3);
+}
+
+.schedule-card.fortuna h3 {
+  color: #00d4ff;
+}
+
+.schedule-card.keno {
+  border-color: rgba(138, 43, 226, 0.3);
+}
+
+.schedule-card.keno h3 {
+  color: #9b59b6;
+}
+
+.time-badge.instant {
+  background: linear-gradient(135deg, #9b59b6, #8e44ad);
+  color: white;
+  font-weight: var(--font-weight-bold);
+  animation: pulse-keno 2s ease-in-out infinite;
+}
+
+@keyframes pulse-keno {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.schedule-card h3 {
+  font-size: var(--font-size-lg);
+  color: var(--color-primary);
+  margin-bottom: var(--spacing-md);
+}
+
+.schedule-times {
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-sm);
+  flex-wrap: wrap;
+}
+
+.time-badge {
+  background-color: var(--color-bg-darker);
+  color: var(--color-text-primary);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-md);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+}
+
+.schedule-frequency {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+/* Games Section */
+.home-games {
+  padding: var(--spacing-2xl) var(--spacing-xl);
+  background-color: var(--color-bg-darker);
+}
+
+.game-block {
+  max-width: var(--max-width-md);
+  margin: 0 auto var(--spacing-2xl);
+  background-color: var(--color-bg-card);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-xl);
+  border: 1px solid var(--color-border);
+}
+
+.game-block.fortuna {
+  border-color: rgba(0, 212, 255, 0.3);
+  background: linear-gradient(135deg, rgba(0, 212, 255, 0.05), transparent);
+}
+
+.game-block.keno {
+  border-color: rgba(155, 89, 182, 0.3);
+  background: linear-gradient(135deg, rgba(155, 89, 182, 0.05), transparent);
+}
+
+.game-header h3.keno-title {
+  color: #9b59b6;
+}
+
+.game-header {
+  text-align: center;
+  margin-bottom: var(--spacing-lg);
+}
+
+.game-header h3 {
+  font-size: var(--font-size-xl);
+  color: var(--color-primary);
+  margin-bottom: var(--spacing-xs);
+}
+
+.game-header h3.fortuna-title {
+  color: #00d4ff;
+}
+
+.game-header p {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.game-types-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+.game-type-card {
+  background-color: var(--color-bg-darker);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md);
+  text-align: center;
+  border: 1px solid var(--color-border);
+}
+
+.game-type-name {
+  display: block;
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+  margin-bottom: var(--spacing-xs);
+}
+
+.game-type-desc {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+/* Fortuna Info */
+.fortuna-info {
+  margin-bottom: var(--spacing-lg);
+}
+
+.fortuna-info > p {
+  text-align: center;
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-lg);
+}
+
+.fortuna-prizes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: var(--spacing-sm);
+}
+
+.prize-tier {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: var(--color-bg-darker);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-sm);
+  border: 1px solid var(--color-border);
+}
+
+.prize-tier.jackpot {
+  border-color: rgba(255, 215, 0, 0.5);
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), transparent);
+}
+
+.prize-tier.jackpot .tier-prize {
+  color: #FFD700;
+  font-weight: var(--font-weight-bold);
+}
+
+.tier-name {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-medium);
+}
+
+.tier-prize {
+  font-size: var(--font-size-xs);
+  color: #00d4ff;
+}
+
+.game-cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-lg);
+  flex-wrap: wrap;
+}
+
+.learn-more {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.learn-more:hover {
+  color: var(--color-primary);
+}
+
+/* Keno Info */
+.keno-info {
+  margin-bottom: var(--spacing-lg);
+}
+
+.keno-info > p {
+  text-align: center;
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-lg);
+}
+
+.keno-how-it-works {
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-lg);
+  flex-wrap: wrap;
+}
+
+.keno-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.step-number {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #9b59b6, #8e44ad);
+  color: white;
+  font-weight: var(--font-weight-bold);
+  border-radius: 50%;
+  font-size: var(--font-size-md);
+}
+
+.step-text {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  text-align: center;
+  max-width: 120px;
+}
+
+.keno-btn {
+  border-color: #9b59b6 !important;
+  color: #9b59b6 !important;
+}
+
+.keno-btn:hover {
+  background-color: rgba(155, 89, 182, 0.1) !important;
+}
+
+/* Features Section */
+.home-features {
+  padding: var(--spacing-2xl) var(--spacing-xl);
+  background-color: var(--color-bg-dark);
+  border-top: 1px solid var(--color-border);
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--spacing-lg);
+  max-width: var(--max-width-lg);
+  margin: 0 auto;
+}
+
+.feature-item {
+  background-color: var(--color-bg-card);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  text-align: center;
+  border: 1px solid var(--color-border);
+  transition: all var(--transition-normal);
+}
+
+.feature-item:hover {
+  border-color: var(--color-primary);
+  transform: translateY(-2px);
+}
+
+.feature-icon {
+  width: 48px;
+  height: 48px;
+  margin: 0 auto var(--spacing-md);
+  color: var(--color-primary);
+}
+
+.feature-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.feature-item h4 {
+  font-size: var(--font-size-md);
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.feature-item p {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  line-height: 1.5;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .home-hero {
+    padding: var(--spacing-xl);
+  }
+
+  .home-hero-title {
+    font-size: var(--font-size-3xl);
+  }
+
+  .home-hero-subtitle {
+    font-size: var(--font-size-md);
+  }
+
+  .results-container {
+    grid-template-columns: 1fr;
+  }
+
+  .game-types-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .fortuna-prizes {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .features-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .home-hero-actions {
+    flex-direction: column;
+  }
+
+  .fortuna-prizes {
+    grid-template-columns: 1fr;
+  }
+
+  .schedule-grid {
+    grid-template-columns: 1fr;
+  }
+}

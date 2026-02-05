@@ -1,0 +1,195 @@
+/* Draw Card */
+.draw-card {
+  background-color: var(--color-bg-card);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  overflow: hidden;
+  transition: all var(--transition-normal);
+}
+
+.draw-card:hover {
+  border-color: var(--color-primary);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-glow);
+}
+
+.draw-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-md);
+  background-color: var(--color-bg-dark);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.draw-number {
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+}
+
+.draw-status {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  text-transform: uppercase;
+}
+
+.status-success {
+  background-color: rgba(76, 175, 80, 0.2);
+  color: var(--color-success);
+}
+
+.status-warning {
+  background-color: rgba(255, 152, 0, 0.2);
+  color: var(--color-warning);
+}
+
+.status-info {
+  background-color: rgba(33, 150, 243, 0.2);
+  color: var(--color-info);
+}
+
+.status-error {
+  background-color: rgba(244, 67, 54, 0.2);
+  color: var(--color-error);
+}
+
+.status-default {
+  background-color: rgba(136, 136, 136, 0.2);
+  color: var(--color-text-muted);
+}
+
+.draw-card-body {
+  padding: var(--spacing-lg);
+}
+
+.draw-countdown-wrapper {
+  text-align: center;
+}
+
+.countdown-label {
+  display: block;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  margin-bottom: var(--spacing-sm);
+}
+
+.draw-winning {
+  text-align: center;
+}
+
+.winning-label {
+  display: block;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  margin-bottom: var(--spacing-xs);
+}
+
+.winning-number {
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+  letter-spacing: 4px;
+}
+
+.draw-scheduled {
+  text-align: center;
+}
+
+.scheduled-label {
+  display: block;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  margin-bottom: var(--spacing-xs);
+}
+
+.scheduled-time {
+  color: var(--color-text-secondary);
+}
+
+.draw-card-footer {
+  padding: var(--spacing-md);
+  border-top: 1px solid var(--color-border);
+}
+
+/* Countdown Display */
+.countdown-display {
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-md);
+}
+
+.countdown-unit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 50px;
+}
+
+.countdown-value {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+  line-height: 1;
+}
+
+.countdown-unit .countdown-label {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  margin-top: 4px;
+  margin-bottom: 0;
+}
+
+.countdown-simple {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-primary);
+}
+
+.countdown-expired {
+  color: var(--color-error);
+  font-weight: var(--font-weight-medium);
+}
+
+.countdown-loading {
+  color: var(--color-text-muted);
+}
+
+/* Draw List */
+.draws-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--spacing-lg);
+}
+
+.draws-loading,
+.draws-empty {
+  padding: var(--spacing-2xl);
+  text-align: center;
+  color: var(--color-text-muted);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+/* Responsive */
+@media (max-width: 576px) {
+  .draws-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .countdown-display {
+    gap: var(--spacing-sm);
+  }
+
+  .countdown-unit {
+    min-width: 40px;
+  }
+
+  .countdown-value {
+    font-size: var(--font-size-xl);
+  }
+}
