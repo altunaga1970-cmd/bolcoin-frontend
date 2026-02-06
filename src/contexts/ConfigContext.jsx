@@ -53,6 +53,16 @@ export function ConfigProvider({ children }) {
    * Cargar configuracion desde el backend
    */
   const loadConfig = useCallback(async (force = false) => {
+    const apiUrl = import.meta.env.VITE_API_URL;
+
+    // MVP Staging: si no hay backend valido, usar defaults inmediatamente
+    if (!apiUrl || !apiUrl.startsWith('http')) {
+      console.log('[ConfigContext] Staging mode - using defaults (Keno only)');
+      setConfig(DEFAULT_CONFIG);
+      setLoading(false);
+      return;
+    }
+
     // Usar cache si no ha expirado
     if (!force && lastFetch > 0 && (Date.now() - lastFetch) < CACHE_TTL_MS) {
       return;
