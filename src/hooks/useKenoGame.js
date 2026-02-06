@@ -133,6 +133,13 @@ export function useKenoGame() {
   // MVP: Cargar configuracion desde el backend
   useEffect(() => {
     async function loadConfig() {
+      // MVP Staging: si no hay backend valido, usar defaults inmediatamente
+      const apiUrl = import.meta.env.VITE_API_URL;
+      if (!apiUrl || !apiUrl.startsWith('http')) {
+        console.log('[useKenoGame] Staging mode - using MVP defaults');
+        return; // Mantener DEFAULT_CONFIG
+      }
+
       try {
         const serverConfig = await kenoApi.getConfig();
         if (serverConfig) {
