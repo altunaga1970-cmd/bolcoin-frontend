@@ -110,10 +110,13 @@ export function BalanceProvider({ children }) {
    * Cargar balance de la base de datos (para Keno y juegos off-chain)
    */
   const loadDatabaseBalance = useCallback(async () => {
-    if (!isConnected) return '0';
+    if (!isConnected || !account) return '0';
 
     try {
-      const response = await api.get('/wallet/balance');
+      const response = await api.get('/wallet/balance', {
+        params: { wallet: account },
+        headers: { 'x-wallet-address': account }
+      });
       const dbBalance = response.data?.data?.balance || response.data?.balance || '0';
       const formatted = parseFloat(dbBalance).toFixed(2);
       setOffChainBalance(formatted);
@@ -122,7 +125,7 @@ export function BalanceProvider({ children }) {
       console.error('[BalanceContext] Error loading database balance:', err);
       return '0';
     }
-  }, [isConnected]);
+  }, [isConnected, account]);
 
   /**
    * Cargar balance del smart contract (para La Fortuna/Lottery)
@@ -247,9 +250,17 @@ export function BalanceProvider({ children }) {
   }, []);
 
   /**
+   * Helper: detectar si estamos en ruta admin (no necesitamos balances de usuario)
+   */
+  const isAdminRoute = () =>
+    typeof window !== 'undefined' && window.location.pathname.startsWith('/admin');
+
+  /**
    * Efecto: Cargar balance inicial cuando se conecta
    */
   useEffect(() => {
+    if (isAdminRoute()) return; // No cargar balances en admin
+
     if (isConnected && account) {
       console.log('[BalanceContext] Wallet conectada, cargando balance inicial...');
       refreshBalance();
@@ -267,9 +278,12 @@ export function BalanceProvider({ children }) {
    * Efecto: Auto-refresh periódico
    */
   useEffect(() => {
+    if (isAdminRoute()) return; // No auto-refresh en admin
+
     if (isConnected) {
       // Iniciar intervalo
       intervalRef.current = setInterval(() => {
+        if (isAdminRoute()) return; // Check again in case of navigation
         console.log('[BalanceContext] Auto-refresh de balance...');
         refreshBalance();
       }, AUTO_REFRESH_INTERVAL);

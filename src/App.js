@@ -50,7 +50,6 @@ const ClaimsPage = React.lazy(() => import('./pages/user/ClaimsPage'));
 
 // Paginas de admin
 const AdminLoginPage = React.lazy(() => import('./pages/admin/AdminLoginPage'));
-const AdminDashboard = React.lazy(() => import('./pages/admin/AdminDashboard'));
 const ManageDrawsPage = React.lazy(() => import('./pages/admin/ManageDrawsPage'));
 const ManageUsersPage = React.lazy(() => import('./pages/admin/ManageUsersPage'));
 const WithdrawalsPage = React.lazy(() => import('./pages/admin/WithdrawalsPage'));
@@ -58,6 +57,11 @@ const AuditLogsPage = React.lazy(() => import('./pages/admin/AuditLogsPage'));
 const Web3AdminPage = React.lazy(() => import('./pages/admin/Web3AdminPage'));
 const BankrollDashboard = React.lazy(() => import('./pages/admin/BankrollDashboard'));
 const KenoPoolDashboard = React.lazy(() => import('./pages/admin/KenoPoolDashboard'));
+const OpsDashboard = React.lazy(() => import('./pages/admin/OpsDashboard'));
+const FinanceDashboard = React.lazy(() => import('./pages/admin/FinanceDashboard'));
+const SystemStatus = React.lazy(() => import('./pages/admin/SystemStatus'));
+const RiskControls = React.lazy(() => import('./pages/admin/RiskControls'));
+const LegacyHome = React.lazy(() => import('./pages/admin/LegacyHome'));
 
 // Loading fallback
 function LoadingFallback() {
@@ -98,7 +102,7 @@ function App() {
                   <React.Suspense fallback={<LoadingFallback />}>
                   <Routes>
                   {/* MVP: Keno es la pagina principal */}
-                  <Route path="/" element={<Web3Route><KenoPage /></Web3Route>} />
+                  <Route path="/" element={<KenoPage />} />
 
                   {/* Paginas de juego Web3 - Protegidas */}
                   {/* MVP: La Bolita deshabilitado - muestra ComingSoon */}
@@ -138,7 +142,16 @@ function App() {
 
                   {/* Rutas de admin - protegidas con AdminRoute */}
                   <Route path="/admin/login" element={<AdminLoginPage />} />
-                  <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
+                  <Route path="/admin" element={<AdminRoute><Navigate to="/admin/ops" replace /></AdminRoute>} />
+
+                  {/* New ops pages */}
+                  <Route path="/admin/ops" element={<AdminRoute><OpsDashboard /></AdminRoute>} />
+                  <Route path="/admin/finance" element={<AdminRoute><FinanceDashboard /></AdminRoute>} />
+                  <Route path="/admin/system" element={<AdminRoute><SystemStatus /></AdminRoute>} />
+                  <Route path="/admin/risk" element={<AdminRoute><RiskControls /></AdminRoute>} />
+                  <Route path="/admin/legacy" element={<AdminRoute><LegacyHome /></AdminRoute>} />
+
+                  {/* Legacy admin pages */}
                   <Route path="/admin/draws" element={<AdminRoute requiredPermission="draws:manage"><ManageDrawsPage /></AdminRoute>} />
                   <Route path="/admin/users" element={<AdminRoute requiredPermission="users:read"><ManageUsersPage /></AdminRoute>} />
                   <Route path="/admin/withdrawals" element={<AdminRoute requiredPermission="withdrawals:manage"><WithdrawalsPage /></AdminRoute>} />
@@ -146,6 +159,9 @@ function App() {
                   <Route path="/admin/web3" element={<AdminRoute><Web3AdminPage /></AdminRoute>} />
                   <Route path="/admin/bankroll" element={<AdminRoute><BankrollDashboard /></AdminRoute>} />
                   <Route path="/admin/keno-pool" element={<AdminRoute><KenoPoolDashboard /></AdminRoute>} />
+
+                  {/* Admin catch-all: any unknown /admin/* path redirects to /admin/ops */}
+                  <Route path="/admin/*" element={<AdminRoute><Navigate to="/admin/ops" replace /></AdminRoute>} />
 
                   {/* Redirecciones de compatibilidad */}
                   <Route path="/web3" element={<Navigate to="/bet" replace />} />

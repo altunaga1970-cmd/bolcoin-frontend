@@ -1,34 +1,98 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useWeb3 } from '../../contexts/Web3Context';
 import { useAdminAuth } from '../../contexts/AdminAuthContext';
+import * as adminAuthApi from '../../api/adminAuthApi';
 import ConnectWallet from '../web3/ConnectWallet';
 
-/**
- * Componente de Login con SIWE para Admin
- */
 function SIWELogin({ onSuccess }) {
-    const { isConnected, account, formatAddress } = useWeb3();
-    const { isAdmin, isAuthenticated, login, error, isLoading, clearError } = useAdminAuth();
-    const [localError, setLocalError] = useState(null);
+    const { isConnected, account, signer, formatAddress } = useWeb3();
+    const { loginAdmin, isAdmin } = useAdminAuth();
+
+    const [walletIsAdmin, setWalletIsAdmin] = useState(null); // null=loading, true/false
+    const [signing, setSigning] = useState(false);
+    const [error, setError] = useState(null);
+
+    // Verificar si la wallet es admin cuando se conecta
+    useEffect(() => {
+        if (!isConnected || !account) {
+            setWalletIsAdmin(null);
+            return;
+        }
+
+        let cancelled = false;
+        setWalletIsAdmin(null);
+        setError(null);
+
+        adminAuthApi.checkAdminWallet(account)
+            .then(result => {
+                if (!cancelled) setWalletIsAdmin(result.data.isAdmin);
+            })
+            .catch((err) => {
+                if (cancelled) return;
+                // Distinguish network/API errors from "not admin"
+                const status = err.status || err.response?.status;
+                if (status === 403) {
+                    setWalletIsAdmin(false);
+                } else {
+                    setError(err.message || 'Error conectando con el servidor. Verifica que el backend este corriendo.');
+                    setWalletIsAdmin(false);
+                }
+            });
+
+        return () => { cancelled = true; };
+    }, [isConnected, account]);
+
+    // Si ya tiene JWT valido, redirigir
+    useEffect(() => {
+        if (isAdmin && onSuccess) {
+            onSuccess();
+        }
+    }, [isAdmin, onSuccess]);
 
     const handleLogin = async () => {
-        setLocalError(null);
-        clearError();
+        if (!account || !signer) return;
 
-        const result = await login();
+        setSigning(true);
+        setError(null);
 
-        if (result.success) {
-            if (onSuccess) {
-                onSuccess(result);
+        try {
+            // 1. Obtener nonce
+            const nonceResult = await adminAuthApi.getNonce(account);
+            const { message } = nonceResult.data;
+
+            // 2. Firmar mensaje con wallet
+            let signature;
+            try {
+                signature = await signer.signMessage(message);
+            } catch (signError) {
+                if (signError.code === 'ACTION_REJECTED' || signError.code === 4001) {
+                    setError('Firma rechazada por el usuario');
+                    setSigning(false);
+                    return;
+                }
+                throw signError;
             }
-        } else {
-            setLocalError(result.error);
+
+            // 3. Verificar firma y obtener JWT
+            const verifyResult = await adminAuthApi.verifySiwe(account, signature, message);
+            const { token } = verifyResult.data;
+
+            // 4. Guardar JWT en contexto
+            const success = loginAdmin(token);
+            if (!success) {
+                setError('Token recibido es invalido');
+            } else if (onSuccess) {
+                onSuccess();
+            }
+        } catch (err) {
+            const msg = err.data?.message || err.message || 'Error de autenticacion';
+            setError(msg);
+        } finally {
+            setSigning(false);
         }
     };
 
-    const displayError = localError || error;
-
-    // Si no hay wallet conectada
+    // Sin wallet conectada
     if (!isConnected) {
         return (
             <div style={styles.container}>
@@ -51,8 +115,19 @@ function SIWELogin({ onSuccess }) {
         );
     }
 
-    // Wallet conectada pero no es admin
-    if (!isAdmin) {
+    // Verificando si es admin...
+    if (walletIsAdmin === null) {
+        return (
+            <div style={styles.container}>
+                <div style={styles.card}>
+                    <h2 style={styles.title}>Verificando wallet...</h2>
+                </div>
+            </div>
+        );
+    }
+
+    // No es admin
+    if (!walletIsAdmin) {
         return (
             <div style={styles.container}>
                 <div style={styles.card}>
@@ -65,12 +140,17 @@ function SIWELogin({ onSuccess }) {
                     </div>
                     <h2 style={styles.title}>Acceso Denegado</h2>
                     <p style={styles.subtitle}>
-                        Esta wallet no tiene permisos de administrador
+                        {error || 'Esta wallet no tiene permisos de administrador'}
                     </p>
                     <div style={styles.addressBox}>
                         <span style={styles.addressLabel}>Wallet conectada:</span>
                         <span style={styles.address}>{formatAddress(account)}</span>
                     </div>
+                    {error && (
+                        <div style={styles.errorBox}>
+                            {error}
+                        </div>
+                    )}
                     <div style={styles.walletContainer}>
                         <ConnectWallet />
                     </div>
@@ -79,31 +159,7 @@ function SIWELogin({ onSuccess }) {
         );
     }
 
-    // Ya autenticado
-    if (isAuthenticated) {
-        return (
-            <div style={styles.container}>
-                <div style={styles.card}>
-                    <div style={styles.icon}>
-                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#4CAF50" strokeWidth="2">
-                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                            <polyline points="22,4 12,14.01 9,11.01"/>
-                        </svg>
-                    </div>
-                    <h2 style={styles.title}>Sesion Activa</h2>
-                    <p style={styles.subtitle}>
-                        Ya tienes una sesion de administrador activa
-                    </p>
-                    <div style={styles.addressBox}>
-                        <span style={styles.addressLabel}>Wallet:</span>
-                        <span style={styles.address}>{formatAddress(account)}</span>
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
-    // Wallet admin lista para autenticar
+    // Es admin, mostrar boton de firma
     return (
         <div style={styles.container}>
             <div style={styles.card}>
@@ -122,35 +178,21 @@ function SIWELogin({ onSuccess }) {
                     <span style={styles.address}>{formatAddress(account)}</span>
                 </div>
 
-                {displayError && (
+                {error && (
                     <div style={styles.errorBox}>
-                        {displayError}
+                        {error}
                     </div>
                 )}
 
                 <button
                     onClick={handleLogin}
-                    disabled={isLoading}
+                    disabled={signing}
                     style={{
                         ...styles.button,
-                        ...(isLoading ? styles.buttonDisabled : {})
+                        ...(signing ? styles.buttonDisabled : {})
                     }}
                 >
-                    {isLoading ? (
-                        <>
-                            <span style={styles.spinner}></span>
-                            Verificando...
-                        </>
-                    ) : (
-                        <>
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ marginRight: '8px' }}>
-                                <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
-                                <polyline points="10 17 15 12 10 7"/>
-                                <line x1="15" y1="12" x2="3" y2="12"/>
-                            </svg>
-                            Firmar y Acceder
-                        </>
-                    )}
+                    {signing ? 'Verificando...' : 'Firmar y Acceder'}
                 </button>
 
                 <p style={styles.hint}>
@@ -232,8 +274,7 @@ const styles = {
         cursor: 'pointer',
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'center',
-        transition: 'background-color 0.2s'
+        justifyContent: 'center'
     },
     buttonDisabled: {
         backgroundColor: '#666',
@@ -246,16 +287,6 @@ const styles = {
     },
     walletContainer: {
         marginTop: '1rem'
-    },
-    spinner: {
-        display: 'inline-block',
-        width: '16px',
-        height: '16px',
-        border: '2px solid #333',
-        borderTopColor: '#FFD700',
-        borderRadius: '50%',
-        animation: 'spin 1s linear infinite',
-        marginRight: '8px'
     }
 };
 

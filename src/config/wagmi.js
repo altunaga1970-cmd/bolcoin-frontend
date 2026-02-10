@@ -1,4 +1,5 @@
 import { getDefaultConfig } from '@rainbow-me/rainbowkit';
+import { injectedWallet } from '@rainbow-me/rainbowkit/wallets';
 import { polygon, polygonAmoy, mainnet, sepolia, localhost } from 'wagmi/chains';
 
 // Chain ID por defecto desde variables de entorno
@@ -58,19 +59,32 @@ const getChains = () => {
 // WalletConnect Project ID - REQUERIDO para WalletConnect v2
 const projectId = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID || '';
 
-if (!projectId) {
+if (!projectId && import.meta.env.DEV) {
   console.warn(
-    '[wagmi] VITE_WALLETCONNECT_PROJECT_ID no está configurado. ' +
-    'WalletConnect no funcionará. Obtén uno en https://cloud.walletconnect.com/'
+    '[wagmi] VITE_WALLETCONNECT_PROJECT_ID no configurado. ' +
+    'WalletConnect desactivado. MetaMask directo sí funciona. ' +
+    'Obtén uno en https://cloud.walletconnect.com/'
   );
 }
+
+// Cuando no hay projectId valido, solo mostrar wallets inyectadas (MetaMask, etc.)
+// Esto evita que WalletConnect intente inicializarse y cause errores 401/getProvider
+const walletConfig = projectId
+  ? {}
+  : {
+      wallets: [{
+        groupName: 'Installed',
+        wallets: [injectedWallet]
+      }]
+    };
 
 // Configuración de wagmi con RainbowKit
 export const config = getDefaultConfig({
   appName: 'Bolcoin',
-  projectId: projectId || 'placeholder-id', // RainbowKit requiere un valor
+  projectId: projectId || 'disabled',
   chains: getChains(),
-  ssr: false, // Deshabilitar SSR para Create React App
+  ssr: false,
+  ...walletConfig,
 });
 
 // Exportar constantes útiles

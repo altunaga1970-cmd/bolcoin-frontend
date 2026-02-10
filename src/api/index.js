@@ -11,23 +11,31 @@ const api = axios.create({
   timeout: 10000
 });
 
-// Interceptor de request - agregar wallet address para autenticación Web3
+// Interceptor de request - enviar token correcto segun contexto
 api.interceptors.request.use(
   (config) => {
-    // Web3 auth: enviar dirección de wallet
+    const url = config.url || '';
+    const isAdminCall = url.includes('/admin/');
+
+    // 1. Authorization header
+    const adminToken = localStorage.getItem('admin_jwt');
+    if (isAdminCall && adminToken) {
+      // Admin API calls use admin JWT
+      config.headers.Authorization = `Bearer ${adminToken}`;
+    } else if (!isAdminCall) {
+      // User API calls use legacy JWT if available
+      const token = localStorage.getItem('token');
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+    }
+
+    // 2. Always send wallet address (backend authenticateWallet needs it)
     const walletAddress = localStorage.getItem('walletAddress');
     if (walletAddress) {
       config.headers['x-wallet-address'] = walletAddress;
-      console.log(`[Frontend] Sending wallet address: ${walletAddress}`);
-    } else {
-      console.warn('[Frontend] No wallet address in localStorage');
     }
 
-    // Legacy auth: token JWT (por compatibilidad)
-    const token = localStorage.getItem('token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
     return config;
   },
   (error) => {
@@ -42,19 +50,22 @@ api.interceptors.response.use(
   },
   (error) => {
     // Manejar error 401 (no autorizado)
-    // En Web3-only mode, no redirigimos a login - el usuario debe conectar wallet
     if (error.response?.status === 401) {
-      // Limpiar tokens legacy si existen
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      // NO redirigir - dejar que el componente maneje el estado de no-autenticado
+      const url = error.config?.url || '';
+      if (url.includes('/admin/')) {
+        // Only clear admin JWT for admin API 401s
+        localStorage.removeItem('admin_jwt');
+      } else {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+      }
     }
 
     // Extraer mensaje de error del servidor
     const message = error.response?.data?.error ||
                    error.response?.data?.message ||
                    error.message ||
-                   'Error de conexión';
+                   'Error de conexion';
 
     return Promise.reject({
       status: error.response?.status,

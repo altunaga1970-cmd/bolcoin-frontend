@@ -16,7 +16,7 @@ function LoginPage() {
     if (isAuthenticated) {
       // Admins siempre van a /admin
       if (isAdmin) {
-        navigate('/admin', { replace: true });
+        navigate('/admin/ops', { replace: true });
       } else {
         const from = location.state?.from?.pathname || '/dashboard';
         navigate(from, { replace: true });
@@ -37,7 +37,7 @@ function LoginPage() {
       // Redirigir segun rol - admins siempre van a /admin
       const isUserAdmin = result.user?.role === 'admin';
       if (isUserAdmin) {
-        navigate('/admin', { replace: true });
+        navigate('/admin/ops', { replace: true });
       } else {
         const from = location.state?.from?.pathname || '/dashboard';
         navigate(from, { replace: true });

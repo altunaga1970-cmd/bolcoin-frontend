@@ -1,0 +1,308 @@
+/* ===========================================
+   OPS ADMIN LAYOUT
+   =========================================== */
+
+.ops-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #0a0a0a;
+  color: #fff;
+}
+
+/* Topbar */
+.ops-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 1.5rem;
+  height: 56px;
+  background: #111;
+  border-bottom: 1px solid rgba(255, 215, 0, 0.15);
+  flex-shrink: 0;
+}
+
+.ops-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.ops-topbar-logo {
+  color: #FFD700;
+  font-size: 1.25rem;
+  font-weight: 700;
+  text-decoration: none;
+  letter-spacing: 0.05em;
+}
+
+.ops-topbar-badge {
+  background: rgba(255, 215, 0, 0.2);
+  color: #FFD700;
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.ops-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.ops-topbar-addr {
+  font-family: monospace;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.ops-topbar-logout {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.7);
+  padding: 0.35rem 0.75rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.ops-topbar-logout:hover {
+  border-color: #ef4444;
+  color: #ef4444;
+}
+
+/* Body: sidebar + content */
+.ops-body {
+  display: flex;
+  flex: 1;
+}
+
+/* Sidebar */
+.ops-sidebar {
+  width: 200px;
+  background: #111;
+  border-right: 1px solid rgba(255, 215, 0, 0.1);
+  padding: 1rem 0.5rem;
+  flex-shrink: 0;
+}
+
+.ops-nav-item {
+  display: block;
+  padding: 0.65rem 1rem;
+  color: rgba(255, 255, 255, 0.65);
+  text-decoration: none;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  margin-bottom: 0.15rem;
+  transition: all 0.2s;
+}
+
+.ops-nav-item:hover {
+  background: rgba(255, 215, 0, 0.08);
+  color: #fff;
+}
+
+.ops-nav-item.active {
+  background: rgba(255, 215, 0, 0.15);
+  color: #FFD700;
+  font-weight: 600;
+}
+
+.ops-nav-separator {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.1);
+  margin: 0.75rem 0.5rem;
+}
+
+/* Content */
+.ops-content {
+  flex: 1;
+  padding: 2rem;
+  min-height: calc(100vh - 56px);
+  overflow-y: auto;
+}
+
+/* ===========================================
+   SHARED OPS CARD STYLES
+   =========================================== */
+
+.ops-page-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 1.5rem;
+}
+
+.ops-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1rem;
+}
+
+.ops-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 1.25rem;
+}
+
+.ops-card-label {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+}
+
+.ops-card-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.ops-card-value.healthy {
+  color: #10b981;
+}
+
+.ops-card-value.degraded {
+  color: #ef4444;
+}
+
+.ops-card-value.gold {
+  color: #FFD700;
+}
+
+/* Loading / Error */
+.ops-loading,
+.ops-error {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 300px;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 1rem;
+}
+
+.ops-error {
+  color: #ef4444;
+}
+
+/* Toggle switch */
+.ops-toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  margin-bottom: 0.75rem;
+}
+
+.ops-toggle-info {
+  flex: 1;
+}
+
+.ops-toggle-key {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+.ops-toggle-desc {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.45);
+  margin-top: 0.15rem;
+}
+
+.ops-toggle-btn {
+  width: 48px;
+  height: 26px;
+  border-radius: 13px;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  transition: background 0.2s;
+  flex-shrink: 0;
+  margin-left: 1rem;
+}
+
+.ops-toggle-btn.on {
+  background: #10b981;
+}
+
+.ops-toggle-btn.off {
+  background: #333;
+}
+
+.ops-toggle-btn::after {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #fff;
+  top: 3px;
+  transition: left 0.2s;
+}
+
+.ops-toggle-btn.on::after {
+  left: 25px;
+}
+
+.ops-toggle-btn.off::after {
+  left: 3px;
+}
+
+/* Legacy link cards */
+.ops-legacy-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.ops-legacy-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 1.25rem;
+  text-decoration: none;
+  display: block;
+  transition: all 0.2s;
+}
+
+.ops-legacy-card:hover {
+  border-color: rgba(255, 215, 0, 0.3);
+  background: rgba(255, 215, 0, 0.05);
+}
+
+.ops-legacy-card-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #FFD700;
+  margin-bottom: 0.35rem;
+}
+
+.ops-legacy-card-desc {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .ops-sidebar {
+    display: none;
+  }
+
+  .ops-content {
+    padding: 1rem;
+  }
+
+  .ops-cards-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { ConnectWallet } from '../web3';
+import { useAdminAuth } from '../../contexts/AdminAuthContext';
 import './Layout.css';
 
 // Logo Bolcoin
@@ -12,6 +13,8 @@ const BolcoinLogo = () => (
 );
 
 function Header({ variant = 'default' }) {
+  const { isAdmin } = useAdminAuth();
+
   return (
     <header className="site-header">
       <div className="header-container">
@@ -42,6 +45,9 @@ function Header({ variant = 'default' }) {
         </nav>
 
         <div className="header-actions">
+          <Link to={isAdmin ? "/admin/ops" : "/admin/login"} className="header-admin-link">
+            Admin
+          </Link>
           <ConnectWallet variant="header" showBalance />
         </div>
       </div>

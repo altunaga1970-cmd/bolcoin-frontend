@@ -3,23 +3,19 @@ import { useNavigate } from 'react-router-dom';
 import { useAdminAuth } from '../../contexts/AdminAuthContext';
 import SIWELogin from '../../components/admin/SIWELogin';
 
-/**
- * Pagina de Login para Administradores
- * Usa SIWE (Sign-In with Ethereum)
- */
 function AdminLoginPage() {
     const navigate = useNavigate();
-    const { isAuthenticated, isLoading } = useAdminAuth();
+    const { isAdmin, loading } = useAdminAuth();
 
     // Redirigir si ya esta autenticado
     useEffect(() => {
-        if (isAuthenticated && !isLoading) {
-            navigate('/admin');
+        if (isAdmin && !loading) {
+            navigate('/admin/ops');
         }
-    }, [isAuthenticated, isLoading, navigate]);
+    }, [isAdmin, loading, navigate]);
 
     const handleLoginSuccess = () => {
-        navigate('/admin');
+        navigate('/admin/ops');
     };
 
     return (

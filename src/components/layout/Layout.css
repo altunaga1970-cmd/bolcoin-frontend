@@ -214,6 +214,22 @@
   gap: 1rem;
 }
 
+.header-admin-link {
+  color: #FFD700;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.3rem 0.6rem;
+  border: 1px solid #FFD700;
+  border-radius: 4px;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.header-admin-link:hover {
+  background-color: #FFD700;
+  color: #0D0D0D;
+}
+
 /* ===========================================
    FOOTER
    =========================================== */
