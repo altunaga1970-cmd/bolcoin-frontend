@@ -1,16 +1,15 @@
 /**
- * useKenoGame Hook (MVP)
+ * useKenoGame Hook
  *
  * Hook central para gestionar el estado y la logica del juego Keno.
  * Conecta con el backend API para procesar las jugadas.
  *
- * MVP:
  * - Apuesta fija: 1 USDT (no editable)
- * - Max payout: 50 USDT (cap)
+ * - Max payout: cap dinamico basado en pool
  * - Fee: 12% sobre perdidas
  */
 
-import { useState, useCallback, useMemo, useEffect } from 'react';
+import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { useWeb3 } from '../contexts/Web3Context';
 import { useToast } from '../contexts/ToastContext';
 import { useBalance } from '../contexts/BalanceContext';
@@ -102,7 +101,7 @@ function calculatePayoutWithCap(betAmount, spots, hits, payoutTable = DEFAULT_PA
  * Hook principal del juego Keno
  */
 export function useKenoGame() {
-  const { isConnected } = useWeb3();
+  const { isConnected, isCorrectNetwork } = useWeb3();
   const { error: showError, success: showSuccess, info: showInfo } = useToast();
   const { refreshBalance, effectiveBalance: contextBalance, isUsingDirectBalance } = useBalance();
 
@@ -313,12 +312,23 @@ export function useKenoGame() {
   // FUNCIÓN PRINCIPAL: JUGAR KENO (via Backend API)
   // ==========================================================================
 
-  const playKeno = useCallback(async () => {
-    console.log('[Keno] playKeno called', { isConnected, selectedNumbers, betAmount, effectiveBalance });
+  // Ref mutex to prevent double-click / concurrent plays
+  const isProcessingRef = useRef(false);
 
+  const playKeno = useCallback(async () => {
+    // Double-click protection
+    if (isProcessingRef.current) return;
+    isProcessingRef.current = true;
+
+    try {
     if (!isConnected) {
       showError('Conecta tu wallet para jugar');
       setGameState(KENO_STATES.WALLET_DISCONNECTED);
+      return;
+    }
+
+    if (!isCorrectNetwork) {
+      showError('Red incorrecta. Cambia a la red correcta antes de jugar.');
       return;
     }
 
@@ -414,8 +424,12 @@ export function useKenoGame() {
     } finally {
       setIsLoading(false);
     }
+    } finally {
+      isProcessingRef.current = false;
+    }
   }, [
     isConnected,
+    isCorrectNetwork,
     selectedNumbers,
     betAmount,
     effectiveBalance,
@@ -465,29 +479,19 @@ export function useKenoGame() {
     const bet = parseFloat(betAmount);
     const userBalance = parseFloat(effectiveBalance);
 
-    console.log('[Keno] canPlay check:', {
-      isConnected,
-      gameState,
-      spots,
-      minSpots: config.MIN_SPOTS,
-      maxSpots: config.MAX_SPOTS,
-      bet,
-      minBet: config.MIN_BET,
-      maxBet: config.MAX_BET,
-      userBalance
-    });
-
     if (!isConnected) return false;
+    if (!isCorrectNetwork) return false;
     if (gameState === KENO_STATES.TX_PENDING) return false;
     if (spots < config.MIN_SPOTS || spots > config.MAX_SPOTS) return false;
     if (isNaN(bet) || bet < config.MIN_BET || bet > config.MAX_BET) return false;
     if (bet > userBalance) return false;
 
     return true;
-  }, [isConnected, gameState, spots, betAmount, effectiveBalance, config]);
+  }, [isConnected, isCorrectNetwork, gameState, spots, betAmount, effectiveBalance, config]);
 
   const disabledReason = useMemo(() => {
     if (!isConnected) return 'Conecta tu wallet';
+    if (!isCorrectNetwork) return 'Cambia a la red correcta';
     if (gameState === KENO_STATES.TX_PENDING) return 'Procesando...';
     if (spots < config.MIN_SPOTS) return `Selecciona al menos ${config.MIN_SPOTS} número`;
     if (spots > config.MAX_SPOTS) return `Máximo ${config.MAX_SPOTS} números`;
@@ -501,7 +505,7 @@ export function useKenoGame() {
     if (bet > userBalance) return 'Balance insuficiente';
 
     return null;
-  }, [isConnected, gameState, spots, betAmount, effectiveBalance, config]);
+  }, [isConnected, isCorrectNetwork, gameState, spots, betAmount, effectiveBalance, config]);
 
   // ==========================================================================
   // RETORNO

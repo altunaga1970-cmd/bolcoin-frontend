@@ -30,7 +30,8 @@ function KenoNumberGrid({
   matchedNumbers,
   onToggle,
   disabled,
-  maxSpots
+  maxSpots,
+  onMaxReached
 }) {
   // Crear Set para búsqueda O(1)
   const selectedSet = useMemo(() => new Set(selectedNumbers), [selectedNumbers]);
@@ -53,7 +54,8 @@ function KenoNumberGrid({
   const handleClick = (num) => {
     if (disabled) return;
     if (!selectedSet.has(num) && selectedNumbers.length >= maxSpots) {
-      return; // Máximo alcanzado
+      onMaxReached?.();
+      return;
     }
     onToggle(num);
   };
@@ -128,12 +130,11 @@ function KenoBetPanel({
         </div>
       </div>
 
-      {/* MVP: Monto de apuesta FIJO */}
+      {/* Monto de apuesta FIJO */}
       <div className="bet-amount-section">
         <div className="fixed-bet-display">
           <span className="fixed-bet-label">Apuesta fija:</span>
           <span className="fixed-bet-value">1 USDT</span>
-          <span className="fixed-bet-tag">(MVP)</span>
         </div>
       </div>
 
@@ -175,7 +176,7 @@ function KenoBetPanel({
         loading={isLoading}
         className="play-button"
       >
-        {isLoading ? 'Procesando...' : 'Jugar Keno'}
+        {isLoading ? 'Procesando...' : `Apostar ${config?.BET_AMOUNT || 1} USDT`}
       </Button>
 
       {/* Razón de deshabilitado */}
@@ -431,7 +432,7 @@ function KenoInstructions({ poolInfo }) {
           <strong>Selecciona numeros:</strong> Elige de 1 a 10 numeros del tablero (1-80).
         </li>
         <li>
-          <strong>Apuesta:</strong> $1 USDT por jugada (fijo en MVP).
+          <strong>Apuesta:</strong> $1 USDT por jugada.
         </li>
         <li>
           <strong>Juega:</strong> Se sortean 20 numeros aleatoriamente.
@@ -491,6 +492,67 @@ function ComingSoonBanners() {
 }
 
 // =============================================================================
+// COMPONENTE: Modal de Confirmacion de Apuesta
+// =============================================================================
+
+function BetConfirmModal({ show, spots, betAmount, maxPotentialPayout, selectedNumbers, onConfirm, onCancel }) {
+  if (!show) return null;
+
+  return (
+    <div className="bet-confirm-overlay" onClick={onCancel}>
+      <div className="bet-confirm-modal" onClick={e => e.stopPropagation()}>
+        <h3>Confirmar Apuesta</h3>
+        <div className="confirm-details">
+          <div className="confirm-row">
+            <span>Numeros seleccionados:</span>
+            <span className="confirm-value">{spots}</span>
+          </div>
+          <div className="confirm-row">
+            <span>Monto:</span>
+            <span className="confirm-value">{betAmount} USDT</span>
+          </div>
+          <div className="confirm-row">
+            <span>Ganancia maxima:</span>
+            <span className="confirm-value">${maxPotentialPayout} USDT</span>
+          </div>
+          <div className="confirm-numbers">
+            {selectedNumbers.map(n => (
+              <span key={n} className="confirm-number">{n}</span>
+            ))}
+          </div>
+        </div>
+        <div className="confirm-actions">
+          <Button variant="ghost" onClick={onCancel}>Cancelar</Button>
+          <Button variant="primary" onClick={onConfirm}>Confirmar Apuesta</Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// =============================================================================
+// COMPONENTE: Panel de Error con Recuperacion
+// =============================================================================
+
+function KenoErrorPanel({ error, onRetry, onClear }) {
+  if (!error) return null;
+
+  return (
+    <div className="keno-error-panel">
+      <div className="error-header">
+        <span className="error-icon">!</span>
+        <h4>Error en la jugada</h4>
+      </div>
+      <p className="error-message">{error}</p>
+      <div className="error-actions">
+        <Button variant="primary" size="sm" onClick={onRetry}>Reintentar</Button>
+        <Button variant="ghost" size="sm" onClick={onClear}>Limpiar</Button>
+      </div>
+    </div>
+  );
+}
+
+// =============================================================================
 // PÁGINA PRINCIPAL: KenoPage
 // =============================================================================
 
@@ -509,6 +571,7 @@ function KenoPage() {
   const [sessionData, setSessionData] = useState(null);
   const [localEffectiveBalance, setLocalEffectiveBalance] = useState(0);
   const [isSettling, setIsSettling] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   // Balance a mostrar: usar directBalance cuando backend no está disponible
   const displayBalance = isUsingDirectBalance
@@ -523,6 +586,7 @@ function KenoPage() {
     currentResult,
     gameHistory,
     requestId,
+    error: gameError,
     isLoading,
 
     // Valores calculados
@@ -607,6 +671,20 @@ function KenoPage() {
     };
   }, [settleSession]);
 
+  // Confirmar y jugar
+  const handlePlayClick = useCallback(() => {
+    setShowConfirm(true);
+  }, []);
+
+  const handleConfirmPlay = useCallback(() => {
+    setShowConfirm(false);
+    playKeno();
+  }, [playKeno]);
+
+  const handleCancelPlay = useCallback(() => {
+    setShowConfirm(false);
+  }, []);
+
   // Determinar números para mostrar en el grid
   const drawnNumbers = currentResult?.drawnNumbers || [];
   const matchedNumbers = currentResult?.matchedNumbers || [];
@@ -619,6 +697,17 @@ function KenoPage() {
 
   return (
     <div className="keno-page">
+      {/* Modal de confirmacion */}
+      <BetConfirmModal
+        show={showConfirm}
+        spots={spots}
+        betAmount={config.BET_AMOUNT || 1}
+        maxPotentialPayout={maxPotentialPayout}
+        selectedNumbers={selectedNumbers}
+        onConfirm={handleConfirmPlay}
+        onCancel={handleCancelPlay}
+      />
+
       <MainNav />
 
       {/* Header */}
@@ -681,6 +770,7 @@ function KenoPage() {
                   onToggle={toggleNumber}
                   disabled={isPlaying}
                   maxSpots={config.MAX_SPOTS}
+                  onMaxReached={() => showInfo(`Maximo ${config.MAX_SPOTS} numeros permitidos`)}
                 />
 
                 {/* Barra de acciones del grid */}
@@ -726,7 +816,7 @@ function KenoPage() {
                 gameState={gameState}
                 config={config}
                 onBetChange={updateBetAmount}
-                onPlay={playKeno}
+                onPlay={handlePlayClick}
                 onQuickPick={quickPick}
                 onClear={clearSelection}
               />
@@ -734,6 +824,13 @@ function KenoPage() {
 
             {/* Columna derecha: Resultado + Historial + Info */}
             <div className="keno-right-column">
+              {/* Error panel */}
+              <KenoErrorPanel
+                error={gameError}
+                onRetry={playKeno}
+                onClear={clearSelection}
+              />
+
               {/* Panel de resultado */}
               <KenoResultPanel
                 result={currentResult}
