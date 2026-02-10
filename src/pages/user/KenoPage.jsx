@@ -598,25 +598,14 @@ function KenoPage() {
     }
   }, [isConnected, sessionData, refreshBalance]);
 
-  // Liquidar al salir (beforeunload + cleanup)
+  // Liquidar al desmontar componente (navegacion interna)
+  // NOTE: sendBeacon removed - unauthenticated GET endpoint was a security risk.
+  // Sessions are auto-settled by server-side cron after 24h of inactivity.
   useEffect(() => {
-    const handleBeforeUnload = (e) => {
-      if (sessionData?.hasActiveSession && sessionData?.session?.gamesPlayed > 0 && account) {
-        // Liquidar via sendBeacon con wallet como query param
-        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-        const settleUrl = `${apiUrl}/keno/session/settle?wallet=${account}`;
-        navigator.sendBeacon?.(settleUrl);
-      }
-    };
-
-    window.addEventListener('beforeunload', handleBeforeUnload);
-
     return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
-      // Liquidar al desmontar componente (navegación interna)
       settleSession();
     };
-  }, [sessionData, settleSession, account]);
+  }, [settleSession]);
 
   // Determinar números para mostrar en el grid
   const drawnNumbers = currentResult?.drawnNumbers || [];

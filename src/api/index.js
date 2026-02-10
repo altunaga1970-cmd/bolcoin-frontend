@@ -30,10 +30,17 @@ api.interceptors.request.use(
       }
     }
 
-    // 2. Always send wallet address (backend authenticateWallet needs it)
+    // 2. Always send wallet address + signature (backend authenticateWallet requires both)
     const walletAddress = localStorage.getItem('walletAddress');
     if (walletAddress) {
       config.headers['x-wallet-address'] = walletAddress;
+    }
+
+    const walletSignature = localStorage.getItem('walletSignature');
+    const walletMessage = localStorage.getItem('walletMessage');
+    if (walletSignature && walletMessage) {
+      config.headers['x-wallet-signature'] = walletSignature;
+      config.headers['x-wallet-message'] = walletMessage;
     }
 
     return config;
@@ -59,6 +66,10 @@ api.interceptors.response.use(
         localStorage.removeItem('token');
         localStorage.removeItem('user');
       }
+      // Clear wallet auth on any 401 (expired signature, etc.)
+      localStorage.removeItem('walletSignature');
+      localStorage.removeItem('walletMessage');
+      localStorage.removeItem('walletSignatureAddr');
     }
 
     // Extraer mensaje de error del servidor

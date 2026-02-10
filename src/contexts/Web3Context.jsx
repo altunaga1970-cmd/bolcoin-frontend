@@ -3,7 +3,7 @@ import { ethers } from 'ethers';
 import { useToast } from './ToastContext';
 
 // Wagmi imports
-import { WagmiProvider, useAccount, useChainId, useConnect, useDisconnect, useSwitchChain } from 'wagmi';
+import { WagmiProvider, useAccount, useChainId, useConnect, useDisconnect, useSwitchChain, useWalletClient } from 'wagmi';
 import { useConnectModal } from '@rainbow-me/rainbowkit';
 import { RainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -24,11 +24,14 @@ function useWeb3Internal() {
   const { error: showError, success: showSuccess } = useToast();
 
   // Hooks de wagmi
-  const { address, isConnected: wagmiIsConnected, isConnecting: wagmiIsConnecting, connector } = useAccount();
+  const { address, isConnected: wagmiIsConnected, isConnecting: wagmiIsConnecting } = useAccount();
   const chainId = useChainId();
   const { disconnect } = useDisconnect();
   const { switchChain } = useSwitchChain();
   const { openConnectModal } = useConnectModal();
+
+  // wagmi v2: useWalletClient devuelve un viem WalletClient
+  const { data: walletClient } = useWalletClient();
 
   // Estado derivado
   const account = address || null;
@@ -41,23 +44,19 @@ function useWeb3Internal() {
 
   // Provider y Signer usando ethers.js (para compatibilidad con código existente)
   const getProviderAndSigner = useCallback(async () => {
-    if (!isConnected || !connector) return { provider: null, signer: null };
+    if (!isConnected || !walletClient) return { provider: null, signer: null };
 
     try {
-      // Obtener el provider del connector de wagmi
-      const walletProvider = await connector.getProvider();
-
-      if (walletProvider) {
-        const ethersProvider = new ethers.BrowserProvider(walletProvider);
-        const ethersSigner = await ethersProvider.getSigner();
-        return { provider: ethersProvider, signer: ethersSigner };
-      }
+      // walletClient.transport tiene el provider subyacente
+      const ethersProvider = new ethers.BrowserProvider(walletClient.transport, chainId);
+      const ethersSigner = await ethersProvider.getSigner();
+      return { provider: ethersProvider, signer: ethersSigner };
     } catch (err) {
       console.error('[Web3Context] Error getting provider/signer:', err);
     }
 
     return { provider: null, signer: null };
-  }, [isConnected, connector]);
+  }, [isConnected, walletClient, chainId]);
 
   // Guardar wallet address en localStorage cuando cambie (para API interceptors)
   useEffect(() => {
@@ -68,6 +67,8 @@ function useWeb3Internal() {
     } else {
       localStorage.removeItem('walletAddress');
       sessionStorage.removeItem('walletAddress');
+      localStorage.removeItem('walletSignature');
+      localStorage.removeItem('walletMessage');
     }
   }, [account]);
 
@@ -86,6 +87,9 @@ function useWeb3Internal() {
     sessionStorage.removeItem('admin_session_token');
     sessionStorage.removeItem('walletAddress');
     localStorage.removeItem('walletAddress');
+    localStorage.removeItem('walletSignature');
+    localStorage.removeItem('walletMessage');
+    localStorage.removeItem('walletSignatureAddr');
     showSuccess('Wallet desconectada');
   }, [disconnect, showSuccess]);
 
@@ -144,9 +148,9 @@ function useWeb3Internal() {
   const [providerState, setProviderState] = React.useState(null);
   const [signerState, setSignerState] = React.useState(null);
 
-  // Actualizar provider/signer cuando cambie la conexión
+  // Actualizar provider/signer cuando cambie la conexión o walletClient
   useEffect(() => {
-    if (isConnected) {
+    if (isConnected && walletClient) {
       getProviderAndSigner().then(({ provider, signer }) => {
         setProviderState(provider);
         setSignerState(signer);
@@ -155,7 +159,30 @@ function useWeb3Internal() {
       setProviderState(null);
       setSignerState(null);
     }
-  }, [isConnected, getProviderAndSigner, chainId]);
+  }, [isConnected, walletClient, getProviderAndSigner, chainId]);
+
+  // Sign authentication message when signer becomes available
+  useEffect(() => {
+    if (!signerState || !account) return;
+    // Only sign if we don't already have a valid signature for this account
+    const existingSig = localStorage.getItem('walletSignature');
+    const existingAddr = localStorage.getItem('walletSignatureAddr');
+    if (existingSig && existingAddr === account.toLowerCase()) return;
+
+    const signAuth = async () => {
+      try {
+        const message = `Bolcoin Auth: ${account.toLowerCase()} at ${Math.floor(Date.now() / 86400000)}`;
+        const signature = await signerState.signMessage(message);
+        localStorage.setItem('walletSignature', signature);
+        localStorage.setItem('walletMessage', message);
+        localStorage.setItem('walletSignatureAddr', account.toLowerCase());
+      } catch (err) {
+        // User rejected signature - API calls requiring auth will fail
+        console.warn('[Web3Context] Auth signature rejected:', err.message);
+      }
+    };
+    signAuth();
+  }, [signerState, account]);
 
   return {
     // Estado
