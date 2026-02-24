@@ -347,21 +347,29 @@ export function BalanceProvider({ children }) {
 
   /**
    * Valor del contexto
+   *
+   * Balance principal: blockchain es la fuente de verdad.
+   * directBalance lee USDT directamente del contrato ERC20 via RPC público.
+   * El backend DB puede tener datos de prueba; NO usarlo como display principal.
    */
+
+  // Calcular balance real: blockchain > backend
+  const hasDirectBalance = directBalance.isSupported && parseFloat(directBalance.usdtBalance) > 0;
+  const realBalance = hasDirectBalance
+    ? parseFloat(directBalance.usdtBalance).toFixed(2)
+    : effectiveBalance;
+
   const value = {
     // Balances - Sistema dual
     contractBalance,          // Balance en smart contract (base)
     onChainBalance,           // Balance en smart contract (para La Fortuna)
     offChainBalance,          // Balance en database (para Keno)
     walletBalance,            // USDT en MetaMask
-    effectiveBalance,         // Balance efectivo (incluye sesión Keno activa)
+    effectiveBalance: realBalance, // Balance real: blockchain cuando disponible
     sessionNetResult,         // Resultado neto de sesión Keno actual
 
-    // Balance principal: usar balance real de blockchain (directBalance) cuando está disponible
-    // El backend DB puede tener datos de prueba; la blockchain es la fuente de verdad
-    balance: (directBalance.isSupported && parseFloat(directBalance.usdtBalance) > 0)
-      ? parseFloat(directBalance.usdtBalance).toFixed(2)
-      : effectiveBalance,
+    // Balance principal para display
+    balance: realBalance,
 
     // Alias para compatibilidad
     smartContractBalance: onChainBalance,  // Alias para lottery
@@ -377,7 +385,7 @@ export function BalanceProvider({ children }) {
     isKenoOnChain,            // true = Keno contract configured and in onchain mode
 
     // Estado de fallback (balance directo de blockchain)
-    isUsingDirectBalance,     // true = backend no disponible, usando blockchain
+    isUsingDirectBalance: hasDirectBalance || isUsingDirectBalance,
     backendAvailable,         // false = backend no responde
 
     // Balance directo de blockchain (siempre disponible)
@@ -397,14 +405,12 @@ export function BalanceProvider({ children }) {
     loadSmartContractBalance,
     loadEffectiveBalance,
 
-    // Helpers formateados - usar balance real de blockchain para display principal
-    formattedContractBalance: (directBalance.isSupported && parseFloat(directBalance.usdtBalance) > 0)
-      ? `$${parseFloat(directBalance.usdtBalance).toFixed(2)}`
-      : `$${parseFloat(effectiveBalance).toFixed(2)}`,
+    // Helpers formateados
+    formattedContractBalance: `$${parseFloat(realBalance).toFixed(2)}`,
     formattedWalletBalance: `$${parseFloat(walletBalance).toFixed(2)}`,
     formattedOnChainBalance: `$${parseFloat(onChainBalance).toFixed(2)}`,
     formattedOffChainBalance: `$${parseFloat(offChainBalance).toFixed(2)}`,
-    formattedEffectiveBalance: `$${parseFloat(effectiveBalance).toFixed(2)}`,
+    formattedEffectiveBalance: `$${parseFloat(realBalance).toFixed(2)}`,
   };
 
   return (
