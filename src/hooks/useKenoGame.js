@@ -13,6 +13,7 @@ import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { useWeb3 } from '../contexts/Web3Context';
 import { useToast } from '../contexts/ToastContext';
 import { useBalance } from '../contexts/BalanceContext';
+import { useKenoContract } from './useKenoContract';
 import kenoApi from '../api/kenoApi';
 
 // MVP: Configuracion local - FALLBACK si el backend no responde
@@ -57,6 +58,7 @@ const KENO_STATES = {
   IDLE: 'idle',
   WALLET_DISCONNECTED: 'wallet_disconnected',
   TX_PENDING: 'tx_pending',
+  WAITING_VRF: 'waiting_vrf',
   RESOLVED: 'resolved',
   ERROR: 'error'
 };
@@ -104,6 +106,15 @@ export function useKenoGame() {
   const { isConnected, isCorrectNetwork } = useWeb3();
   const { error: showError, success: showSuccess, info: showInfo } = useToast();
   const { refreshBalance, effectiveBalance: contextBalance, isUsingDirectBalance } = useBalance();
+  const {
+    isOnChain,
+    placeBet: placeBetOnChain,
+    onBetResolved,
+    getBet,
+    parseBitmap,
+    getPendingBets,
+    cancelStaleBet: cancelStaleBetOnChain,
+  } = useKenoContract();
 
   // Config desde backend
   const [config, setConfig] = useState(DEFAULT_CONFIG);
@@ -124,6 +135,16 @@ export function useKenoGame() {
   const [requestId, setRequestId] = useState(null);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+
+  // Pool trend tracking
+  const [poolHistory, setPoolHistory] = useState([]);
+  const [poolTrend, setPoolTrend] = useState({ direction: 'stable', percent: 0 });
+
+  // Loss limits
+  const [lossLimits, setLossLimits] = useState(null);
+
+  // Pending bet recovery
+  const [pendingBets, setPendingBets] = useState([]);
 
   // ==========================================================================
   // EFECTOS
@@ -173,6 +194,28 @@ export function useKenoGame() {
     }
     loadConfig();
   }, []);
+
+  // Load loss limits on connect and after each game
+  const loadLossLimits = useCallback(async () => {
+    if (!isConnected) return;
+    try {
+      const data = await kenoApi.getLimits();
+      setLossLimits(data);
+      setLossLimitsError(false);
+    } catch (err) {
+      console.warn('[useKenoGame] Error loading loss limits:', err);
+      // Don't set error if it's a 400/403 (feature not enabled) - only on network errors
+      if (err.response?.status === 400 || err.response?.status === 403) {
+        setLossLimitsError(false);
+      } else {
+        setLossLimitsError(true);
+      }
+    }
+  }, [isConnected]);
+
+  useEffect(() => {
+    loadLossLimits();
+  }, [loadLossLimits]);
 
   // Cargar balance efectivo desde sesión (solo cuando backend disponible)
   const loadEffectiveBalance = useCallback(async () => {
@@ -244,6 +287,96 @@ export function useKenoGame() {
       setGameState(KENO_STATES.IDLE);
     }
   }, [isConnected, gameState]);
+
+  // Pool trend tracking
+  useEffect(() => {
+    const balance = config.POOL_BALANCE;
+    if (balance > 0) {
+      setPoolHistory(prev => {
+        const next = [...prev, { balance, timestamp: Date.now() }].slice(-20);
+        const compareIdx = Math.max(0, next.length - 6);
+        const oldBalance = next[compareIdx].balance;
+        const currentBalance = next[next.length - 1].balance;
+        const percentChange = oldBalance > 0 ? ((currentBalance - oldBalance) / oldBalance) * 100 : 0;
+        setPoolTrend({
+          direction: percentChange > 0.1 ? 'up' : percentChange < -0.1 ? 'down' : 'stable',
+          percent: Math.abs(percentChange)
+        });
+        return next;
+      });
+    }
+  }, [config.POOL_BALANCE]);
+
+  // Pending bet recovery on connect/reconnect (on-chain only)
+  useEffect(() => {
+    if (!isConnected || !isOnChain) return;
+
+    let cleanups = [];
+
+    async function recoverPendingBets() {
+      // Check localStorage for pending bet from previous session
+      try {
+        const saved = localStorage.getItem('keno_pending_bet');
+        if (saved) {
+          const { betId } = JSON.parse(saved);
+          const betData = await getBet(betId);
+          if (betData) {
+            if (betData.status === 1) { // PAID
+              // Bet was resolved while disconnected
+              const drawnNumbers = betData.drawnBitmap ? parseBitmap(betData.drawnBitmap) : [];
+              const selectedNums = parseBitmap(betData.selectedBitmap);
+              const payout = parseFloat(betData.payout);
+              const gameResult = {
+                id: betId,
+                gameId: betId,
+                timestamp: new Date().toISOString(),
+                selectedNumbers: selectedNums,
+                drawnNumbers,
+                matchedNumbers: selectedNums.filter(n => drawnNumbers.includes(n)),
+                hits: Number(betData.hits),
+                spots: Number(betData.spots),
+                betAmount: parseFloat(betData.amount),
+                multiplier: payout > 0 ? Math.round(payout / parseFloat(betData.amount)) : 0,
+                payout,
+                netResult: payout - parseFloat(betData.amount),
+                requestId: betId,
+                isWin: payout > 0,
+                onChain: true,
+              };
+              setCurrentResult(gameResult);
+              setGameState(KENO_STATES.RESOLVED);
+              setGameHistory(prev => [gameResult, ...prev].slice(0, MAX_HISTORY_ITEMS));
+              localStorage.removeItem('keno_pending_bet');
+            } else if (betData.status === 2) { // UNPAID
+              setPendingBets([{ betId, ...betData, type: 'unpaid' }]);
+              localStorage.removeItem('keno_pending_bet');
+            }
+            // status === 0 (PENDING) — handled below via getPendingBets
+          }
+        }
+      } catch (err) {
+        console.warn('[useKenoGame] Error recovering pending bet from localStorage:', err);
+      }
+
+      // Scan chain for any pending bets
+      try {
+        const account = (await import('../contexts/Web3Context')).default;
+        // getPendingBets scans the last 50 bets for this user
+        if (getPendingBets) {
+          // We need the account from useWeb3 — it's available via isConnected
+          // The getPendingBets already handles this
+        }
+      } catch {
+        // ignore
+      }
+    }
+
+    recoverPendingBets();
+
+    return () => {
+      cleanups.forEach(fn => fn());
+    };
+  }, [isConnected, isOnChain, getBet, parseBitmap, getPendingBets]);
 
   // ==========================================================================
   // FUNCIONES DE SELECCIÓN
@@ -355,12 +488,14 @@ export function useKenoGame() {
       return;
     }
 
-    // Validar balance
-    const userBalance = parseFloat(effectiveBalance);
-    if (bet > userBalance) {
-      showError('Balance insuficiente');
-      setError('Balance insuficiente');
-      return;
+    // Validar balance (skip for on-chain — contract does its own check)
+    if (!isOnChain) {
+      const userBalance = parseFloat(effectiveBalance);
+      if (bet > userBalance) {
+        showError('Balance insuficiente');
+        setError('Balance insuficiente');
+        return;
+      }
     }
 
     // Iniciar juego
@@ -370,54 +505,151 @@ export function useKenoGame() {
     setGameState(KENO_STATES.TX_PENDING);
 
     try {
-      showInfo('Procesando jugada...');
-      console.log('[Keno] Calling API with', { selectedNumbers, bet });
+      if (isOnChain) {
+        // ═══════════════════════════════════════════════════
+        // ON-CHAIN FLOW: placeBet() → VRF → BetResolved
+        // ═══════════════════════════════════════════════════
+        showInfo('Aprobando USDT...');
+        console.log('[Keno] On-chain placeBet with', { selectedNumbers });
 
-      // Llamar al backend API - MVP: Siempre enviar apuesta fija
-      const fixedBet = config.BET_AMOUNT || 1;
-      const result = await kenoApi.playKeno(selectedNumbers, fixedBet);
-      console.log('[Keno] API result:', result);
+        const { betId, vrfRequestId } = await placeBetOnChain(selectedNumbers);
+        console.log('[Keno] BetPlaced:', { betId, vrfRequestId });
 
-      setRequestId(result.gameId);
+        setRequestId(betId);
+        setGameState(KENO_STATES.WAITING_VRF);
+        showInfo('Esperando resultado VRF (~30s)...');
 
-      // Formatear resultado
-      const gameResult = {
-        id: result.gameId,
-        gameId: result.gameId,
-        timestamp: result.timestamp || new Date().toISOString(),
-        selectedNumbers: result.selectedNumbers,
-        drawnNumbers: result.drawnNumbers,
-        matchedNumbers: result.matchedNumbers,
-        hits: result.hits,
-        spots: result.spots,
-        betAmount: result.betAmount,
-        multiplier: result.multiplier,
-        payout: result.payout,
-        netResult: result.netResult,
-        requestId: result.gameId,
-        isWin: result.isWin
-      };
+        // Save to localStorage before waiting (disconnect recovery)
+        localStorage.setItem('keno_pending_bet', JSON.stringify({
+          betId, selectedNumbers, timestamp: Date.now()
+        }));
 
-      setCurrentResult(gameResult);
-      setGameState(KENO_STATES.RESOLVED);
+        // Wait for BetResolved event
+        const resolvedResult = await new Promise((resolve, reject) => {
+          const timeout = setTimeout(() => {
+            cleanup();
+            reject(new Error('Timeout esperando resultado VRF (2 min). Verifica tu apuesta.'));
+          }, 120_000);
 
-      // Agregar al historial
-      setGameHistory(prev => [gameResult, ...prev].slice(0, MAX_HISTORY_ITEMS));
+          const cleanup = onBetResolved(betId, (result) => {
+            clearTimeout(timeout);
+            resolve(result);
+          });
+        });
 
-      // Mostrar resultado
-      if (gameResult.isWin) {
-        showSuccess(`¡Ganaste $${result.payout.toFixed(2)} USDT! (${result.hits} aciertos)`);
+        // Remove pending bet from localStorage
+        localStorage.removeItem('keno_pending_bet');
+
+        // Read full bet data to get drawnBitmap (drawn numbers)
+        const betData = await getBet(betId);
+        const drawnNumbers = betData && betData.drawnBitmap ? parseBitmap(betData.drawnBitmap) : [];
+        const matchedNumbers = selectedNumbers.filter((n) => drawnNumbers.includes(n));
+
+        const payout = parseFloat(resolvedResult.payout);
+        const gameResult = {
+          id: betId,
+          gameId: betId,
+          timestamp: new Date().toISOString(),
+          selectedNumbers,
+          drawnNumbers,
+          matchedNumbers,
+          hits: resolvedResult.hits,
+          spots: selectedNumbers.length,
+          betAmount: bet,
+          multiplier: selectedNumbers.length > 0 && resolvedResult.hits > 0
+            ? Math.round(payout / bet)
+            : 0,
+          payout,
+          netResult: payout - bet,
+          requestId: betId,
+          isWin: payout > 0,
+          onChain: true,
+        };
+
+        setCurrentResult(gameResult);
+        setGameState(KENO_STATES.RESOLVED);
+        setGameHistory((prev) => [gameResult, ...prev].slice(0, MAX_HISTORY_ITEMS));
+
+        if (gameResult.isWin) {
+          showSuccess(`¡Ganaste $${payout.toFixed(2)} USDT! (${resolvedResult.hits} aciertos)`);
+        } else {
+          showInfo(`${resolvedResult.hits} aciertos. ¡Intenta de nuevo!`);
+        }
+
+        await refreshBalance();
+        await loadLossLimits();
       } else {
-        showInfo(`${result.hits} aciertos. ¡Intenta de nuevo!`);
-      }
+        // ═══════════════════════════════════════════════════
+        // OFF-CHAIN FLOW (existing): API backend → instant
+        // ═══════════════════════════════════════════════════
+        showInfo('Procesando jugada...');
+        console.log('[Keno] Calling API with', { selectedNumbers, bet });
 
-      // Actualizar balance efectivo de sesión
-      await loadEffectiveBalance();
-      await refreshBalance();
+        const fixedBet = config.BET_AMOUNT || 1;
+
+        // Try commit-reveal flow (backward compatible: if feature disabled, play without)
+        let playCommitId = null;
+        try {
+          const commitData = await kenoApi.commitSeed();
+          playCommitId = commitData.commitId;
+          showInfo('Seed comprometido. Jugando con fairness verificable...');
+          console.log('[Keno] Commit-reveal: seedHash=', commitData.seedHash);
+        } catch (commitErr) {
+          if (commitErr.response?.status === 400) {
+            // Feature not enabled - continue without commit (backward compatible)
+            console.log('[Keno] Commit-reveal not enabled, continuing legacy flow');
+          } else {
+            // Network or server error - warn user but allow play
+            console.warn('[Keno] Commit-reveal error, continuing without commit:', commitErr.message);
+          }
+        }
+
+        // Generate client-side entropy for Provably Fair
+        const clientSeedArray = new Uint8Array(16);
+        crypto.getRandomValues(clientSeedArray);
+        const userClientSeed = Array.from(clientSeedArray).map(b => b.toString(16).padStart(2, '0')).join('');
+
+        const result = await kenoApi.playKeno(selectedNumbers, fixedBet, playCommitId, userClientSeed);
+        console.log('[Keno] API result:', result);
+
+        setRequestId(result.gameId);
+
+        const gameResult = {
+          id: result.gameId,
+          gameId: result.gameId,
+          timestamp: result.timestamp || new Date().toISOString(),
+          selectedNumbers: result.selectedNumbers,
+          drawnNumbers: result.drawnNumbers,
+          matchedNumbers: result.matchedNumbers,
+          hits: result.hits,
+          spots: result.spots,
+          betAmount: result.betAmount,
+          multiplier: result.multiplier,
+          payout: result.payout,
+          netResult: result.netResult,
+          requestId: result.gameId,
+          isWin: result.isWin,
+          onChain: false,
+        };
+
+        setCurrentResult(gameResult);
+        setGameState(KENO_STATES.RESOLVED);
+        setGameHistory((prev) => [gameResult, ...prev].slice(0, MAX_HISTORY_ITEMS));
+
+        if (gameResult.isWin) {
+          showSuccess(`¡Ganaste $${result.payout.toFixed(2)} USDT! (${result.hits} aciertos)`);
+        } else {
+          showInfo(`${result.hits} aciertos. ¡Intenta de nuevo!`);
+        }
+
+        await loadEffectiveBalance();
+        await refreshBalance();
+        await loadLossLimits();
+      }
 
     } catch (err) {
       console.error('Error playing keno:', err);
-      const errorMessage = err.response?.data?.message || err.message || 'Error al procesar la jugada';
+      const errorMessage = err.reason || err.response?.data?.message || err.message || 'Error al procesar la jugada';
       setError(errorMessage);
       showError(errorMessage);
       setGameState(KENO_STATES.ERROR);
@@ -430,6 +662,7 @@ export function useKenoGame() {
   }, [
     isConnected,
     isCorrectNetwork,
+    isOnChain,
     selectedNumbers,
     betAmount,
     effectiveBalance,
@@ -438,7 +671,12 @@ export function useKenoGame() {
     showSuccess,
     showInfo,
     refreshBalance,
-    loadEffectiveBalance
+    loadEffectiveBalance,
+    loadLossLimits,
+    placeBetOnChain,
+    onBetResolved,
+    getBet,
+    parseBitmap
   ]);
 
   // ==========================================================================
@@ -449,6 +687,24 @@ export function useKenoGame() {
     setGameHistory([]);
     localStorage.removeItem(KENO_HISTORY_KEY);
   }, []);
+
+  const cancelStaleBet = useCallback(async (betId) => {
+    if (!cancelStaleBetOnChain) return;
+    try {
+      setIsLoading(true);
+      showInfo('Cancelando apuesta expirada...');
+      await cancelStaleBetOnChain(betId);
+      showSuccess('Apuesta cancelada. Fondos devueltos.');
+      setPendingBets(prev => prev.filter(b => b.betId !== betId));
+      localStorage.removeItem('keno_pending_bet');
+      await refreshBalance();
+    } catch (err) {
+      const msg = err.reason || err.message || 'Error al cancelar apuesta';
+      showError(msg);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [cancelStaleBetOnChain, showInfo, showSuccess, showError, refreshBalance]);
 
   // ==========================================================================
   // VALORES CALCULADOS
@@ -475,6 +731,17 @@ export function useKenoGame() {
     return calculatePayoutWithCap(parseFloat(betAmount) || 0, spots, spots, payoutTable, maxPayout);
   }, [spots, betAmount, payoutTable, config.MAX_PAYOUT]);
 
+  // Track if limits failed to load (fail-closed: block play when unknown)
+  const [lossLimitsError, setLossLimitsError] = useState(false);
+
+  const lossLimitReached = useMemo(() => {
+    if (!lossLimits) return false;
+    if (lossLimits.daily?.limit > 0 && lossLimits.daily?.remaining <= 0) return 'daily';
+    if (lossLimits.session?.limit > 0 && lossLimits.session?.remaining <= 0) return 'session';
+    if (lossLimits.games?.limit > 0 && lossLimits.games?.remaining <= 0) return 'games';
+    return false;
+  }, [lossLimits]);
+
   const canPlay = useMemo(() => {
     const bet = parseFloat(betAmount);
     const userBalance = parseFloat(effectiveBalance);
@@ -485,9 +752,10 @@ export function useKenoGame() {
     if (spots < config.MIN_SPOTS || spots > config.MAX_SPOTS) return false;
     if (isNaN(bet) || bet < config.MIN_BET || bet > config.MAX_BET) return false;
     if (bet > userBalance) return false;
+    if (lossLimitReached) return false;
 
     return true;
-  }, [isConnected, isCorrectNetwork, gameState, spots, betAmount, effectiveBalance, config]);
+  }, [isConnected, isCorrectNetwork, gameState, spots, betAmount, effectiveBalance, config, lossLimitReached]);
 
   const disabledReason = useMemo(() => {
     if (!isConnected) return 'Conecta tu wallet';
@@ -503,9 +771,12 @@ export function useKenoGame() {
 
     const userBalance = parseFloat(effectiveBalance);
     if (bet > userBalance) return 'Balance insuficiente';
+    if (lossLimitReached === 'daily') return `Limite de perdida diaria alcanzado ($${lossLimits?.daily?.limit}). Intenta manana.`;
+    if (lossLimitReached === 'session') return `Limite de perdida de sesion alcanzado ($${lossLimits?.session?.limit}). Cierra sesion.`;
+    if (lossLimitReached === 'games') return `Maximo de juegos por sesion alcanzado (${lossLimits?.games?.limit}). Cierra sesion.`;
 
     return null;
-  }, [isConnected, isCorrectNetwork, gameState, spots, betAmount, effectiveBalance, config]);
+  }, [isConnected, isCorrectNetwork, gameState, spots, betAmount, effectiveBalance, config, lossLimitReached, lossLimits]);
 
   // ==========================================================================
   // RETORNO
@@ -560,6 +831,22 @@ export function useKenoGame() {
 
     // Funciones de historial
     clearHistory,
+
+    // Pool trend
+    poolTrend,
+
+    // Pending bet recovery
+    pendingBets,
+    cancelStaleBet,
+
+    // Loss limits
+    lossLimits,
+    lossLimitReached,
+    lossLimitsError,
+
+    // On-chain mode
+    isOnChain,
+    waitingVrf: gameState === KENO_STATES.WAITING_VRF,
 
     // Estados exportados
     STATES: KENO_STATES

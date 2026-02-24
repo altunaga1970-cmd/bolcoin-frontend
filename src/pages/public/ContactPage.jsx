@@ -1,22 +1,25 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import '../../components/layout/Layout.css';
 
 function ContactPage() {
+  const { t } = useTranslation('common');
+
   return (
     <div className="info-page">
-      <h1>Contact Us</h1>
+      <h1>{t('contact.title')}</h1>
       <p className="page-subtitle">
-        Have questions or need assistance? Here's how to reach us.
+        {t('contact.subtitle')}
       </p>
 
-      <h2>Community Channels</h2>
-      <p>Join our community for support, updates, and discussions:</p>
+      <h2>{t('contact.community')}</h2>
+      <p>{t('contact.community_desc')}</p>
 
       <div className="info-cards">
         <div className="info-card">
-          <h3>Telegram</h3>
-          <p>Join our official Telegram group for real-time support and community chat.</p>
+          <h3>{t('contact.telegram_title')}</h3>
+          <p>{t('contact.telegram_desc')}</p>
           <a
             href="https://t.me/labolita"
             target="_blank"
@@ -28,8 +31,8 @@ function ContactPage() {
         </div>
 
         <div className="info-card">
-          <h3>Twitter / X</h3>
-          <p>Follow us for announcements, draw results, and jackpot updates.</p>
+          <h3>{t('contact.twitter_title')}</h3>
+          <p>{t('contact.twitter_desc')}</p>
           <a
             href="https://twitter.com/labolita"
             target="_blank"
@@ -41,8 +44,8 @@ function ContactPage() {
         </div>
 
         <div className="info-card">
-          <h3>Discord</h3>
-          <p>Join our Discord server for detailed discussions and support tickets.</p>
+          <h3>{t('contact.discord_title')}</h3>
+          <p>{t('contact.discord_desc')}</p>
           <a
             href="https://discord.gg/labolita"
             target="_blank"
@@ -54,76 +57,70 @@ function ContactPage() {
         </div>
       </div>
 
-      <h2>Email Support</h2>
+      <h2>{t('contact.email_support')}</h2>
       <p>
-        For issues that require private communication or cannot be resolved through community channels:
+        {t('contact.email_desc')}
       </p>
       <div className="contract-address">
         <div>
-          <span className="label">General Support</span>
+          <span className="label">{t('contact.general_support')}</span>
           <span className="address">support@labolita.io</span>
         </div>
       </div>
       <div className="contract-address">
         <div>
-          <span className="label">Security Issues</span>
+          <span className="label">{t('contact.security_issues')}</span>
           <span className="address">security@labolita.io</span>
         </div>
       </div>
 
       <div className="info-box">
-        <p>
-          <strong>Response Time:</strong> We aim to respond to all inquiries within 24-48 hours.
-          Community channels typically have faster response times.
-        </p>
+        <p dangerouslySetInnerHTML={{ __html: t('contact.response_time') }} />
       </div>
 
-      <h2>Before Contacting Us</h2>
-      <p>Please check these resources first - your question may already be answered:</p>
+      <h2>{t('contact.before_contact')}</h2>
+      <p>{t('contact.before_desc')}</p>
       <ul>
-        <li><Link to="/faq" style={{ color: '#FFD700' }}>Frequently Asked Questions</Link></li>
-        <li><Link to="/how-it-works" style={{ color: '#FFD700' }}>How It Works</Link></li>
-        <li><Link to="/legal/rules" style={{ color: '#FFD700' }}>Game Rules</Link></li>
-        <li><Link to="/fairness" style={{ color: '#FFD700' }}>Provably Fair</Link></li>
+        <li><Link to="/faq" style={{ color: '#FFD700' }}>{t('faq.title')}</Link></li>
+        <li><Link to="/how-it-works" style={{ color: '#FFD700' }}>{t('how_it_works.title')}</Link></li>
+        <li><Link to="/legal/rules" style={{ color: '#FFD700' }}>{t('how_it_works.rules_link')}</Link></li>
+        <li><Link to="/fairness" style={{ color: '#FFD700' }}>{t('how_it_works.learn_fairness')}</Link></li>
       </ul>
 
-      <h2>Security Notice</h2>
+      <h2>{t('contact.security_notice')}</h2>
       <div className="warning-box">
-        <p>
-          <strong>Beware of Scams!</strong> La Bolita staff will NEVER:
-        </p>
+        <p dangerouslySetInnerHTML={{ __html: t('contact.scam_warning') }} />
         <ul style={{ marginTop: '0.5rem', marginBottom: '0' }}>
-          <li>Ask for your private keys or seed phrase</li>
-          <li>Ask you to send funds to verify your account</li>
-          <li>Contact you first via DM about "winning" something</li>
-          <li>Offer guaranteed wins or insider information</li>
+          <li>{t('contact.scam1')}</li>
+          <li>{t('contact.scam2')}</li>
+          <li>{t('contact.scam3')}</li>
+          <li>{t('contact.scam4')}</li>
         </ul>
       </div>
       <p>
-        Always verify you're communicating through official channels.
-        See our <Link to="/official-links" style={{ color: '#FFD700' }}>Official Links</Link> page for verified accounts and domains.
+        {t('contact.verify_channels')}{' '}
+        <Link to="/official-links" style={{ color: '#FFD700' }}>{t('contact.official_links')}</Link>
       </p>
 
-      <h2>Bug Reports & Feedback</h2>
+      <h2>{t('contact.bug_reports')}</h2>
       <p>
-        Found a bug or have suggestions for improvement? We appreciate your feedback!
-        Please report technical issues with as much detail as possible:
+        {t('contact.bug_desc')}
       </p>
       <ul>
-        <li>What you were trying to do</li>
-        <li>What happened instead</li>
-        <li>Your wallet address (if relevant)</li>
-        <li>Transaction hash (if applicable)</li>
-        <li>Browser and wallet you're using</li>
+        <li>{t('contact.bug1')}</li>
+        <li>{t('contact.bug2')}</li>
+        <li>{t('contact.bug3')}</li>
+        <li>{t('contact.bug4')}</li>
+        <li>{t('contact.bug5')}</li>
       </ul>
 
-      <h2>Partnerships & Business</h2>
+      <h2>{t('contact.partnerships')}</h2>
       <p>
-        For partnership inquiries, integration requests, or business development:
+        {t('contact.partnerships_desc')}
       </p>
       <div className="contract-address">
         <div>
-          <span className="label">Business Inquiries</span>
+          <span className="label">{t('contact.business_inquiries')}</span>
           <span className="address">business@labolita.io</span>
         </div>
       </div>

@@ -66,10 +66,13 @@ api.interceptors.response.use(
         localStorage.removeItem('token');
         localStorage.removeItem('user');
       }
-      // Clear wallet auth on any 401 (expired signature, etc.)
-      localStorage.removeItem('walletSignature');
-      localStorage.removeItem('walletMessage');
-      localStorage.removeItem('walletSignatureAddr');
+      // Only clear wallet auth on explicit expiry — Web3Context handles re-signing
+      const errorMsg = error.response?.data?.message || '';
+      if (errorMsg.includes('Firma expirada')) {
+        localStorage.removeItem('walletSignature');
+        localStorage.removeItem('walletMessage');
+        localStorage.removeItem('walletSignatureAddr');
+      }
     }
 
     // Extraer mensaje de error del servidor

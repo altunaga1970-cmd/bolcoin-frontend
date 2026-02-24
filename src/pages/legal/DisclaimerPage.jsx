@@ -14,11 +14,11 @@ function DisclaimerPage() {
 
       <h2>No Investment Advice</h2>
       <p>
-        La Bolita is a gambling platform. Nothing on this Platform should be construed as investment advice, financial advice, trading advice, or any other sort of advice. You are solely responsible for your decisions regarding the use of this Platform.
+        Bolcoin is a gambling platform. Nothing on this Platform should be construed as investment advice, financial advice, trading advice, or any other sort of advice. You are solely responsible for your decisions regarding the use of this Platform.
       </p>
 
       <h2>Gambling Risks</h2>
-      <p>By using La Bolita, you acknowledge and accept that:</p>
+      <p>By using Bolcoin, you acknowledge and accept that:</p>
       <ul>
         <li>Gambling is inherently risky and you may lose your entire stake</li>
         <li>Past results do not guarantee future outcomes</li>
@@ -102,11 +102,11 @@ function DisclaimerPage() {
 
       <h2>Indemnification</h2>
       <p>
-        You agree to defend, indemnify, and hold harmless La Bolita and its affiliates from any claims, damages, losses, or expenses arising from your use of the Platform or violation of these terms.
+        You agree to defend, indemnify, and hold harmless Bolcoin and its affiliates from any claims, damages, losses, or expenses arising from your use of the Platform or violation of these terms.
       </p>
 
       <div className="highlight-box">
-        <p><strong>By using La Bolita, you acknowledge that you have read, understood, and accepted this Disclaimer in its entirety.</strong></p>
+        <p><strong>By using Bolcoin, you acknowledge that you have read, understood, and accepted this Disclaimer in its entirety.</strong></p>
       </div>
     </div>
   );

@@ -14,8 +14,9 @@ import api from '../api/index';
 const DEFAULT_CONFIG = {
   flags: {
     game_keno: true,
-    game_bolita: false,
+    game_bolita: true,
     game_fortuna: false,
+    game_bingo: true,
     feature_history: true,
     feature_deposits: true,
     feature_withdrawals: true,

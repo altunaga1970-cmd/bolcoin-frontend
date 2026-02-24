@@ -14,7 +14,7 @@ function CookiesPage() {
       </p>
 
       <h2>How We Use Cookies</h2>
-      <p>La Bolita uses the following types of cookies:</p>
+      <p>Bolcoin uses the following types of cookies:</p>
 
       <h3>Essential Cookies</h3>
       <p>These cookies are necessary for the Platform to function properly:</p>

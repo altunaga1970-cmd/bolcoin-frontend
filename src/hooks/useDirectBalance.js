@@ -15,6 +15,7 @@ const PUBLIC_RPCS = {
   80002: 'https://rpc-amoy.polygon.technology',     // Polygon Amoy
   1: 'https://eth.llamarpc.com',                     // Ethereum Mainnet
   11155111: 'https://rpc.sepolia.org',              // Sepolia
+  31337: 'http://127.0.0.1:8545',                    // Hardhat local
 };
 
 // Direcciones USDT por red
@@ -23,6 +24,7 @@ const USDT_ADDRESSES = {
   80002: '0x41E94Eb019C0762f9Bfcf9Fb1E58725BfB0e7582', // Polygon Amoy (test USDT)
   1: '0xdAC17F958D2ee523a2206206994597C13D831ec7',    // Ethereum Mainnet
   11155111: '0x7169D38820dfd117C3FA1f22a697dBA58d90BA06', // Sepolia
+  31337: import.meta.env.VITE_TOKEN_ADDRESS || '', // Hardhat local (empty = no USDT contract deployed)
 };
 
 // ABI mínimo para leer balance ERC20

@@ -87,6 +87,15 @@ function OpsDashboard() {
             </div>
           )}
 
+          {data.bolitaPool && (
+            <div className="ops-card">
+              <div className="ops-card-label">La Bolita</div>
+              <div className="ops-card-value gold">
+                {data.bolitaPool.draws?.open || 0} draws open
+              </div>
+            </div>
+          )}
+
           <div className="ops-card" style={{ gridColumn: '1 / -1' }}>
             <div className="ops-card-label">Feature Flags</div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginTop: '0.5rem' }}>

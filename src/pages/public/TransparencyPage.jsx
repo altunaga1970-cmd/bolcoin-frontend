@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useContract } from '../../hooks/useContract';
 import '../../components/layout/Layout.css';
 
@@ -9,6 +10,7 @@ const TOKEN_ADDRESS = import.meta.env.VITE_TOKEN_ADDRESS || '0xc2132D05D31c914a8
 const VRF_COORDINATOR = '0xAE975071Be8F8eE67addBC1A82488F1C24858067'; // Polygon Mainnet
 
 function TransparencyPage() {
+  const { t } = useTranslation('common');
   const { getJackpot } = useContract();
   const [jackpot, setJackpot] = useState('0');
 
@@ -26,88 +28,88 @@ function TransparencyPage() {
 
   return (
     <div className="info-page">
-      <h1>Transparency</h1>
+      <h1>{t('transparency.title')}</h1>
       <p className="page-subtitle">
-        Complete transparency is a core principle of La Bolita. All smart contracts are verified and open source.
+        {t('transparency.subtitle')}
       </p>
 
-      <h2>Smart Contract Addresses</h2>
-      <p>All contracts are deployed on Polygon (MATIC) and verified on PolygonScan:</p>
+      <h2>{t('transparency.contracts')}</h2>
+      <p>{t('transparency.contracts_desc')}</p>
 
       <div className="contract-address">
         <div>
-          <span className="label">La Bolita Main Contract</span>
+          <span className="label">{t('transparency.main_contract')}</span>
           <span className="address">{CONTRACT_ADDRESS}</span>
         </div>
         <a href={`https://polygonscan.com/address/${CONTRACT_ADDRESS}#code`} target="_blank" rel="noopener noreferrer">
-          View on PolygonScan →
+          {t('transparency.view_polygonscan')}
         </a>
       </div>
 
       <div className="contract-address">
         <div>
-          <span className="label">USDT Token (Polygon)</span>
+          <span className="label">{t('transparency.usdt_token')}</span>
           <span className="address">{TOKEN_ADDRESS}</span>
         </div>
         <a href={`https://polygonscan.com/token/${TOKEN_ADDRESS}`} target="_blank" rel="noopener noreferrer">
-          View on PolygonScan →
+          {t('transparency.view_polygonscan')}
         </a>
       </div>
 
       <div className="contract-address">
         <div>
-          <span className="label">Chainlink VRF Coordinator</span>
+          <span className="label">{t('transparency.vrf_coordinator')}</span>
           <span className="address">{VRF_COORDINATOR}</span>
         </div>
         <a href={`https://polygonscan.com/address/${VRF_COORDINATOR}`} target="_blank" rel="noopener noreferrer">
-          View on PolygonScan →
+          {t('transparency.view_polygonscan')}
         </a>
       </div>
 
-      <h2>Current Platform Parameters</h2>
+      <h2>{t('transparency.parameters')}</h2>
 
       <div className="info-cards">
         <div className="info-card">
-          <h3>Current Jackpot</h3>
+          <h3>{t('transparency.current_jackpot')}</h3>
           <p style={{ fontSize: '1.5rem', color: '#FFD700', fontWeight: 'bold' }}>
             ${parseFloat(jackpot).toLocaleString()} USDT
           </p>
-          <p style={{ fontSize: '0.75rem', marginTop: '0.5rem' }}>La Fortuna progressive jackpot</p>
+          <p style={{ fontSize: '0.75rem', marginTop: '0.5rem' }}>{t('transparency.fortuna_jackpot')}</p>
         </div>
 
         <div className="info-card">
-          <h3>Jackpot Cap</h3>
+          <h3>{t('transparency.jackpot_cap')}</h3>
           <p style={{ fontSize: '1.5rem', color: '#FFD700', fontWeight: 'bold' }}>
             $1,000,000 USDT
           </p>
-          <p style={{ fontSize: '0.75rem', marginTop: '0.5rem' }}>Maximum jackpot before overflow</p>
+          <p style={{ fontSize: '0.75rem', marginTop: '0.5rem' }}>{t('transparency.jackpot_cap_desc')}</p>
         </div>
 
         <div className="info-card">
-          <h3>Operations Fee</h3>
+          <h3>{t('transparency.operations_fee')}</h3>
           <p style={{ fontSize: '1.5rem', color: '#FFD700', fontWeight: 'bold' }}>
             15%
           </p>
-          <p style={{ fontSize: '0.75rem', marginTop: '0.5rem' }}>Platform operational costs</p>
+          <p style={{ fontSize: '0.75rem', marginTop: '0.5rem' }}>{t('transparency.operations_fee_desc')}</p>
         </div>
 
         <div className="info-card">
-          <h3>Jackpot Contribution</h3>
+          <h3>{t('transparency.jackpot_contribution')}</h3>
           <p style={{ fontSize: '1.5rem', color: '#FFD700', fontWeight: 'bold' }}>
             40%
           </p>
-          <p style={{ fontSize: '0.75rem', marginTop: '0.5rem' }}>From each La Fortuna ticket</p>
+          <p style={{ fontSize: '0.75rem', marginTop: '0.5rem' }}>{t('transparency.jackpot_contribution_desc')}</p>
         </div>
       </div>
 
-      <h2>La Bolita Multipliers</h2>
+      <h2>{t('transparency.multipliers')}</h2>
       <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '1rem' }}>
         <thead>
           <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.2)' }}>
-            <th style={{ textAlign: 'left', padding: '0.75rem', color: '#FFD700' }}>Game Type</th>
-            <th style={{ textAlign: 'left', padding: '0.75rem', color: '#FFD700' }}>Digits</th>
-            <th style={{ textAlign: 'right', padding: '0.75rem', color: '#FFD700' }}>Multiplier</th>
-            <th style={{ textAlign: 'right', padding: '0.75rem', color: '#FFD700' }}>Odds</th>
+            <th style={{ textAlign: 'left', padding: '0.75rem', color: '#FFD700' }}>{t('transparency.game_type')}</th>
+            <th style={{ textAlign: 'left', padding: '0.75rem', color: '#FFD700' }}>{t('transparency.digits')}</th>
+            <th style={{ textAlign: 'right', padding: '0.75rem', color: '#FFD700' }}>{t('transparency.multiplier')}</th>
+            <th style={{ textAlign: 'right', padding: '0.75rem', color: '#FFD700' }}>{t('transparency.odds')}</th>
           </tr>
         </thead>
         <tbody>
@@ -132,27 +134,26 @@ function TransparencyPage() {
         </tbody>
       </table>
 
-      <h2>La Fortuna Prize Distribution</h2>
-      <p>How ticket sales are distributed:</p>
+      <h2>{t('transparency.prize_distribution')}</h2>
+      <p>{t('transparency.distribution_desc')}</p>
       <ul>
-        <li><strong>40%</strong> → Jackpot Fund (until CAP reached)</li>
-        <li><strong>40%</strong> → Prize Pool (for categories 2-8)</li>
-        <li><strong>15%</strong> → Operations</li>
-        <li><strong>5%</strong> → Reserve Fund</li>
+        <li dangerouslySetInnerHTML={{ __html: t('transparency.dist_jackpot') }} />
+        <li dangerouslySetInnerHTML={{ __html: t('transparency.dist_prize_pool') }} />
+        <li dangerouslySetInnerHTML={{ __html: t('transparency.dist_operations') }} />
+        <li dangerouslySetInnerHTML={{ __html: t('transparency.dist_reserve') }} />
       </ul>
       <p>
-        When the jackpot reaches the CAP ($1,000,000 USDT), additional contributions flow to the prize pool instead,
-        increasing prizes for all winning categories.
+        {t('transparency.cap_overflow')}
       </p>
 
-      <h3>Prize Categories</h3>
+      <h3>{t('transparency.prize_categories')}</h3>
       <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '1rem' }}>
         <thead>
           <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.2)' }}>
-            <th style={{ textAlign: 'left', padding: '0.75rem', color: '#FFD700' }}>Category</th>
-            <th style={{ textAlign: 'left', padding: '0.75rem', color: '#FFD700' }}>Matches</th>
-            <th style={{ textAlign: 'right', padding: '0.75rem', color: '#FFD700' }}>Min Prize</th>
-            <th style={{ textAlign: 'right', padding: '0.75rem', color: '#FFD700' }}>Odds</th>
+            <th style={{ textAlign: 'left', padding: '0.75rem', color: '#FFD700' }}>{t('transparency.category')}</th>
+            <th style={{ textAlign: 'left', padding: '0.75rem', color: '#FFD700' }}>{t('transparency.matches')}</th>
+            <th style={{ textAlign: 'right', padding: '0.75rem', color: '#FFD700' }}>{t('transparency.min_prize')}</th>
+            <th style={{ textAlign: 'right', padding: '0.75rem', color: '#FFD700' }}>{t('transparency.odds')}</th>
           </tr>
         </thead>
         <tbody>
@@ -207,30 +208,30 @@ function TransparencyPage() {
         </tbody>
       </table>
       <p style={{ fontSize: '0.875rem', color: 'rgba(255,255,255,0.6)', marginTop: '0.5rem' }}>
-        * Minimum guaranteed prizes. Actual prizes may be higher based on ticket sales and pool size.
+        {t('transparency.min_prize_note')}
       </p>
 
-      <h2>Referral Program</h2>
+      <h2>{t('transparency.referral_program')}</h2>
       <ul>
-        <li><strong>Referral Bonus:</strong> 5% of referee's net bets</li>
-        <li>Bonuses are credited automatically on-chain</li>
-        <li>Can be claimed at any time</li>
+        <li dangerouslySetInnerHTML={{ __html: t('transparency.referral_bonus') }} />
+        <li>{t('transparency.referral_auto')}</li>
+        <li>{t('transparency.referral_claim')}</li>
       </ul>
 
-      <h2>Audit & Security</h2>
-      <p>Our smart contracts follow best practices:</p>
+      <h2>{t('transparency.audit')}</h2>
+      <p>{t('transparency.audit_desc')}</p>
       <ul>
-        <li>Built with OpenZeppelin contracts</li>
-        <li>Reentrancy protection on all external calls</li>
-        <li>Access control for admin functions</li>
-        <li>Emergency pause functionality</li>
-        <li>Verified source code on PolygonScan</li>
+        <li>{t('transparency.audit1')}</li>
+        <li>{t('transparency.audit2')}</li>
+        <li>{t('transparency.audit3')}</li>
+        <li>{t('transparency.audit4')}</li>
+        <li>{t('transparency.audit5')}</li>
       </ul>
 
       <div className="info-box">
         <p>
-          All transactions and results are permanently recorded on the Polygon blockchain and can be independently verified by anyone.
-          Visit our <Link to="/fairness">Provably Fair</Link> page to learn how to verify results.
+          {t('transparency.verify_note')}{' '}
+          <Link to="/fairness">{t('transparency.provably_fair_link')}</Link>
         </p>
       </div>
     </div>

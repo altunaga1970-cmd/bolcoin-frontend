@@ -1,8 +1,11 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useWeb3 } from '../../contexts/Web3Context';
+import { useBalance } from '../../contexts/BalanceContext';
 import { useConfig } from '../../contexts/ConfigContext';
 import { Button } from '../common';
+import LanguageSwitcher from '../../i18n/LanguageSwitcher';
 import './MainNav.css';
 
 // Logo Bolcoin
@@ -50,6 +53,7 @@ const MetaMaskIcon = () => (
 
 function MainNav() {
   const location = useLocation();
+  const { t } = useTranslation('common');
   const {
     isConnected,
     account,
@@ -59,6 +63,8 @@ function MainNav() {
     isConnecting,
     currentNetwork
   } = useWeb3();
+
+  const { effectiveBalance } = useBalance();
 
   // MVP: Obtener feature flags
   const { isGameEnabled } = useConfig();
@@ -77,57 +83,63 @@ function MainNav() {
         </Link>
 
         <nav className="nav-links">
-          <Link to="/" className={isActive('/') ? 'active' : ''}>Inicio</Link>
+          <Link to="/" className={isActive('/') ? 'active' : ''}>{t('nav.home')}</Link>
 
           {/* MVP: Solo mostrar juegos habilitados */}
           {showBolita && (
-            <Link to="/bet" className={isActive('/bet') ? 'active' : ''}>La Bolita</Link>
+            <Link to="/bet" className={isActive('/bet') ? 'active' : ''}>{t('nav.la_bolita')}</Link>
           )}
           {showFortuna && (
-            <Link to="/lottery" className={isActive('/lottery') ? 'active' : ''}>La Fortuna</Link>
+            <Link to="/lottery" className={isActive('/lottery') ? 'active' : ''}>{t('nav.la_fortuna')}</Link>
           )}
           {showKeno && (
-            <Link to="/keno" className={isActive('/keno') ? 'active' : ''}>Keno</Link>
+            <Link to="/keno" className={isActive('/keno') ? 'active' : ''}>{t('nav.keno')}</Link>
           )}
+          <Link to="/bingo" className={isActive('/bingo') ? 'active' : ''}>{t('nav.bingo')}</Link>
 
-          <Link to="/wallet" className={isActive('/wallet') ? 'active' : ''}>Billetera</Link>
-          <Link to="/history" className={isActive('/history') ? 'active' : ''}>Historial</Link>
+          <Link to="/history" className={isActive('/history') ? 'active' : ''}>{t('nav.history')}</Link>
         </nav>
 
-        <div className="nav-wallet">
-          {isConnected ? (
-            <div className="wallet-connected-nav">
-              <div className="wallet-info">
-                <span className="network-badge">
-                  <span className="network-dot"></span>
-                  {currentNetwork?.name || 'Red'}
+        <div className="nav-actions">
+          <LanguageSwitcher />
+          <div className="nav-wallet">
+            {isConnected ? (
+              <div className="wallet-connected-nav">
+                <span className="nav-balance">
+                  ${parseFloat(effectiveBalance || 0).toFixed(2)}
                 </span>
-                <span className="wallet-address-nav">
-                  <MetaMaskIcon />
-                  {formatAddress(account)}
-                </span>
+                <div className="wallet-info">
+                  <span className="network-badge">
+                    <span className="network-dot"></span>
+                    {currentNetwork?.name || 'Red'}
+                  </span>
+                  <span className="wallet-address-nav">
+                    <MetaMaskIcon />
+                    {formatAddress(account)}
+                  </span>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={disconnectWallet}
+                  className="disconnect-btn"
+                >
+                  {t('nav.disconnect')}
+                </Button>
               </div>
+            ) : (
               <Button
-                variant="ghost"
+                variant="primary"
                 size="sm"
-                onClick={disconnectWallet}
-                className="disconnect-btn"
+                onClick={connectWallet}
+                disabled={isConnecting}
+                className="connect-btn"
               >
-                Salir
+                <MetaMaskIcon />
+                {isConnecting ? t('nav.connecting') : t('nav.connect_metamask')}
               </Button>
-            </div>
-          ) : (
-            <Button
-              variant="primary"
-              size="sm"
-              onClick={connectWallet}
-              disabled={isConnecting}
-              className="connect-btn"
-            >
-              <MetaMaskIcon />
-              {isConnecting ? 'Conectando...' : 'Conectar MetaMask'}
-            </Button>
-          )}
+            )}
+          </div>
         </div>
       </div>
     </header>

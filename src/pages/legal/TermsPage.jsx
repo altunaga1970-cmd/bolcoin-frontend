@@ -6,18 +6,18 @@ function TermsPage() {
   return (
     <div className="legal-page">
       <h1>Terms of Service</h1>
-      <p className="last-updated">Last updated: January 20, 2026</p>
+      <p className="last-updated">Last updated: February 16, 2026</p>
 
       <div className="warning-box">
-        <p><strong>Important:</strong> By using La Bolita, you acknowledge that you are participating in cryptocurrency-based gambling activities. Please read these terms carefully before using our platform.</p>
+        <p><strong>Important:</strong> By using Bolcoin, you acknowledge that you are participating in cryptocurrency-based gambling activities. Please read these terms carefully before using our platform.</p>
       </div>
 
       <h2>1. Acceptance of Terms</h2>
       <p>
-        By accessing or using the La Bolita platform ("Platform"), you agree to be bound by these Terms of Service ("Terms"). If you do not agree to these Terms, you must not use the Platform.
+        By accessing or using the Bolcoin platform ("Platform"), you agree to be bound by these Terms of Service ("Terms"). If you do not agree to these Terms, you must not use the Platform.
       </p>
       <p>
-        These Terms constitute a legally binding agreement between you and La Bolita regarding your use of the Platform and participation in any games offered.
+        These Terms constitute a legally binding agreement between you and Bolcoin regarding your use of the Platform and participation in any games offered.
       </p>
 
       <h2>2. Eligibility</h2>
@@ -32,19 +32,23 @@ function TermsPage() {
 
       <h2>3. Platform Description</h2>
       <p>
-        La Bolita is a decentralized lottery platform operating on the Polygon blockchain. The Platform offers:
+        Bolcoin is a decentralized gaming platform operating on the Polygon blockchain. The Platform currently offers:
       </p>
       <ul>
+        <li><strong>Keno:</strong> Instant number-matching game. Select 1-10 numbers from 1-80. Fixed bet of 1 USDT per play. Payout is dynamically capped based on the pool balance (max 10% of pool per win).</li>
+      </ul>
+      <p>Coming soon:</p>
+      <ul>
         <li><strong>La Bolita:</strong> Number-based betting games (2, 3, and 4 digit numbers)</li>
-        <li><strong>La Fortuna:</strong> Lottery-style game (6 numbers from 1-49 plus a key number 0-9)</li>
+        <li><strong>La Fortuna:</strong> Lottery-style game (5 numbers plus a key number)</li>
       </ul>
       <p>
-        All games utilize Chainlink VRF (Verifiable Random Function) for provably fair random number generation.
+        Keno uses a SHA-256 provably fair system with server seed, client seed, and nonce. Each game result can be independently verified via the verification endpoint. On-chain VRF integration is planned for a future update.
       </p>
 
       <h2>4. Non-Custodial Nature</h2>
       <p>
-        La Bolita operates as a non-custodial platform. This means:
+        Bolcoin operates as a non-custodial platform. This means:
       </p>
       <ul>
         <li>You maintain full control of your cryptocurrency wallet and private keys</li>
@@ -99,7 +103,7 @@ function TermsPage() {
 
       <h2>10. Indemnification</h2>
       <p>
-        You agree to indemnify and hold harmless La Bolita, its affiliates, and their respective officers, directors, employees, and agents from any claims, damages, losses, or expenses arising from your use of the Platform or violation of these Terms.
+        You agree to indemnify and hold harmless Bolcoin, its affiliates, and their respective officers, directors, employees, and agents from any claims, damages, losses, or expenses arising from your use of the Platform or violation of these Terms.
       </p>
 
       <h2>11. Modifications to Terms</h2>
@@ -123,7 +127,7 @@ function TermsPage() {
       </p>
 
       <div className="info-box">
-        <p>By using La Bolita, you confirm that you have read, understood, and agree to be bound by these Terms of Service.</p>
+        <p>By using Bolcoin, you confirm that you have read, understood, and agree to be bound by these Terms of Service.</p>
       </div>
     </div>
   );

@@ -5,7 +5,7 @@ function ResponsibleGamingPage() {
   return (
     <div className="legal-page">
       <h1>Responsible Gaming</h1>
-      <p className="last-updated">Last updated: January 20, 2026</p>
+      <p className="last-updated">Last updated: February 16, 2026</p>
 
       <div className="warning-box">
         <p><strong>Important:</strong> Gambling should be entertainment, not a way to make money. If gambling stops being fun, it's time to stop.</p>
@@ -13,7 +13,7 @@ function ResponsibleGamingPage() {
 
       <h2>Our Commitment</h2>
       <p>
-        La Bolita is committed to promoting responsible gambling. We believe that gambling should be an enjoyable form of entertainment, conducted in a safe environment. We encourage all our users to gamble responsibly.
+        Bolcoin is committed to promoting responsible gambling. We believe that gambling should be an enjoyable form of entertainment, conducted in a safe environment. We encourage all our users to gamble responsibly.
       </p>
 
       <h2>Know the Signs</h2>
@@ -82,21 +82,25 @@ function ResponsibleGamingPage() {
       </div>
 
       <h2>Platform Limits</h2>
-      <p>La Bolita enforces the following limits to promote responsible gambling:</p>
+      <p>Bolcoin enforces the following limits to promote responsible gambling:</p>
       <ul>
-        <li><strong>Bet Limits:</strong> Maximum bet of 1,000 USDT per number in La Bolita games</li>
-        <li><strong>Ticket Limits:</strong> Maximum 8 tickets per transaction in La Fortuna</li>
-        <li><strong>No Credit:</strong> All bets require immediate payment from your wallet</li>
+        <li><strong>Fixed Bet:</strong> Keno uses a fixed bet of 1 USDT per play, keeping stakes low</li>
+        <li><strong>Rate Limiting:</strong> Maximum 10 plays per minute per wallet</li>
+        <li><strong>Daily Loss Limit:</strong> Configurable daily loss cap (default: $100)</li>
+        <li><strong>Session Loss Limit:</strong> Configurable per-session loss cap (default: $50)</li>
+        <li><strong>Max Games Limit:</strong> Configurable max games per day (default: 200)</li>
+        <li><strong>Payout Cap:</strong> Dynamic payout cap based on pool balance (max 10% of pool)</li>
+        <li><strong>No Credit:</strong> All bets require immediate payment from your wallet balance</li>
       </ul>
 
       <h2>Taking a Break</h2>
       <p>
-        If you feel you need a break from gambling, simply disconnect your wallet and step away from the platform. Since La Bolita is non-custodial, there are no accounts to close - you simply stop interacting with the smart contracts.
+        If you feel you need a break from gambling, simply disconnect your wallet and step away from the platform. Since Bolcoin is non-custodial, there are no accounts to close - you simply stop interacting with the smart contracts.
       </p>
 
       <h2>Underage Gambling</h2>
       <p>
-        La Bolita is strictly for adults. You must be at least 18 years old (or the legal gambling age in your jurisdiction) to use our platform. We encourage parents to:
+        Bolcoin is strictly for adults. You must be at least 18 years old (or the legal gambling age in your jurisdiction) to use our platform. We encourage parents to:
       </p>
       <ul>
         <li>Keep wallet credentials secure and away from minors</li>

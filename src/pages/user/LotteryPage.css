@@ -68,6 +68,16 @@
   color: var(--color-text-secondary);
 }
 
+.jackpot-countdown {
+  display: block;
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #fff;
+  font-family: monospace;
+  letter-spacing: 0.1em;
+  margin-top: var(--spacing-sm);
+}
+
 /* Schedule Info */
 .schedule-info {
   display: flex;
@@ -455,10 +465,21 @@
   color: var(--color-text-secondary);
 }
 
-.receipt-id {
+.receipt-numbers {
+  margin: var(--spacing-md) 0;
+  text-align: left;
+}
+
+.receipt-bet-line {
   font-family: monospace;
-  color: var(--color-primary) !important;
-  font-weight: bold;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+  padding: var(--spacing-xs) 0;
+}
+
+.receipt-bet-index {
+  color: var(--color-primary);
+  margin-right: var(--spacing-sm);
 }
 
 /* Info Cards */
@@ -557,7 +578,7 @@
   }
 
   .lottery-info-section {
-    order: -1;
+    order: 0;
   }
 
   .schedule-info {
@@ -608,4 +629,88 @@
   .selection-actions button {
     flex: 1 1 45%;
   }
+}
+
+/* Selection Count */
+.selection-count {
+  color: var(--color-primary);
+  margin-left: var(--spacing-xs);
+  font-weight: 600;
+}
+
+/* Confirmation Modal */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: var(--spacing-md);
+}
+
+.confirm-modal {
+  background: var(--color-bg-card);
+  border: 2px solid var(--color-primary);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-xl);
+  max-width: 480px;
+  width: 100%;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.confirm-modal h3 {
+  color: var(--color-primary);
+  margin-bottom: var(--spacing-lg);
+  text-align: center;
+}
+
+.confirm-summary {
+  margin-bottom: var(--spacing-lg);
+}
+
+.confirm-draw {
+  color: var(--color-text-secondary);
+  text-align: center;
+  margin-bottom: var(--spacing-md);
+}
+
+.confirm-bets {
+  background: var(--color-bg-darker);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+}
+
+.confirm-bet-row {
+  display: flex;
+  justify-content: space-between;
+  font-family: monospace;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+  padding: var(--spacing-xs) 0;
+}
+
+.confirm-total {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--font-size-lg);
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--color-border);
+}
+
+.confirm-amount {
+  color: var(--color-primary);
+  font-weight: bold;
+}
+
+.confirm-actions {
+  display: flex;
+  gap: var(--spacing-md);
+}
+
+.confirm-actions button {
+  flex: 1;
 }

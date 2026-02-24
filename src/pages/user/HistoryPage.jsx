@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useWeb3 } from '../../contexts/Web3Context';
 import { useContract } from '../../hooks/useContract';
 import { Button, Spinner } from '../../components/common';
@@ -9,6 +10,7 @@ import './UserPages.css';
 import './HistoryPage.css';
 
 function HistoryPage() {
+  const { t } = useTranslation(['games', 'common']);
   const { account, isConnected, connectWallet, formatAddress } = useWeb3();
   const {
     getUserBets,
@@ -99,17 +101,17 @@ function HistoryPage() {
 
   // Determinar estado de apuesta
   const getBetStatus = (bet) => {
-    if (bet.draw?.status === 'cancelled') return { text: 'Cancelado', class: 'cancelled' };
-    if (bet.draw?.status !== 'completed') return { text: 'Pendiente', class: 'pending' };
-    if (parseFloat(bet.payout) > 0) return { text: 'Ganada', class: 'won' };
-    return { text: 'Perdida', class: 'lost' };
+    if (bet.draw?.status === 'cancelled') return { text: t('history.status.cancelled'), class: 'cancelled' };
+    if (bet.draw?.status !== 'completed') return { text: t('history.status.pending'), class: 'pending' };
+    if (parseFloat(bet.payout) > 0) return { text: t('history.status.won'), class: 'won' };
+    return { text: t('history.status.lost'), class: 'lost' };
   };
 
   // Formatear fecha
   const formatDate = (dateString) => {
     if (!dateString) return '-';
     const date = new Date(dateString);
-    return date.toLocaleDateString('es-ES', {
+    return date.toLocaleDateString(undefined, {
       day: '2-digit',
       month: '2-digit',
       year: 'numeric',
@@ -124,8 +126,8 @@ function HistoryPage() {
         <MainNav />
         <main className="user-main">
           <div className="connect-prompt">
-            <h3>Conecta tu Wallet</h3>
-            <p>Necesitas conectar tu wallet para ver tu historial</p>
+            <h3>{t('common:common.connect_wallet')}</h3>
+            <p>{t('history.connect_prompt')}</p>
             <ConnectWallet />
           </div>
         </main>
@@ -138,19 +140,19 @@ function HistoryPage() {
       <MainNav />
 
       <main className="user-main">
-        <h1 className="page-title">Mi Historial</h1>
+        <h1 className="page-title">{t('history.title')}</h1>
 
         {loading ? (
           <div className="loading-state">
             <Spinner size="lg" />
-            <p>Cargando historial...</p>
+            <p>{t('history.loading')}</p>
           </div>
         ) : (
           <>
             {/* Balance actual */}
             <div className="current-balance-card">
               <div className="balance-info">
-                <span className="balance-label">Balance Actual</span>
+                <span className="balance-label">{t('history.current_balance')}</span>
                 <span className="balance-value">${parseFloat(balance).toFixed(2)} USDT</span>
               </div>
               <div className="wallet-info">
@@ -164,21 +166,21 @@ function HistoryPage() {
                 <div className="stat-icon bets">🎰</div>
                 <div className="stat-content">
                   <span className="stat-number">{stats.totalBets}</span>
-                  <span className="stat-text">Total Apuestas</span>
+                  <span className="stat-text">{t('history.total_bets')}</span>
                 </div>
               </div>
               <div className="stat-box">
                 <div className="stat-icon wagered">💰</div>
                 <div className="stat-content">
                   <span className="stat-number">${stats.totalWagered.toFixed(2)}</span>
-                  <span className="stat-text">Total Apostado</span>
+                  <span className="stat-text">{t('history.total_wagered')}</span>
                 </div>
               </div>
               <div className="stat-box">
                 <div className="stat-icon won">🏆</div>
                 <div className="stat-content">
                   <span className="stat-number">${stats.totalWon.toFixed(2)}</span>
-                  <span className="stat-text">Total Ganado</span>
+                  <span className="stat-text">{t('history.total_won')}</span>
                 </div>
               </div>
               <div className={`stat-box ${stats.netProfit >= 0 ? 'profit' : 'loss'}`}>
@@ -187,7 +189,7 @@ function HistoryPage() {
                   <span className="stat-number">
                     {stats.netProfit >= 0 ? '+' : ''}{stats.netProfit.toFixed(2)}
                   </span>
-                  <span className="stat-text">Ganancia Neta</span>
+                  <span className="stat-text">{t('history.net_profit')}</span>
                 </div>
               </div>
             </div>
@@ -195,7 +197,7 @@ function HistoryPage() {
             {/* Tarjetas de resumen */}
             <div className="summary-cards">
               <div className="summary-card win-rate">
-                <h4>Tasa de Victoria</h4>
+                <h4>{t('history.win_rate')}</h4>
                 <div className="progress-ring">
                   <svg viewBox="0 0 36 36">
                     <path
@@ -214,19 +216,19 @@ function HistoryPage() {
 
               {referralStats && (
                 <div className="summary-card referral-earnings">
-                  <h4>Ganancias por Referidos</h4>
+                  <h4>{t('history.referral_earnings')}</h4>
                   <div className="referral-info">
                     <div className="referral-stat">
                       <span className="value">{referralStats.totalReferred}</span>
-                      <span className="label">Referidos</span>
+                      <span className="label">{t('history.referrals')}</span>
                     </div>
                     <div className="referral-stat">
                       <span className="value">${referralStats.totalEarnings}</span>
-                      <span className="label">Ganado</span>
+                      <span className="label">{t('history.earned')}</span>
                     </div>
                     <div className="referral-stat highlight">
                       <span className="value">${referralStats.pendingEarnings}</span>
-                      <span className="label">Pendiente</span>
+                      <span className="label">{t('history.pending')}</span>
                     </div>
                   </div>
                 </div>
@@ -239,37 +241,37 @@ function HistoryPage() {
                 className={`filter-btn ${filter === 'all' ? 'active' : ''}`}
                 onClick={() => setFilter('all')}
               >
-                Todas ({bets.length})
+                {t('history.filter_all')} ({bets.length})
               </button>
               <button
                 className={`filter-btn ${filter === 'won' ? 'active' : ''}`}
                 onClick={() => setFilter('won')}
               >
-                Ganadas
+                {t('history.filter_won')}
               </button>
               <button
                 className={`filter-btn ${filter === 'lost' ? 'active' : ''}`}
                 onClick={() => setFilter('lost')}
               >
-                Perdidas
+                {t('history.filter_lost')}
               </button>
               <button
                 className={`filter-btn ${filter === 'pending' ? 'active' : ''}`}
                 onClick={() => setFilter('pending')}
               >
-                Pendientes
+                {t('history.filter_pending')}
               </button>
             </div>
 
             {/* Lista de apuestas */}
             <div className="bets-history">
-              <h3>Historial de Apuestas</h3>
+              <h3>{t('history.bet_history')}</h3>
 
               {filteredBets.length === 0 ? (
                 <div className="empty-history">
-                  <p>No hay apuestas para mostrar</p>
+                  <p>{t('history.no_bets')}</p>
                   <Link to="/web3">
-                    <Button>Realizar Primera Apuesta</Button>
+                    <Button>{t('history.first_bet')}</Button>
                   </Link>
                 </div>
               ) : (
@@ -277,13 +279,13 @@ function HistoryPage() {
                   <table className="bets-table">
                     <thead>
                       <tr>
-                        <th>ID</th>
-                        <th>Sorteo</th>
-                        <th>Tipo</th>
-                        <th>Numero</th>
-                        <th>Apuesta</th>
-                        <th>Premio</th>
-                        <th>Estado</th>
+                        <th>{t('history.table.id')}</th>
+                        <th>{t('history.table.draw')}</th>
+                        <th>{t('history.table.type')}</th>
+                        <th>{t('history.table.number')}</th>
+                        <th>{t('history.table.bet')}</th>
+                        <th>{t('history.table.prize')}</th>
+                        <th>{t('history.table.status')}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -323,7 +325,7 @@ function HistoryPage() {
             {/* Numeros ganadores (si hay apuestas completadas) */}
             {bets.some(bet => bet.draw?.status === 'completed') && (
               <div className="winning-numbers-section">
-                <h3>Numeros Ganadores Recientes</h3>
+                <h3>{t('history.winning_numbers')}</h3>
                 <div className="winning-draws">
                   {bets
                     .filter(bet => bet.draw?.status === 'completed')
@@ -342,15 +344,15 @@ function HistoryPage() {
                         </div>
                         <div className="winning-numbers">
                           <div className="number-group">
-                            <span className="label">Fijo</span>
+                            <span className="label">{t('history.fijo')}</span>
                             <span className="number">{bet.draw?.winning_fijos || '--'}</span>
                           </div>
                           <div className="number-group">
-                            <span className="label">Centena</span>
+                            <span className="label">{t('history.centena')}</span>
                             <span className="number">{bet.draw?.winning_centenas || '---'}</span>
                           </div>
                           <div className="number-group">
-                            <span className="label">Parle</span>
+                            <span className="label">{t('history.parle')}</span>
                             <span className="number">{bet.draw?.winning_parles || '----'}</span>
                           </div>
                         </div>

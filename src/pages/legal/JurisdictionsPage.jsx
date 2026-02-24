@@ -41,12 +41,12 @@ function JurisdictionsPage() {
       <p className="last-updated">Last updated: January 20, 2026</p>
 
       <div className="warning-box">
-        <p><strong>Access Restriction:</strong> La Bolita is not available to residents of or persons located in the jurisdictions listed below. Attempting to access the Platform from these locations is strictly prohibited.</p>
+        <p><strong>Access Restriction:</strong> Bolcoin is not available to residents of or persons located in the jurisdictions listed below. Attempting to access the Platform from these locations is strictly prohibited.</p>
       </div>
 
       <h2>Why Are Some Countries Restricted?</h2>
       <p>
-        La Bolita operates as a decentralized cryptocurrency gambling platform. Due to varying gambling regulations, licensing requirements, and legal frameworks around the world, we are unable to offer our services in certain jurisdictions.
+        Bolcoin operates as a decentralized cryptocurrency gambling platform. Due to varying gambling regulations, licensing requirements, and legal frameworks around the world, we are unable to offer our services in certain jurisdictions.
       </p>
       <p>
         These restrictions exist to:
@@ -60,7 +60,7 @@ function JurisdictionsPage() {
 
       <h2>List of Restricted Countries</h2>
       <p>
-        Users from the following countries and territories are prohibited from using La Bolita:
+        Users from the following countries and territories are prohibited from using Bolcoin:
       </p>
 
       <div className="countries-grid">
@@ -105,7 +105,7 @@ function JurisdictionsPage() {
 
       <h2>Your Responsibility</h2>
       <p>
-        It is your responsibility to ensure that your use of La Bolita complies with all applicable laws in your jurisdiction. By using the Platform, you represent and warrant that:
+        It is your responsibility to ensure that your use of Bolcoin complies with all applicable laws in your jurisdiction. By using the Platform, you represent and warrant that:
       </p>
       <ul>
         <li>You are not located in a restricted jurisdiction</li>
@@ -121,11 +121,11 @@ function JurisdictionsPage() {
 
       <h2>Questions</h2>
       <p>
-        If you have questions about whether you can legally use La Bolita in your jurisdiction, we recommend consulting with a local legal professional. For general inquiries, please visit our <Link to="/contact">Contact</Link> page.
+        If you have questions about whether you can legally use Bolcoin in your jurisdiction, we recommend consulting with a local legal professional. For general inquiries, please visit our <Link to="/contact">Contact</Link> page.
       </p>
 
       <div className="info-box">
-        <p>By using La Bolita, you confirm that you are not located in or a resident of any restricted jurisdiction listed above.</p>
+        <p>By using Bolcoin, you confirm that you are not located in or a resident of any restricted jurisdiction listed above.</p>
       </div>
     </div>
   );

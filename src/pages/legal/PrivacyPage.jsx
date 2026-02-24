@@ -6,15 +6,15 @@ function PrivacyPage() {
   return (
     <div className="legal-page">
       <h1>Privacy Policy</h1>
-      <p className="last-updated">Last updated: January 20, 2026</p>
+      <p className="last-updated">Last updated: February 16, 2026</p>
 
       <div className="info-box">
-        <p>La Bolita is designed with privacy in mind. As a non-custodial, blockchain-based platform, we collect minimal personal data.</p>
+        <p>Bolcoin is designed with privacy in mind. As a non-custodial, blockchain-based platform, we collect minimal personal data. No KYC, no email required.</p>
       </div>
 
       <h2>1. Introduction</h2>
       <p>
-        This Privacy Policy explains how La Bolita ("we", "us", "our") collects, uses, and protects information when you use our decentralized lottery platform ("Platform").
+        This Privacy Policy explains how Bolcoin ("we", "us", "our") collects, uses, and protects information when you use our decentralized lottery platform ("Platform").
       </p>
       <p>
         By using the Platform, you agree to the collection and use of information in accordance with this policy.
@@ -27,12 +27,13 @@ function PrivacyPage() {
       <ul>
         <li>Your wallet address</li>
         <li>Transaction hashes</li>
-        <li>Bet details (numbers, amounts)</li>
-        <li>Ticket purchases</li>
-        <li>Prize claims</li>
+        <li>Deposit and withdrawal amounts</li>
       </ul>
       <p>
-        <strong>Note:</strong> This data is inherently public and immutable as part of blockchain technology. We do not control or have the ability to delete blockchain data.
+        <strong>Note:</strong> Keno games are processed via virtual sessions on our backend. Only settlement transactions (when you leave the game) are recorded on-chain, not individual plays.
+      </p>
+      <p>
+        Blockchain data is inherently public and immutable. We do not control or have the ability to delete blockchain data.
       </p>
 
       <h3>2.2 Automatically Collected Data</h3>
@@ -44,6 +45,9 @@ function PrivacyPage() {
         <li>Pages visited and time spent</li>
         <li>Referring website</li>
       </ul>
+      <p>
+        We also store a wallet signature (day-based) in your browser's localStorage for authentication. This signature expires after 2 days and is never sent to third parties.
+      </p>
 
       <h3>2.3 Data We Do NOT Collect</h3>
       <p>As a non-custodial platform, we do NOT collect:</p>
@@ -149,7 +153,7 @@ function PrivacyPage() {
       </p>
 
       <div className="info-box">
-        <p>By using La Bolita, you acknowledge that you have read and understood this Privacy Policy.</p>
+        <p>By using Bolcoin, you acknowledge that you have read and understood this Privacy Policy.</p>
       </div>
     </div>
   );

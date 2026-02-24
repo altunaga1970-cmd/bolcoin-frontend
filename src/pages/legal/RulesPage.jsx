@@ -9,12 +9,12 @@ function RulesPage() {
       <p className="last-updated">Last updated: January 20, 2026</p>
 
       <div className="info-box">
-        <p>All games on La Bolita use Chainlink VRF (Verifiable Random Function) for provably fair random number generation. Results can be independently verified on the blockchain.</p>
+        <p>Keno on Bolcoin uses a SHA-256 provably fair system for random number generation. Each game result can be independently verified via the verification endpoint. On-chain VRF is planned for future games.</p>
       </div>
 
-      <h2>La Bolita - Number Games</h2>
+      <h2>Bolcoin - Number Games</h2>
       <p>
-        La Bolita offers three types of number-based betting games. Each draw has winning numbers for all three game types generated simultaneously.
+        Bolcoin offers three types of number-based betting games. Each draw has winning numbers for all three game types generated simultaneously.
       </p>
 
       <h3>Fijos (2-Digit Game)</h3>
@@ -45,7 +45,7 @@ function RulesPage() {
       </ul>
 
       <h3>Draw Schedule</h3>
-      <p>La Bolita draws occur three times daily:</p>
+      <p>Bolcoin draws occur three times daily:</p>
       <ul>
         <li><strong>Morning (Mañana):</strong> 10:00 UTC</li>
         <li><strong>Afternoon (Tarde):</strong> 15:00 UTC</li>
@@ -156,7 +156,7 @@ function RulesPage() {
 
       <h2>Claiming Prizes</h2>
       <ul>
-        <li><strong>La Bolita:</strong> Prizes are automatically calculated when results are published. Winners can claim directly from the smart contract.</li>
+        <li><strong>Bolcoin:</strong> Prizes are automatically calculated when results are published. Winners can claim directly from the smart contract.</li>
         <li><strong>La Fortuna:</strong> Winners are verified through a Merkle tree claim system. Each winner receives a cryptographic proof to claim their prize on-chain.</li>
         <li><strong>Claim Period:</strong> Prizes must be claimed within <strong>30 days</strong> of the draw</li>
         <li><strong>Unclaimed Prizes:</strong> Unclaimed prizes after 30 days return to the prize pool</li>
@@ -165,7 +165,7 @@ function RulesPage() {
 
       <h2>Fairness Verification</h2>
       <p>
-        All results can be independently verified. See our <Link to="/fairness">Provably Fair</Link> page for details on how to verify results using the Chainlink VRF proof.
+        All results can be independently verified. See our <Link to="/fairness">Provably Fair</Link> page for details on how to verify results using the SHA-256 provably fair system.
       </p>
 
       <div className="highlight-box">

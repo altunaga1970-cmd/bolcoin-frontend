@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useWeb3 } from '../../contexts/Web3Context';
 import { Button } from '../common';
 import './Web3.css';
@@ -15,6 +16,7 @@ const getExplorerUrl = (chainId) => {
 };
 
 function ConnectWallet({ variant = 'default', showBalance = false, showExplorerLink = true }) {
+  const { t } = useTranslation('wallet');
   const {
     account,
     isConnected,
@@ -58,55 +60,42 @@ function ConnectWallet({ variant = 'default', showBalance = false, showExplorerL
   // Agregar/Cambiar a red Hardhat Local
   const addHardhatNetwork = useCallback(async () => {
     if (!window.ethereum) {
-      setLocalError('MetaMask no detectado');
+      setLocalError(t('metamask_not_detected'));
       return;
     }
 
     try {
-      // Primero intentar cambiar a red existente
       await window.ethereum.request({
         method: 'wallet_switchEthereumChain',
-        params: [{ chainId: '0x7a69' }], // 31337 en hex
+        params: [{ chainId: '0x7a69' }],
       });
-      console.log('Switched to existing Hardhat network');
       setLocalError(null);
     } catch (switchError) {
-      console.log('Switch error:', switchError.code, switchError.message);
-
-      // Si no existe, agregarla
       if (switchError.code === 4902) {
         try {
           await window.ethereum.request({
             method: 'wallet_addEthereumChain',
             params: [{
-              chainId: '0x7a69', // 31337 en hex
+              chainId: '0x7a69',
               chainName: 'Hardhat Local',
-              nativeCurrency: {
-                name: 'ETH',
-                symbol: 'ETH',
-                decimals: 18
-              },
+              nativeCurrency: { name: 'ETH', symbol: 'ETH', decimals: 18 },
               rpcUrls: ['http://127.0.0.1:8545'],
               blockExplorerUrls: []
             }]
           });
-
-          // Ahora cambiar a ella
           await window.ethereum.request({
             method: 'wallet_switchEthereumChain',
             params: [{ chainId: '0x7a69' }],
           });
-
           setLocalError(null);
         } catch (addError) {
-          console.error('Error adding Hardhat network:', addError);
-          setLocalError('Error configurando red Hardhat: ' + addError.message);
+          setLocalError(t('error_hardhat', { message: addError.message }));
         }
       } else {
-        setLocalError('Error cambiando a red Hardhat: ' + switchError.message);
+        setLocalError(t('error_switch', { message: switchError.message }));
       }
     }
-  }, []);
+  }, [t]);
 
   // Handle connect with error handling
   const handleConnect = useCallback(async () => {
@@ -146,7 +135,7 @@ function ConnectWallet({ variant = 'default', showBalance = false, showExplorerL
           className="connect-wallet-btn"
           aria-label="Connect cryptocurrency wallet"
         >
-          {isConnecting ? 'Conectando...' : 'Conectar Wallet'}
+          {isConnecting ? t('connecting') : t('connect')}
         </Button>
 
         {displayError && variant !== 'header' && (
@@ -166,10 +155,9 @@ function ConnectWallet({ variant = 'default', showBalance = false, showExplorerL
         {variant !== 'header' && (
           <>
             <p className="wallet-help-text">
-              Conecta tu wallet para apostar en La Bolita.
+              {t('help_text')}
             </p>
 
-            {/* Solo mostrar botón Hardhat si hay wallet injected (MetaMask) */}
             {typeof window !== 'undefined' && window.ethereum && (
               <Button
                 onClick={addHardhatNetwork}
@@ -177,7 +165,7 @@ function ConnectWallet({ variant = 'default', showBalance = false, showExplorerL
                 size="sm"
                 className="add-network-btn"
               >
-                🔧 Agregar Red Hardhat Local
+                {'\uD83D\uDD27'} {t('add_hardhat')}
               </Button>
             )}
           </>
@@ -192,7 +180,7 @@ function ConnectWallet({ variant = 'default', showBalance = false, showExplorerL
       <div className="connect-wallet-container wrong-network">
         <div className="network-warning" role="alert">
           <span className="warning-icon">!</span>
-          <span>Red incorrecta: {currentNetwork?.name || 'Desconocida'}</span>
+          <span>{t('wrong_network', { network: currentNetwork?.name || 'Unknown' })}</span>
         </div>
         <div className="network-buttons">
           <Button
@@ -202,10 +190,9 @@ function ConnectWallet({ variant = 'default', showBalance = false, showExplorerL
             className="switch-network-btn"
             aria-label="Switch to Polygon network"
           >
-            Cambiar a Polygon
+            {t('switch_to_polygon')}
           </Button>
 
-          {/* Solo mostrar botón Hardhat si hay wallet injected (MetaMask) */}
           {typeof window !== 'undefined' && window.ethereum && (
             <Button
               onClick={addHardhatNetwork}
@@ -213,7 +200,7 @@ function ConnectWallet({ variant = 'default', showBalance = false, showExplorerL
               size={variant === 'header' ? 'sm' : 'md'}
               className="add-hardhat-btn"
             >
-              🔧 Agregar Hardhat Local
+              {'\uD83D\uDD27'} {t('add_hardhat')}
             </Button>
           )}
         </div>
@@ -243,11 +230,11 @@ function ConnectWallet({ variant = 'default', showBalance = false, showExplorerL
           <button
             className="wallet-address-btn"
             onClick={copyAddress}
-            title={copied ? 'Copiado!' : 'Click para copiar direccion'}
+            title={copied ? t('copied') : t('click_to_copy')}
             aria-label={`Wallet address: ${account}. Click to copy.`}
           >
             {formatAddress(account)}
-            {copied && <span className="copied-badge">Copiado</span>}
+            {copied && <span className="copied-badge">{t('copied')}</span>}
           </button>
           {showExplorerLink && (
             <a
@@ -255,7 +242,7 @@ function ConnectWallet({ variant = 'default', showBalance = false, showExplorerL
               target="_blank"
               rel="noopener noreferrer"
               className="explorer-link"
-              title="Ver en Polygonscan"
+              title={t('view_polygonscan')}
               aria-label="View address on Polygonscan"
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -268,7 +255,7 @@ function ConnectWallet({ variant = 'default', showBalance = false, showExplorerL
           <button
             className="disconnect-btn-header"
             onClick={disconnectWallet}
-            title="Desconectar wallet"
+            title={t('disconnect')}
             aria-label="Disconnect wallet"
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -287,28 +274,28 @@ function ConnectWallet({ variant = 'default', showBalance = false, showExplorerL
     <div className="wallet-connected" role="region" aria-label="Wallet information">
       <div className="wallet-status">
         <span className="status-dot connected" aria-hidden="true"></span>
-        <span className="status-text">Conectado</span>
+        <span className="status-text">{t('connected')}</span>
       </div>
 
       <div className="wallet-details">
         <div className="wallet-row">
-          <span className="label">Red:</span>
+          <span className="label">{t('network')}</span>
           <span className="value network-value">
             <span className="network-dot active" aria-hidden="true"></span>
             {currentNetwork?.name}
           </span>
         </div>
         <div className="wallet-row">
-          <span className="label">Direccion:</span>
+          <span className="label">{t('address')}</span>
           <div className="address-container">
             <button
               className="address-value"
               onClick={copyAddress}
-              title={copied ? 'Copiado!' : 'Click para copiar'}
+              title={copied ? t('copied') : t('click_to_copy')}
               aria-label={`Address: ${account}. Click to copy.`}
             >
               {formatAddress(account)}
-              {copied && <span className="copied-indicator">Copiado!</span>}
+              {copied && <span className="copied-indicator">{t('copied')}</span>}
             </button>
             {showExplorerLink && (
               <a
@@ -316,17 +303,17 @@ function ConnectWallet({ variant = 'default', showBalance = false, showExplorerL
                 target="_blank"
                 rel="noopener noreferrer"
                 className="explorer-link-full"
-                title="Ver en Polygonscan"
+                title={t('view_polygonscan')}
                 aria-label="View on Polygonscan"
               >
-                Ver en Explorer
+                {t('view_explorer')}
               </a>
             )}
           </div>
         </div>
         {showBalance && (
           <div className="wallet-row">
-            <span className="label">Balance:</span>
+            <span className="label">{t('balance_matic', { amount: '' }).split(' ')[0]}:</span>
             <span className="value balance-value">{parseFloat(balance).toFixed(4)} MATIC</span>
           </div>
         )}
@@ -340,7 +327,7 @@ function ConnectWallet({ variant = 'default', showBalance = false, showExplorerL
           className="disconnect-btn"
           aria-label="Disconnect wallet"
         >
-          Desconectar
+          {t('disconnect')}
         </Button>
       </div>
 

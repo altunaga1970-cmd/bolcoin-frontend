@@ -45,6 +45,15 @@ function AdminLayout({ children }) {
 
           <div className="ops-nav-separator" />
 
+          <NavLink to="/admin/keno-pool" className={({ isActive }) => `ops-nav-item ${isActive ? 'active' : ''}`}>
+            Keno Pool
+          </NavLink>
+          <NavLink to="/admin/bolita-pool" className={({ isActive }) => `ops-nav-item ${isActive ? 'active' : ''}`}>
+            La Bolita
+          </NavLink>
+
+          <div className="ops-nav-separator" />
+
           <NavLink to="/admin/legacy" className={({ isActive }) => `ops-nav-item ${isActive ? 'active' : ''}`}>
             Legacy
           </NavLink>

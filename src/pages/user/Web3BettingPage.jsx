@@ -1,28 +1,22 @@
-// src/pages/web3/Web3BettingPage.jsx (o donde lo tengas)
+// src/pages/user/Web3BettingPage.jsx
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
+import { useTranslation, Trans } from 'react-i18next';
 
 import { useWeb3 } from '../../contexts/Web3Context';
 import { useToast } from '../../contexts/ToastContext';
+import { useBalance } from '../../contexts/BalanceContext';
+import api from '../../api/index';
 
-// OJO: si useContract en tu proyecto es default export, usa:
-// import useContract from '../../hooks/useContract';
-import { useContract } from '../../hooks/useContract';
-
-// ✅ FALTA EN TU CÓDIGO ORIGINAL: betApi
-// Ajusta la ruta según tu estructura real:
-// - Si existe: src/api/betApi.js  -> '../../api/betApi'
-// - Si existe: src/api/betApi.js y estás en pages/user -> '../../api/betApi'
-import betApi from '../../api/betApi';
+import { useBolitaContract } from '../../hooks/useBolitaContract';
 
 import { Button, Input, Spinner } from '../../components/common';
 import { MainNav } from '../../components/layout';
 import { ConnectWallet } from '../../components/web3';
 
-import { drawScheduler } from '../../utils/drawScheduler';
 import { BOLITA_CONFIG } from '../../utils/prizeCalculations';
-import { limitManager } from '../../utils/limitManager';
-import { poolStatistics } from '../../utils/poolStatistics';
+import drawApi from '../../api/drawApi';
+import betApi from '../../api/betApi';
 
 import '../user/UserPages.css';
 import './Web3BettingPage.css';
@@ -30,6 +24,13 @@ import './Web3BettingPage.css';
 // Sistema de apuestas con límites progresivos
 const MIN_STAKE = 0.01;         // Mínimo 0.01 USDT
 const INITIAL_MAX_STAKE = 2.0;  // Máximo inicial por número
+
+// Map frontend bet type IDs to backend game_type values
+const BACKEND_GAME_TYPE = {
+  'FIJO': 'fijos',
+  'CENTENA': 'centenas',
+  'PARLE': 'parles'
+};
 
 const BET_TYPES = [
   {
@@ -59,12 +60,29 @@ const BET_TYPES = [
 ];
 
 function Web3BettingPage() {
+  const { t } = useTranslation('games');
   const { drawId: paramDrawId } = useParams();
 
-  const { isConnected } = useWeb3();
+  const { isConnected, account } = useWeb3();
   const { error: showError, success: showSuccess } = useToast();
+  const { directBalance, refreshBalance } = useBalance();
 
-  const { getContractBalance } = useContract();
+  const {
+    isOnChain,
+    getOpenDraws,
+    getResolvedDraws,
+    getDrawInfo,
+    getTokenBalance,
+    getAvailablePool,
+    getNumberExposure,
+    getMaxExposure,
+    getBetLimits,
+    placeBetsBatch,
+    onDrawResolved,
+    onWinningNumberSet,
+    bolitaContractAddress,
+    BET_TYPE_MAP
+  } = useBolitaContract();
 
   const [balance, setBalance] = useState('0');
   const [draws, setDraws] = useState([]);
@@ -78,100 +96,135 @@ function Web3BettingPage() {
   const [isLoading, setIsLoading] = useState(false);
 
   // Sistema de límites y disponibilidad
-  const [maxPerNumber, setMaxPerNumber] = useState(INITIAL_MAX_STAKE);
-  const [numberBets, setNumberBets] = useState({});
+  const [maxPerNumber, setMaxPerNumber] = useState(INITIAL_MAX_STAKE); // Exposure limit per number
+  const [maxBetAmount, setMaxBetAmount] = useState(INITIAL_MAX_STAKE); // Max single bet amount
   const [poolBalance, setPoolBalance] = useState(0);
 
-  // Resultados del sorteo anterior (si los alimentas desde backend, aquí queda listo)
+  // Resultados del sorteo anterior
   const [lastDrawResults, setLastDrawResults] = useState(null);
+
+  // Últimos 3 resultados resueltos
+  const [resolvedDraws, setResolvedDraws] = useState([]);
 
   // Carrito
   const [betCart, setBetCart] = useState([]);
-
-  const gameTypeMap = useMemo(() => ({
-    FIJO: 'fijos',
-    CENTENA: 'centenas',
-    PARLE: 'parles'
-  }), []);
 
   const loadData = useCallback(async () => {
     if (!isConnected) return;
 
     setIsLoadingDraws(true);
     try {
-      // Balance del contrato
-      const contractBal = await getContractBalance();
-      setBalance(contractBal);
+      let openDraws = [];
 
-      // Generar 3 sorteos
-      const autoDraws = drawScheduler.generateNextDraws();
-      setDraws(autoDraws);
+      // Balance
+      if (isOnChain) {
+        const tokenBal = await getTokenBalance();
+        setBalance(tokenBal);
+      } else {
+        // Off-chain: fetch DB balance directly (no auth required)
+        try {
+          const resp = await api.get('/wallet/balance-by-address', { params: { address: account } });
+          const dbBal = resp.data?.data?.balance || '0';
+          setBalance(dbBal);
+        } catch {
+          // Fallback to on-chain balance
+          setBalance(directBalance.usdt || '0');
+        }
+      }
 
-      // Seleccionar sorteo inicial
-      const openDraw = drawScheduler.getCurrentOpenDraw(autoDraws);
+      if (isOnChain) {
+        // On-chain mode: read draws from smart contract
+        openDraws = await getOpenDraws();
+
+        // Read all limits from contract in a single call
+        const limits = await getBetLimits();
+        setPoolBalance(parseFloat(limits.pool));
+        setMaxPerNumber(parseFloat(limits.maxPerNumber));
+        setMaxBetAmount(parseFloat(limits.max));
+
+        // Load last 3 resolved draws for results banner
+        const resolved = await getResolvedDraws(3);
+        setResolvedDraws(resolved);
+      } else {
+        // Off-chain mode: read draws from backend API
+        try {
+          const data = await drawApi.getActive();
+          const apiDraws = (data?.draws || []).map(d => ({
+            ...d,
+            is_open: d.status === 'open',
+          }));
+          openDraws = apiDraws;
+        } catch (apiErr) {
+          console.error('Error loading draws from API:', apiErr);
+        }
+        setPoolBalance(1000);
+        setMaxPerNumber(INITIAL_MAX_STAKE);
+        setMaxBetAmount(INITIAL_MAX_STAKE);
+      }
+
+      setDraws(openDraws);
+
+      // Select initial draw
+      const openDraw = openDraws.find(d => d.is_open) || openDraws[0] || null;
 
       if (paramDrawId) {
-        const found = autoDraws.find(d => d.id === parseInt(paramDrawId, 10));
+        const found = openDraws.find(d => d.id === parseInt(paramDrawId, 10));
         setSelectedDraw(found || openDraw);
       } else {
         setSelectedDraw(openDraw);
       }
-
-      // Si tú manejas poolBalance/maxPerNumber desde backend, este es el sitio:
-      // const stats = await someApi.getStats(); setPoolBalance(stats.pool); setMaxPerNumber(stats.maxPerNumber);
-
-      // console.log(`[Auto Draws] ${autoDraws.length} draws, selected: ${openDraw?.draw_number}`);
     } catch (err) {
       console.error('Error loading data:', err);
-      showError('Error cargando datos');
+      showError(t('betting.error_loading'));
     } finally {
       setIsLoadingDraws(false);
     }
-  }, [isConnected, getContractBalance, paramDrawId, showError]);
+  }, [isConnected, isOnChain, account, getTokenBalance, getOpenDraws, getResolvedDraws, getBetLimits, paramDrawId, showError, t]);
 
   useEffect(() => {
     loadData();
   }, [loadData]);
 
-  // Refrescar sorteos cada minuto y ajustar selectedDraw si se cerró
+  // Refresh draws periodically
   useEffect(() => {
     if (!isConnected) return;
 
-    const interval = setInterval(() => {
-      const autoDraws = drawScheduler.generateNextDraws();
-      setDraws(autoDraws);
-
-      if (selectedDraw) {
-        const updated = autoDraws.find(d => d.id === selectedDraw.id);
-        if (updated && !updated.is_open) {
-          const nextOpen = drawScheduler.getCurrentOpenDraw(autoDraws);
-          setSelectedDraw(nextOpen);
-        } else if (updated) {
-          setSelectedDraw(updated);
+    const interval = setInterval(async () => {
+      try {
+        let openDraws = [];
+        if (isOnChain) {
+          openDraws = await getOpenDraws();
+        } else {
+          const data = await drawApi.getActive();
+          openDraws = (data?.draws || []).map(d => ({
+            ...d,
+            is_open: d.status === 'open',
+          }));
         }
-      } else {
-        const openDraw = drawScheduler.getCurrentOpenDraw(autoDraws);
-        setSelectedDraw(openDraw);
+        setDraws(openDraws);
+
+        if (selectedDraw) {
+          const updated = openDraws.find(d => d.id === selectedDraw.id);
+          if (!updated || !updated.is_open) {
+            const nextOpen = openDraws.find(d => d.is_open) || openDraws[0] || null;
+            setSelectedDraw(nextOpen);
+          } else {
+            setSelectedDraw(updated);
+          }
+        } else {
+          setSelectedDraw(openDraws.find(d => d.is_open) || openDraws[0] || null);
+        }
+      } catch (err) {
+        console.error('Error refreshing draws:', err);
       }
     }, 60000);
 
     return () => clearInterval(interval);
-  }, [isConnected, selectedDraw]);
+  }, [isConnected, isOnChain, selectedDraw, getOpenDraws]);
 
   const handleNumbersChange = (e) => {
     const value = e.target.value.replace(/\D/g, '');
     if (value.length <= selectedBetType.digits) setNumbers(value);
-  };
-
-  const checkNumberAvailability = (number) => {
-    if (!number || !selectedDraw) return { available: true, maxAmount: maxPerNumber };
-    return limitManager.checkNumberAvailability(number, numberBets, maxPerNumber);
-  };
-
-  const getAvailabilityMessage = () => {
-    if (!numbers || numbers.length !== selectedBetType.digits) return null;
-    const availability = checkNumberAvailability(numbers);
-    return limitManager.formatAvailabilityMessage(availability);
   };
 
   const calculateCartTotal = () => betCart.reduce((t, b) => t + b.amount, 0);
@@ -181,61 +234,59 @@ function Web3BettingPage() {
     return betAmount * selectedBetType.multiplierNum;
   };
 
-  const addBetToCart = () => {
+  const addBetToCart = async () => {
     if (!selectedDraw) {
-      showError('Selecciona un sorteo');
+      showError(t('betting.error_select_draw'));
       return;
     }
 
     if (numbers.length !== selectedBetType.digits) {
-      showError(`Ingresa ${selectedBetType.digits} dígitos`);
+      showError(t('betting.error_digits', { digits: selectedBetType.digits }));
       return;
     }
 
     const betAmount = parseFloat(amount);
     if (!betAmount || betAmount <= 0) {
-      showError('Ingresa un monto válido');
+      showError(t('betting.error_invalid_amount'));
       return;
     }
 
     if (betAmount < MIN_STAKE) {
-      showError(`Monto mínimo: ${MIN_STAKE} USDT`);
+      showError(t('betting.error_min_amount', { min: MIN_STAKE }));
       return;
     }
 
-    const availability = checkNumberAvailability(numbers);
-    if (!availability.available) {
-      if (availability.isSold) showError('Número vendido - No disponible para este sorteo');
-      else showError(`Monto máximo disponible: $${availability.maxAmount.toFixed(2)} USDT`);
-      return;
-    }
+    // Check on-chain exposure for this number
+    if (isOnChain) {
+      try {
+        const betNumber = parseInt(numbers, 10);
+        const exposure = parseFloat(await getNumberExposure(selectedDraw.id, selectedBetType.id, betNumber));
+        const availableAmount = Math.max(0, maxPerNumber - exposure);
 
-    if (betAmount > availability.maxAmount) {
-      showError(`Monto máximo para este número: $${availability.maxAmount.toFixed(2)} USDT`);
-      return;
+        if (availableAmount <= 0) {
+          showError(t('betting.error_number_sold'));
+          return;
+        }
+
+        if (betAmount > availableAmount) {
+          showError(t('betting.error_max_for_number', { max: availableAmount.toFixed(2) }));
+          return;
+        }
+      } catch (err) {
+        console.error('Error checking exposure:', err);
+      }
     }
 
     const formattedNumber = numbers.padStart(selectedBetType.digits, '0');
-
-    // Procesar con limitManager
-    const betProcess = limitManager.processBet(numbers, betAmount, numberBets, maxPerNumber);
-    if (!betProcess.success) {
-      showError(betProcess.message);
-      return;
-    }
-
-    // Actualizar estado
-    setNumberBets(betProcess.updatedBets);
-
-    // Si tu lógica de expansión actualiza maxPerNumber/poolBalance, aplica aquí:
-    // setPoolBalance(prev => prev + betProcess.poolContribution);
-    // setMaxPerNumber(betProcess.newMaxPerNumber ?? maxPerNumber);
+    const betNumber = parseInt(formattedNumber, 10);
 
     const betItem = {
       id: Date.now(),
       drawId: selectedDraw.id,
       drawNumber: selectedDraw.draw_number,
       game_type: selectedBetType.id,
+      betType: BET_TYPE_MAP[selectedBetType.id],
+      betNumber: betNumber,
       number: formattedNumber,
       amount: betAmount,
       multiplier: selectedBetType.multiplierNum,
@@ -247,52 +298,93 @@ function Web3BettingPage() {
     setNumbers('');
     setAmount('');
 
-    showSuccess('Apuesta agregada al carrito');
+    showSuccess(t('betting.success_added'));
   };
 
   const processCartPurchase = async () => {
     const totalCost = calculateCartTotal();
 
     if (betCart.length === 0) {
-      showError('No hay apuestas en el carrito');
+      showError(t('betting.error_empty_cart'));
       return;
     }
 
     if (totalCost > parseFloat(balance)) {
-      showError(`Balance insuficiente en contrato. Tienes ${balance} USDT. Deposita más fondos primero.`);
+      showError(t('betting.error_insufficient_balance', { balance }));
       return;
     }
 
     setIsLoading(true);
     try {
-      // Agrupar por sorteo
-      const betsByDraw = betCart.reduce((acc, bet) => {
-        if (!acc[bet.drawId]) acc[bet.drawId] = [];
-        acc[bet.drawId].push({
-          game_type: gameTypeMap[bet.game_type],
-          number: bet.number,
-          amount: bet.amount
-        });
-        return acc;
-      }, {});
+      if (isOnChain) {
+        // On-chain: group by draw and send batch tx
+        const betsByDraw = betCart.reduce((acc, bet) => {
+          if (!acc[bet.drawId]) acc[bet.drawId] = [];
+          acc[bet.drawId].push({
+            betType: bet.betType,
+            betNumber: bet.betNumber,
+            amount: bet.amount
+          });
+          return acc;
+        }, {});
 
-      for (const [drawId, bets] of Object.entries(betsByDraw)) {
-        await betApi.placeBets(parseInt(drawId, 10), bets);
+        for (const [drawId, bets] of Object.entries(betsByDraw)) {
+          await placeBetsBatch(parseInt(drawId, 10), bets);
+        }
+      } else {
+        // Off-chain: use backend API
+        const betsByDraw = betCart.reduce((acc, bet) => {
+          if (!acc[bet.drawId]) acc[bet.drawId] = [];
+          acc[bet.drawId].push({
+            game_type: BACKEND_GAME_TYPE[bet.game_type] || bet.game_type.toLowerCase(),
+            number: bet.number,
+            amount: bet.amount
+          });
+          return acc;
+        }, {});
+
+        let lastResult = null;
+        for (const [drawId, bets] of Object.entries(betsByDraw)) {
+          lastResult = await betApi.placeBets(parseInt(drawId, 10), bets);
+        }
+        // Update balance immediately from API response
+        if (lastResult?.new_balance !== undefined) {
+          setBalance(parseFloat(lastResult.new_balance).toFixed(2));
+        }
       }
 
-      showSuccess(`¡Compra exitosa! ${betCart.length} apuesta(s) registrada(s).`);
+      showSuccess(t('betting.success_purchase', { count: betCart.length }));
 
       setBetCart([]);
+      // Refresh balance from backend
+      await refreshBalance();
       await loadData();
     } catch (err) {
       console.error('Error processing cart:', err);
-      showError(err?.response?.data?.message || 'Error al procesar las apuestas');
+      const message = err?.reason || err?.message || t('betting.error_processing');
+      showError(message);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const availabilityMsg = getAvailabilityMessage();
+  // Extract fijo/centena/parle from a 4-digit winning number
+  const extractWinningParts = (num) => {
+    const padded = String(num).padStart(4, '0');
+    return {
+      fijo: padded.slice(-2),
+      centena: padded.slice(-3),
+      parle: padded
+    };
+  };
+
+  // Polygonscan base URL (Polygon mainnet or Amoy testnet)
+  const chainId = parseInt(import.meta.env.VITE_CHAIN_ID || '137');
+  const scanBaseUrl = chainId === 80002
+    ? 'https://amoy.polygonscan.com'
+    : chainId === 31337
+    ? null // local hardhat, no explorer
+    : 'https://polygonscan.com';
 
   return (
     <div className="user-page">
@@ -300,14 +392,48 @@ function Web3BettingPage() {
 
       <main className="user-main">
         <div className="page-header">
-          <h1>Realizar Apuesta</h1>
-          <p className="page-subtitle">Apuestas descentralizadas en Polygon</p>
+          <h1>{t('betting.title')}</h1>
+          <p className="page-subtitle">{t('betting.subtitle')}</p>
         </div>
+
+        {/* ── Banner: Últimos 3 Resultados ── */}
+        {resolvedDraws.length > 0 && (
+          <div className="results-banner">
+            <h3 className="results-banner-title">{t('betting.recent_results.title')}</h3>
+            <div className="results-banner-grid">
+              {resolvedDraws.map(draw => {
+                const parts = extractWinningParts(draw.winningNumber);
+                const paidOut = parseFloat(draw.totalPaidOut);
+                return (
+                  <div key={draw.id} className="result-card">
+                    <div className="result-card-header">
+                      <span className="result-draw-label">{t('betting.recent_results.draw_label')} #{draw.draw_number}</span>
+                      <span className="result-bets-count">{t('betting.recent_results.total_bets', { count: draw.betCount })}</span>
+                    </div>
+                    <div className="result-winning-number">
+                      {String(draw.winningNumber).padStart(4, '0')}
+                    </div>
+                    <div className="result-breakdown">
+                      <span className="result-part"><em>{t('betting.recent_results.fijo')}</em> {parts.fijo}</span>
+                      <span className="result-part"><em>{t('betting.recent_results.centena')}</em> {parts.centena}</span>
+                      <span className="result-part"><em>{t('betting.recent_results.parle')}</em> {parts.parle}</span>
+                    </div>
+                    <div className="result-payout">
+                      {paidOut > 0
+                        ? t('betting.recent_results.total_paid', { amount: paidOut.toFixed(2) })
+                        : t('betting.recent_results.no_winners')}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
         {!isConnected ? (
           <div className="connect-prompt">
-            <h3>Conecta tu Wallet</h3>
-            <p>Necesitas conectar MetaMask para realizar apuestas</p>
+            <h3>{t('betting.connect_prompt')}</h3>
+            <p>{t('betting.connect_prompt_desc')}</p>
             <ConnectWallet />
           </div>
         ) : isLoadingDraws ? (
@@ -316,8 +442,8 @@ function Web3BettingPage() {
           </div>
         ) : draws.length === 0 ? (
           <div className="empty-state">
-            <p>No hay sorteos abiertos en este momento</p>
-            <p className="hint">Los sorteos se abren periódicamente</p>
+            <p>{t('betting.no_draws')}</p>
+            <p className="hint">{t('betting.draws_hint')}</p>
           </div>
         ) : (
           <div className="betting-layout">
@@ -325,15 +451,15 @@ function Web3BettingPage() {
             <div className="betting-form-section">
               <div className="balance-section">
                 <div className="balance-display-inline">
-                  <span className="label">Balance disponible:</span>
+                  <span className="label">{t('betting.available_balance')}</span>
                   <span className="amount">${parseFloat(balance).toFixed(2)} USDT</span>
                 </div>
-                <small className="balance-hint">Balance en el contrato inteligente para apostar</small>
+                <small className="balance-hint">{t('betting.balance_hint')}</small>
               </div>
 
               {/* Sorteos */}
               <div className="form-group">
-                <label>Sorteos Disponibles</label>
+                <label>{t('betting.available_draws')}</label>
 
                 <div className="draws-selector">
                   {draws.map(draw => (
@@ -347,15 +473,14 @@ function Web3BettingPage() {
                       <div className="draw-header">
                         <span className="draw-number">{draw.draw_number}</span>
                         <span className={`draw-status ${draw.status}`}>
-                          {draw.status === 'open' ? 'ABIERTO' : draw.status === 'closed' ? 'CIERRADO' : 'FINALIZADO'}
+                          {draw.status === 'open' ? t('betting.draw_status.open') : draw.status === 'closed' ? t('betting.draw_status.closed') : t('betting.draw_status.completed')}
                         </span>
                       </div>
 
                       <div className="draw-details">
                         <div className="draw-info">
-                          <span className="draw-label">{draw.draw_label}</span>
                           <span className="draw-time">
-                            {new Date(draw.scheduled_time).toLocaleString('es-ES', {
+                            {new Date(draw.scheduled_time).toLocaleString(undefined, {
                               timeZone: 'UTC',
                               hour: '2-digit',
                               minute: '2-digit',
@@ -368,15 +493,15 @@ function Web3BettingPage() {
 
                         {draw.is_open ? (
                           <div className="countdown-info">
-                            <span className="time-label">Cierra en:</span>
-                            <span className={`time-remaining ${drawScheduler.needsToCloseSoon(draw) ? 'urgent' : ''}`}>
-                              {draw.time_remaining}
+                            <span className="time-label">{t('betting.closes_in')}</span>
+                            <span className="time-remaining">
+                              {t('betting.draw_status.open')}
                             </span>
                           </div>
                         ) : (
                           <div className="closed-info">
                             <span className="closed-label">
-                              {draw.status === 'closed' ? 'Apuestas cerradas' : 'Sorteo finalizado'}
+                              {draw.status === 'closed' ? t('betting.bets_closed') : draw.status === 'resolved' ? t('betting.draw_completed') : draw.status}
                             </span>
                           </div>
                         )}
@@ -388,7 +513,7 @@ function Web3BettingPage() {
 
               {/* Tipo */}
               <div className="form-group">
-                <label>Tipo de Apuesta</label>
+                <label>{t('betting.bet_type')}</label>
                 <div className="bet-type-selector">
                   {BET_TYPES.map(type => (
                     <button
@@ -409,7 +534,7 @@ function Web3BettingPage() {
 
               {/* Número */}
               <div className="form-group">
-                <label>Número ({selectedBetType.digits} dígitos)</label>
+                <label>{t('betting.number_label', { digits: selectedBetType.digits })}</label>
                 <Input
                   type="text"
                   inputMode="numeric"
@@ -423,24 +548,24 @@ function Web3BettingPage() {
 
               {/* Monto */}
               <div className="form-group">
-                <label>Monto (USDT) - Máx: ${maxPerNumber.toFixed(2)} por número</label>
+                <label>{t('betting.amount_label', { max: maxBetAmount.toFixed(2) })}</label>
                 <Input
                   type="number"
                   step="0.01"
                   min={MIN_STAKE}
-                  max={maxPerNumber}
-                  placeholder={`0.01 - ${maxPerNumber.toFixed(2)}`}
+                  max={maxBetAmount}
+                  placeholder={`0.01 - ${maxBetAmount.toFixed(2)}`}
                   value={amount}
                   onChange={(e) => {
                     const val = e.target.value;
                     if (val === '') return setAmount('');
                     const num = parseFloat(val);
-                    if (!Number.isNaN(num) && num >= 0 && num <= maxPerNumber) setAmount(val);
+                    if (!Number.isNaN(num) && num >= 0 && num <= maxBetAmount) setAmount(val);
                   }}
                 />
 
                 <div className="amount-quick-select">
-                  {[0.5, 1.0, 1.5, 2.0].filter(v => v <= maxPerNumber).map(v => (
+                  {[0.5, 1.0, 2.0, 5.0, 10.0].filter(v => v <= maxBetAmount).map(v => (
                     <button
                       key={v}
                       type="button"
@@ -453,45 +578,31 @@ function Web3BettingPage() {
                 </div>
               </div>
 
-              {/* Disponibilidad */}
-              {availabilityMsg && (
-                <div className="form-group">
-                  <div className="number-availability-section">
-                    <div className={`availability-message ${availabilityMsg.type}`}>
-                      <span className="availability-icon">
-                        {availabilityMsg.type === 'error' ? '❌' : availabilityMsg.type === 'warning' ? '⚠️' : 'ℹ️'}
-                      </span>
-                      <span className="availability-text">{availabilityMsg.message}</span>
-                    </div>
-                  </div>
-                </div>
-              )}
-
               {/* Resumen */}
               {amount && parseFloat(amount) > 0 && (
                 <div className="bet-summary">
                   <div className="summary-row">
-                    <span>Tipo:</span>
+                    <span>{t('betting.summary.type')}</span>
                     <span>{selectedBetType.label} ({selectedBetType.multiplierLabel})</span>
                   </div>
                   <div className="summary-row">
-                    <span>Número:</span>
+                    <span>{t('betting.summary.number')}</span>
                     <span>{numbers || '---'}</span>
                   </div>
                   <div className="summary-row">
-                    <span>Apuesta:</span>
+                    <span>{t('betting.summary.bet')}</span>
                     <span>${parseFloat(amount).toFixed(2)}</span>
                   </div>
                   <div className="summary-row total-cost">
-                    <span>Total a debitar:</span>
+                    <span>{t('betting.summary.total_debit')}</span>
                     <span>${parseFloat(amount).toFixed(2)}</span>
                   </div>
                   <div className="summary-row highlight">
-                    <span>Ganancia potencial:</span>
+                    <span>{t('betting.summary.potential_win')}</span>
                     <span>${potentialWin().toFixed(2)}</span>
                   </div>
                   <div className="summary-row fee-info">
-                    <span>Fee (5%):</span>
+                    <span>{t('betting.summary.fee')}</span>
                     <span>${(parseFloat(amount) * 0.05).toFixed(2)}</span>
                   </div>
                 </div>
@@ -502,35 +613,45 @@ function Web3BettingPage() {
                 disabled={!numbers || !amount || numbers.length !== selectedBetType.digits}
                 fullWidth
               >
-                Agregar al Carrito
+                {t('betting.add_to_cart')}
               </Button>
 
               <p className="blockchain-notice">
-                Las apuestas se agregan a tu carrito. Al comprar, se registran en el contrato (según tu backend).
-                Sistema híbrido: tú controlas tu wallet.
+                {t('betting.blockchain_notice')}
               </p>
 
               {/* Resultados anteriores (opcional) */}
               {lastDrawResults && (
                 <div className={`last-draw-results ${lastDrawResults.winners ? 'has-winners' : 'no-winners'}`}>
-                  <h4>Resultados del Sorteo Anterior</h4>
+                  <h4>{t('betting.previous_results')}</h4>
                   {lastDrawResults.winners ? (
                     <div className="winners-info">
-                      <span className="result-icon">🏆</span>
+                      <span className="result-icon">&#x1F3C6;</span>
                       <span className="result-text">
-                        <strong>{lastDrawResults.winnerCount}</strong> ganador(es) - Se pagó{' '}
-                        <strong>${lastDrawResults.totalPaidOut.toFixed(2)}</strong> USDT
+                        <Trans
+                          i18nKey="games:betting.winners"
+                          values={{ count: lastDrawResults.winnerCount, amount: lastDrawResults.totalPaidOut.toFixed(2) }}
+                          components={{ strong: <strong /> }}
+                        />
                       </span>
                     </div>
                   ) : (
                     <div className="no-winners-info">
-                      <span className="result-icon">🎰</span>
+                      <span className="result-icon">&#x1F3B0;</span>
                       <span className="result-text">
-                        Sin ganadores - Pool aumentado en <strong>${lastDrawResults.poolIncrease.toFixed(2)}</strong> USDT
+                        <Trans
+                          i18nKey="games:betting.no_winners"
+                          values={{ amount: lastDrawResults.poolIncrease.toFixed(2) }}
+                          components={{ strong: <strong /> }}
+                        />
                       </span>
                       {lastDrawResults.businessFee > 0 && (
                         <span className="fee-info">
-                          Fee empresarial: <strong>${lastDrawResults.businessFee.toFixed(2)}</strong> USDT
+                          <Trans
+                            i18nKey="games:betting.business_fee"
+                            values={{ amount: lastDrawResults.businessFee.toFixed(2) }}
+                            components={{ strong: <strong /> }}
+                          />
                         </span>
                       )}
                     </div>
@@ -540,47 +661,111 @@ function Web3BettingPage() {
 
               {/* Límites */}
               <div className="limits-info">
-                <h4>Información de Límites</h4>
-                <p>Límite actual por número: <strong>${maxPerNumber.toFixed(2)} USDT</strong></p>
-                <p>Límite máximo soportado: <strong>${limitManager.MAX_LIMIT_PER_NUMBER} USDT</strong></p>
-                <p>Fee del sistema: <strong>5%</strong></p>
-                <p>Expansión automática con el 30% del pool</p>
+                <h4>{t('betting.limits_info')}</h4>
+                <p>
+                  <Trans
+                    i18nKey="games:betting.current_limit"
+                    values={{ amount: maxPerNumber.toFixed(2) }}
+                    components={{ strong: <strong /> }}
+                  />
+                </p>
+                <p>
+                  <Trans
+                    i18nKey="games:betting.system_fee"
+                    components={{ strong: <strong /> }}
+                  />
+                </p>
+                <p>{t('betting.expansion')}</p>
 
                 {poolBalance > 0 && (
                   <div className="pool-status">
-                    <p>Pool actual: <strong>${poolBalance.toFixed(2)} USDT</strong></p>
-                    {(() => {
-                      const statusMessage = poolStatistics.generateStatusMessage(poolBalance, maxPerNumber);
-                      return (
-                        <div className={`pool-status-message ${statusMessage.type}`}>
-                          <span className="status-icon">{statusMessage.icon}</span>
-                          <span className="status-text">{statusMessage.message}</span>
-                        </div>
-                      );
-                    })()}
+                    <p>
+                      <Trans
+                        i18nKey="games:betting.pool_current"
+                        values={{ amount: poolBalance.toFixed(2) }}
+                        components={{ strong: <strong /> }}
+                      />
+                    </p>
                   </div>
                 )}
+              </div>
+
+              {/* ── Seccion de Probabilidades ── */}
+              <div className="odds-section">
+                <h4 className="odds-title">{t('betting.odds.title')}</h4>
+                <p className="odds-subtitle">{t('betting.odds.subtitle')}</p>
+
+                <div className="odds-grid">
+                  <div className="odds-card odds-fijo">
+                    <div className="odds-card-header">
+                      <span className="odds-type">Fijo</span>
+                      <span className="odds-multiplier">65x</span>
+                    </div>
+                    <span className="odds-probability">{t('betting.odds.fijo_odds')}</span>
+                    <p className="odds-desc">
+                      <Trans i18nKey="games:betting.odds.fijo_desc" components={{ strong: <strong /> }} />
+                    </p>
+                  </div>
+
+                  <div className="odds-card odds-centena">
+                    <div className="odds-card-header">
+                      <span className="odds-type">Centena</span>
+                      <span className="odds-multiplier">300x</span>
+                    </div>
+                    <span className="odds-probability">{t('betting.odds.centena_odds')}</span>
+                    <p className="odds-desc">
+                      <Trans i18nKey="games:betting.odds.centena_desc" components={{ strong: <strong /> }} />
+                    </p>
+                  </div>
+
+                  <div className="odds-card odds-parle">
+                    <div className="odds-card-header">
+                      <span className="odds-type">Parle</span>
+                      <span className="odds-multiplier">1000x</span>
+                    </div>
+                    <span className="odds-probability">{t('betting.odds.parle_odds')}</span>
+                    <p className="odds-desc">
+                      <Trans i18nKey="games:betting.odds.parle_desc" components={{ strong: <strong /> }} />
+                    </p>
+                  </div>
+                </div>
+
+                <div className="odds-comparison">
+                  <h5>{t('betting.odds.comparison_title')}</h5>
+                  <div className="odds-vs-list">
+                    <div className="odds-vs-item bad">{t('betting.odds.vs_powerball')}</div>
+                    <div className="odds-vs-item bad">{t('betting.odds.vs_euromillions')}</div>
+                    <div className="odds-vs-item bad">{t('betting.odds.vs_mega')}</div>
+                  </div>
+                  <p className="odds-comparison-note">{t('betting.odds.comparison_note')}</p>
+                </div>
+
+                <div className="odds-features">
+                  <span className="odds-feature">{t('betting.odds.transparent')}</span>
+                  <span className="odds-feature">{t('betting.odds.instant_payout')}</span>
+                  <span className="odds-feature">{t('betting.odds.no_middleman')}</span>
+                </div>
               </div>
             </div>
 
             {/* Panel derecho */}
             {selectedDraw && (
               <div className="draw-info-section">
-                <h3>Sorteo {selectedDraw.draw_label}</h3>
+                <h3>{t('betting.draw_label', { label: selectedDraw.draw_number })}</h3>
 
                 <div className={`draw-card ${selectedDraw.status}`}>
                   <div className="draw-header">
                     <span className="draw-number">{selectedDraw.draw_number}</span>
                     <span className={`draw-status ${selectedDraw.status}`}>
-                      {selectedDraw.status === 'open' ? 'ABIERTO' : selectedDraw.status === 'closed' ? 'CIERRADO' : 'FINALIZADO'}
+                      {selectedDraw.status === 'open' ? t('betting.draw_status.open') : selectedDraw.status === 'closed' ? t('betting.draw_status.closed') : t('betting.draw_status.completed')}
                     </span>
                   </div>
 
                   <div className="draw-details">
                     <div className="detail-row">
-                      <span className="label">Fecha/Hora:</span>
+                      <span className="label">{t('betting.date_time')}</span>
                       <span className="value">
-                        {new Date(selectedDraw.scheduled_time).toLocaleString('es-ES', {
+                        {new Date(selectedDraw.scheduled_time).toLocaleString(undefined, {
                           timeZone: 'UTC',
                           hour: '2-digit',
                           minute: '2-digit',
@@ -593,32 +778,22 @@ function Web3BettingPage() {
                     </div>
 
                     <div className="detail-row">
-                      <span className="label">Tipo:</span>
-                      <span className="value">Sorteo Automático</span>
+                      <span className="label">{t('betting.type')}</span>
+                      <span className="value">{t('betting.auto_draw')}</span>
                     </div>
 
                     {selectedDraw.is_open ? (
                       <>
                         <div className="detail-row highlight">
-                          <span className="label">Estado:</span>
-                          <span className="value open-status">Apuestas ABIERTAS</span>
-                        </div>
-
-                        <div className="countdown-section">
-                          <span className="countdown-label">Cierra en:</span>
-                          <span className={`countdown-timer ${drawScheduler.needsToCloseSoon(selectedDraw) ? 'urgent' : ''}`}>
-                            {selectedDraw.time_remaining}
-                          </span>
-                          {drawScheduler.needsToCloseSoon(selectedDraw) && (
-                            <div className="urgent-warning">Cerrando pronto</div>
-                          )}
+                          <span className="label">{t('betting.status')}</span>
+                          <span className="value open-status">{t('betting.bets_open')}</span>
                         </div>
                       </>
                     ) : (
                       <div className="detail-row">
-                        <span className="label">Estado:</span>
+                        <span className="label">{t('betting.status')}</span>
                         <span className="value closed-status">
-                          {selectedDraw.status === 'closed' ? 'Apuestas CERRADAS' : 'Sorteo FINALIZADO'}
+                          {selectedDraw.status === 'closed' ? t('betting.bets_closed') : t('betting.draw_completed')}
                         </span>
                       </div>
                     )}
@@ -626,74 +801,136 @@ function Web3BettingPage() {
                 </div>
 
                 <div className="multipliers-info">
-                  <h4>Multiplicadores</h4>
+                  <h4>{t('betting.multipliers')}</h4>
                   <div className="multiplier-row">
-                    <span>Fijo (2 dígitos)</span>
+                    <span>{t('betting.fijo_digits')}</span>
                     <span className="mult">65x</span>
                   </div>
                   <div className="multiplier-row">
-                    <span>Centena (3 dígitos)</span>
+                    <span>{t('betting.centena_digits')}</span>
                     <span className="mult">300x</span>
                   </div>
                   <div className="multiplier-row">
-                    <span>Parle (4 dígitos)</span>
+                    <span>{t('betting.parle_digits')}</span>
                     <span className="mult">1000x</span>
                   </div>
 
                   <div className="stake-limits-info">
-                    <h4>Sistema de Límites</h4>
-                    <p>Límite actual: <strong>${maxPerNumber.toFixed(2)} USDT</strong> por número</p>
-                    <p>Fee: <strong>5%</strong></p>
-                    <p>Expansión: <strong>30%</strong> del pool</p>
+                    <h4>{t('betting.limits_info')}</h4>
+                    <p>
+                      <Trans
+                        i18nKey="games:betting.current_limit"
+                        values={{ amount: maxBetAmount.toFixed(2) }}
+                        components={{ strong: <strong /> }}
+                      />
+                    </p>
+                    <p>
+                      <Trans
+                        i18nKey="games:betting.system_fee"
+                        components={{ strong: <strong /> }}
+                      />
+                    </p>
+                    <p>{t('betting.expansion')}</p>
                   </div>
 
                   <div className="schedule-info">
-                    <h4>Horarios Automáticos</h4>
+                    <h4>{t('betting.schedule')}</h4>
                     <div className="schedule-row">
-                      <span className="time-slot">Mañana:</span>
+                      <span className="time-slot">{t('betting.morning')}</span>
                       <span>10:00 UTC</span>
                     </div>
                     <div className="schedule-row">
-                      <span className="time-slot">Tarde:</span>
+                      <span className="time-slot">{t('betting.afternoon')}</span>
                       <span>15:00 UTC</span>
                     </div>
                     <div className="schedule-row">
-                      <span className="time-slot">Noche:</span>
+                      <span className="time-slot">{t('betting.evening')}</span>
                       <span>21:00 UTC</span>
                     </div>
-                    <p className="schedule-note">Cierre 5 min antes del sorteo</p>
+                    <p className="schedule-note">{t('betting.schedule_note')}</p>
                   </div>
+
+                  {/* ── Verificacion On-Chain ── */}
+                  {scanBaseUrl && bolitaContractAddress && (
+                    <div className="verify-section">
+                      <h4>{t('betting.verify.title')}</h4>
+                      <p className="verify-desc">{t('betting.verify.desc')}</p>
+                      <div className="verify-links">
+                        <a
+                          href={`${scanBaseUrl}/address/${bolitaContractAddress}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="verify-link"
+                        >
+                          {t('betting.verify.view_contract')}
+                        </a>
+                        <a
+                          href={`${scanBaseUrl}/address/${bolitaContractAddress}#internaltx`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="verify-link"
+                        >
+                          {t('betting.verify.view_txs')}
+                        </a>
+                        <a
+                          href={`${scanBaseUrl}/address/${bolitaContractAddress}#events`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="verify-link"
+                        >
+                          {t('betting.verify.view_events')}
+                        </a>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             )}
           </div>
         )}
 
-        {/* Carrito simple */}
+        {/* Carrito de apuestas */}
         {betCart.length > 0 && (
-          <div className="bet-cart-simple">
-            <div className="cart-simple-header">
-              <span>{betCart.length} apuesta(s) en carrito</span>
-              <span>Total: ${calculateCartTotal().toFixed(2)}</span>
+          <div className="bet-cart-panel">
+            <div className="cart-panel-header">
+              <span className="cart-title">{t('betting.cart_header', { count: betCart.length })}</span>
+              <button className="cart-clear-btn" onClick={() => setBetCart([])}>
+                {t('common.common.clear')}
+              </button>
             </div>
 
-            <div className="cart-simple-actions">
-              <Button
-                onClick={() => setBetCart([])}
-                variant="outline"
-                size="sm"
-              >
-                Limpiar
-              </Button>
+            <div className="cart-items-list">
+              {betCart.map((bet, idx) => (
+                <div key={bet.id} className="cart-item">
+                  <div className="cart-item-info">
+                    <span className="cart-item-type">{bet.game_type}</span>
+                    <span className="cart-item-number">#{bet.number}</span>
+                  </div>
+                  <div className="cart-item-right">
+                    <span className="cart-item-amount">${bet.amount.toFixed(2)}</span>
+                    <button
+                      className="cart-item-remove"
+                      onClick={() => setBetCart(prev => prev.filter((_, i) => i !== idx))}
+                    >
+                      x
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
 
+            <div className="cart-panel-footer">
+              <div className="cart-total-row">
+                <span>{t('betting.cart_total', { amount: calculateCartTotal().toFixed(2) })}</span>
+              </div>
               <Button
                 onClick={processCartPurchase}
                 loading={isLoading}
                 disabled={calculateCartTotal() > parseFloat(balance)}
                 variant="primary"
-                size="sm"
+                className="cart-buy-btn"
               >
-                Comprar
+                {t('betting.buy')} — ${calculateCartTotal().toFixed(2)} USDT
               </Button>
             </div>
           </div>

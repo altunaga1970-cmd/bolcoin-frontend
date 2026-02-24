@@ -14,6 +14,7 @@ import React, { createContext, useContext, useState, useCallback, useEffect, use
 import { useWeb3 } from './Web3Context';
 import { useContract } from '../hooks/useContract';
 import { useDirectBalance } from '../hooks/useDirectBalance';
+import { useKenoContract } from '../hooks/useKenoContract';
 import api from '../api';
 import kenoApi from '../api/kenoApi';
 
@@ -38,6 +39,7 @@ export function BalanceProvider({ children }) {
   const { isConnected, account } = useWeb3();
   const { getContractBalance, getTokenBalance } = useContract();
   const directBalance = useDirectBalance();
+  const { isOnChain: isKenoOnChain, getAvailablePool } = useKenoContract();
 
   // Estado del balance - Sistema dual
   const [onChainBalance, setOnChainBalance] = useState('0');    // Smart contract userBalances
@@ -49,6 +51,9 @@ export function BalanceProvider({ children }) {
   const [isLoading, setIsLoading] = useState(false);
   const [lastUpdated, setLastUpdated] = useState(null);
   const [error, setError] = useState(null);
+
+  // Keno on-chain pool balance
+  const [kenoPoolBalance, setKenoPoolBalance] = useState('0');
 
   // Estado de fallback - indica si estamos usando balance directo de blockchain
   const [isUsingDirectBalance, setIsUsingDirectBalance] = useState(false);
@@ -89,20 +94,25 @@ export function BalanceProvider({ children }) {
       console.log('[BalanceContext] Effective balance from backend:', { effectiveBalance: eff, sessionNetResult: netResult });
       return eff;
     } catch (err) {
-      console.warn('[BalanceContext] Backend no disponible, usando balance directo:', err.message);
-
-      // FALLBACK: Usar balance directo de blockchain
+      console.warn('[BalanceContext] Backend no disponible:', err.message);
       setBackendAvailable(false);
+
+      // Keep last known good balance — don't overwrite with 0 from blockchain on Hardhat
+      const currentEff = parseFloat(effectiveBalance);
+      if (currentEff > 0) {
+        console.log('[BalanceContext] Keeping last known effective balance:', effectiveBalance);
+        return effectiveBalance;
+      }
+
+      // No previous value — try direct blockchain as last resort
       setIsUsingDirectBalance(true);
-
-      // Refrescar balance directo y USAR EL VALOR RETORNADO (no el estado)
-      const { usdt: directUsdtBalance } = await directBalance.refreshDirectBalance();
-
-      setEffectiveBalance(directUsdtBalance);
-      setSessionNetResult(0);
-
-      console.log('[BalanceContext] Using direct blockchain balance:', directUsdtBalance);
-      return directUsdtBalance;
+      try {
+        const { usdt: directUsdtBalance } = await directBalance.refreshDirectBalance();
+        setEffectiveBalance(directUsdtBalance);
+        return directUsdtBalance;
+      } catch {
+        return '0';
+      }
     }
   }, [isConnected, directBalance]);
 
@@ -113,13 +123,22 @@ export function BalanceProvider({ children }) {
     if (!isConnected || !account) return '0';
 
     try {
-      const response = await api.get('/wallet/balance', {
-        params: { wallet: account },
-        headers: { 'x-wallet-address': account }
+      // Use public endpoint (no auth required) to read DB balance
+      const response = await api.get('/wallet/balance-by-address', {
+        params: { address: account }
       });
-      const dbBalance = response.data?.data?.balance || response.data?.balance || '0';
+      const dbBalance = response.data?.data?.balance || '0';
       const formatted = parseFloat(dbBalance).toFixed(2);
       setOffChainBalance(formatted);
+
+      // Also update effectiveBalance if DB balance is higher
+      // This ensures bingo/game winnings written directly to users.balance are visible immediately
+      setEffectiveBalance(prev => {
+        const prevVal = parseFloat(prev) || 0;
+        const dbVal = parseFloat(formatted) || 0;
+        return dbVal > prevVal ? formatted : prev;
+      });
+
       return formatted;
     } catch (err) {
       console.error('[BalanceContext] Error loading database balance:', err);
@@ -159,11 +178,21 @@ export function BalanceProvider({ children }) {
 
     try {
       // Cargar todos los balances en paralelo
-      const [dbBalance, scBalance, effBalance] = await Promise.all([
+      const balancePromises = [
         loadDatabaseBalance(),
         loadSmartContractBalance(),
         loadEffectiveBalance()
-      ]);
+      ];
+      // If Keno contract is on-chain, also read its pool balance
+      if (isKenoOnChain) {
+        balancePromises.push(
+          getAvailablePool().then((pool) => {
+            setKenoPoolBalance(pool);
+            return pool;
+          }).catch(() => '0')
+        );
+      }
+      const [dbBalance, scBalance, effBalance] = await Promise.all(balancePromises);
 
       // El balance on-chain es la base
       const sc = parseFloat(scBalance) || 0;
@@ -171,9 +200,21 @@ export function BalanceProvider({ children }) {
       // El balance efectivo ya incluye la sesión de Keno
       setContractBalance(sc.toFixed(2));
 
+      // If keno session endpoint failed, use DB balance as effective balance
+      // This ensures bingo winnings (written directly to users.balance) are reflected
+      const dbVal = parseFloat(dbBalance) || 0;
+      const effVal = parseFloat(effBalance) || 0;
+      if (dbVal > effVal) {
+        const corrected = dbVal.toFixed(2);
+        setEffectiveBalance(corrected);
+        console.log('[BalanceContext] Using DB balance as effective (higher):', corrected);
+        return corrected;
+      }
+
       console.log('[BalanceContext] Balances:', {
         onChain: sc,
         effective: effBalance,
+        database: dbBalance,
         sessionNet: sessionNetResult
       });
 
@@ -245,7 +286,15 @@ export function BalanceProvider({ children }) {
   const updateBalanceOptimistic = useCallback((change) => {
     setContractBalance(prev => {
       const newBalance = parseFloat(prev) + change;
-      return Math.max(0, newBalance).toFixed(6);
+      return Math.max(0, newBalance).toFixed(2);
+    });
+    setEffectiveBalance(prev => {
+      const newBalance = parseFloat(prev) + change;
+      return Math.max(0, newBalance).toFixed(2);
+    });
+    setOffChainBalance(prev => {
+      const newBalance = parseFloat(prev) + change;
+      return Math.max(0, newBalance).toFixed(2);
     });
   }, []);
 
@@ -317,6 +366,10 @@ export function BalanceProvider({ children }) {
     isLoading,
     lastUpdated,
     error,
+
+    // Keno on-chain pool
+    kenoPoolBalance,          // Pool disponible en contrato KenoGame (on-chain)
+    isKenoOnChain,            // true = Keno contract configured and in onchain mode
 
     // Estado de fallback (balance directo de blockchain)
     isUsingDirectBalance,     // true = backend no disponible, usando blockchain

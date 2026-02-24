@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Button, Spinner } from '../../components/common';
 import { MainNav } from '../../components/layout';
 import './ResultsPage.css';
 
 function ResultsPage() {
+  const { t } = useTranslation('games');
   const [draws, setDraws] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all'); // 'all', 'bolita', 'fortuna'
@@ -35,9 +37,9 @@ function ResultsPage() {
 
       <main className="results-main">
         <div className="results-header-section">
-          <h1 className="results-title">Resultados</h1>
+          <h1 className="results-title">{t('results.title')}</h1>
           <p className="results-subtitle">
-            Consulta los resultados de los sorteos de La Bolita y La Fortuna
+            {t('results.subtitle')}
           </p>
         </div>
 
@@ -47,39 +49,39 @@ function ResultsPage() {
             className={`filter-btn ${filter === 'all' ? 'active' : ''}`}
             onClick={() => setFilter('all')}
           >
-            Todos
+            {t('results.filter_all')}
           </button>
           <button
             className={`filter-btn ${filter === 'bolita' ? 'active' : ''}`}
             onClick={() => setFilter('bolita')}
           >
-            La Bolita
+            {t('results.filter_bolita')}
           </button>
           <button
             className={`filter-btn ${filter === 'fortuna' ? 'active' : ''}`}
             onClick={() => setFilter('fortuna')}
           >
-            La Fortuna
+            {t('results.filter_fortuna')}
           </button>
         </div>
 
         {/* Schedule Info */}
         <div className="schedule-cards">
           <div className="schedule-card bolita">
-            <h3>La Bolita</h3>
+            <h3>{t('results.filter_bolita')}</h3>
             <p className="schedule-times">
               <span>08:00</span>
               <span>12:00</span>
               <span>20:00</span>
             </p>
-            <p className="schedule-days">Todos los dias</p>
+            <p className="schedule-days">{t('results.every_day')}</p>
           </div>
           <div className="schedule-card fortuna">
-            <h3>La Fortuna</h3>
+            <h3>{t('results.filter_fortuna')}</h3>
             <p className="schedule-times">
               <span>21:00</span>
             </p>
-            <p className="schedule-days">Miercoles y Sabados</p>
+            <p className="schedule-days">{t('results.wed_sat')}</p>
           </div>
         </div>
 
@@ -87,15 +89,15 @@ function ResultsPage() {
         {loading ? (
           <div className="results-loading">
             <Spinner size="lg" />
-            <p>Cargando resultados...</p>
+            <p>{t('results.loading')}</p>
           </div>
         ) : filteredDraws.length === 0 ? (
           <div className="results-empty">
             <div className="empty-icon">🎰</div>
-            <h3>No hay resultados disponibles</h3>
-            <p>Los resultados apareceran aqui despues de cada sorteo.</p>
+            <h3>{t('results.no_results')}</h3>
+            <p>{t('results.results_appear')}</p>
             <Link to="/bet">
-              <Button variant="primary">Jugar La Bolita</Button>
+              <Button variant="primary">{t('results.play_la_bolita')}</Button>
             </Link>
           </div>
         ) : (
@@ -104,10 +106,10 @@ function ResultsPage() {
               <div key={draw.id} className={`result-card ${draw.type}`}>
                 <div className="result-header">
                   <span className="result-type">
-                    {draw.type === 'lottery' ? 'La Fortuna' : 'La Bolita'}
+                    {draw.type === 'lottery' ? t('results.filter_fortuna') : t('results.filter_bolita')}
                   </span>
                   <span className="result-date">
-                    {new Date(draw.scheduled_time).toLocaleDateString('es-ES', {
+                    {new Date(draw.scheduled_time).toLocaleDateString(undefined, {
                       weekday: 'long',
                       day: 'numeric',
                       month: 'long',
@@ -130,9 +132,9 @@ function ResultsPage() {
                   )}
                 </div>
                 <div className="result-info">
-                  <span>Sorteo #{draw.draw_number}</span>
+                  <span>{t('results.draw_number', { number: draw.draw_number })}</span>
                   {draw.total_pool && (
-                    <span>Pozo: ${parseFloat(draw.total_pool).toLocaleString()}</span>
+                    <span>{t('results.pool', { amount: parseFloat(draw.total_pool).toLocaleString() })}</span>
                   )}
                 </div>
               </div>
