@@ -1,73 +1,88 @@
+/* ========================================
+   MAIN NAV - Frosted Glass Minimal
+   ======================================== */
+
 .main-nav {
-  background-color: rgba(13, 13, 13, 0.95);
-  border-bottom: 1px solid var(--color-border);
-  padding: 0.75rem 1.5rem;
+  background: rgba(10, 10, 10, 0.72);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 0 2rem;
   position: sticky;
   top: 0;
   z-index: 100;
-  backdrop-filter: blur(10px);
+  height: var(--header-height);
 }
 
 .main-nav-content {
-  max-width: 1400px;
+  max-width: 1280px;
   margin: 0 auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 2rem;
+  height: 100%;
 }
 
+/* Logo */
 .nav-logo {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   font-weight: 700;
   color: var(--color-primary);
-  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
   text-decoration: none;
   white-space: nowrap;
+  letter-spacing: 0.04em;
+  transition: opacity var(--transition-fast);
+}
+
+.nav-logo:hover {
+  opacity: 0.8;
 }
 
 .nav-logo .bolcoin-logo {
   flex-shrink: 0;
 }
 
+/* Links */
 .nav-links {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  flex-wrap: wrap;
+  gap: 2px;
 }
 
 .nav-links a {
   color: var(--color-text-secondary);
   text-decoration: none;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  font-size: 0.9rem;
-  transition: all 0.2s ease;
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition:
+    color var(--transition-fast),
+    background-color var(--transition-fast);
   white-space: nowrap;
 }
 
 .nav-links a:hover {
-  color: var(--color-primary);
-  background-color: rgba(255, 215, 0, 0.1);
+  color: var(--color-text-primary);
+  background-color: rgba(255, 255, 255, 0.06);
 }
 
 .nav-links a.active {
-  color: var(--color-primary);
-  background-color: rgba(255, 215, 0, 0.15);
+  color: var(--color-text-primary);
+  background-color: rgba(255, 255, 255, 0.08);
 }
 
-/* Nav actions (language switcher + wallet) */
+/* Actions area */
 .nav-actions {
   display: flex;
   align-items: center;
   gap: 0.75rem;
 }
 
-/* Wallet section */
 .nav-wallet {
   display: flex;
   align-items: center;
@@ -76,78 +91,88 @@
 .wallet-connected-nav {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.5rem;
 }
 
-/* Balance display in nav */
+/* Balance pill */
 .nav-balance {
   display: flex;
   align-items: center;
-  padding: 0.35rem 0.85rem;
-  background: rgba(245, 158, 11, 0.12);
-  border: 1px solid rgba(245, 158, 11, 0.3);
-  border-radius: 20px;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: #f59e0b;
+  padding: 5px 12px;
+  background: rgba(255, 215, 0, 0.08);
+  border: 1px solid rgba(255, 215, 0, 0.15);
+  border-radius: var(--radius-full);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-primary);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
 
+/* Wallet info pills */
 .wallet-info {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.5rem;
 }
 
 .network-badge {
   display: flex;
   align-items: center;
-  gap: 0.4rem;
-  padding: 0.35rem 0.75rem;
-  background-color: rgba(0, 200, 100, 0.15);
-  border: 1px solid rgba(0, 200, 100, 0.3);
-  border-radius: 20px;
-  font-size: 0.75rem;
-  color: #00c864;
+  gap: 6px;
+  padding: 5px 10px;
+  background: rgba(52, 211, 153, 0.08);
+  border: 1px solid rgba(52, 211, 153, 0.15);
+  border-radius: var(--radius-full);
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: var(--color-success);
 }
 
 .network-dot {
-  width: 8px;
-  height: 8px;
-  background-color: #00c864;
+  width: 6px;
+  height: 6px;
+  background-color: var(--color-success);
   border-radius: 50%;
-  animation: pulse 2s infinite;
+  animation: dot-pulse 2s ease-in-out infinite;
 }
 
-@keyframes pulse {
+@keyframes dot-pulse {
   0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+  50% { opacity: 0.4; }
 }
 
 .wallet-address-nav {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.35rem 0.75rem;
-  background-color: var(--color-bg-card);
-  border: 1px solid var(--color-border);
-  border-radius: 6px;
-  font-family: monospace;
-  font-size: 0.85rem;
-  color: var(--color-primary);
+  gap: 6px;
+  padding: 5px 10px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-md);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
 }
 
 .metamask-icon {
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   flex-shrink: 0;
 }
 
+/* Disconnect */
 .disconnect-btn {
-  font-size: 0.8rem !important;
-  padding: 0.35rem 0.75rem !important;
+  font-size: 0.75rem !important;
+  padding: 5px 10px !important;
+  border-radius: var(--radius-full) !important;
+  color: var(--color-text-muted) !important;
+}
+
+.disconnect-btn:hover {
+  color: var(--color-error) !important;
+  background: rgba(248, 113, 113, 0.08) !important;
 }
 
 /* Connect button */
@@ -156,18 +181,26 @@
   align-items: center;
   gap: 0.5rem;
   white-space: nowrap;
+  border-radius: var(--radius-full) !important;
 }
 
 .connect-btn .metamask-icon {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
 }
 
-/* Responsive */
+/* ---- Responsive ---- */
+
 @media (max-width: 1024px) {
+  .main-nav {
+    padding: 0 1rem;
+  }
+
   .main-nav-content {
     flex-wrap: wrap;
-    gap: 1rem;
+    gap: 0.75rem;
+    height: auto;
+    padding: 0.75rem 0;
   }
 
   .nav-links {
@@ -175,17 +208,18 @@
     width: 100%;
     justify-content: center;
     padding-top: 0.5rem;
-    border-top: 1px solid var(--color-border);
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    flex-wrap: wrap;
   }
 }
 
 @media (max-width: 768px) {
   .main-nav {
-    padding: 0.5rem 1rem;
+    padding: 0 0.75rem;
   }
 
   .nav-links a {
-    padding: 0.4rem 0.6rem;
+    padding: 5px 10px;
     font-size: 0.8rem;
   }
 
@@ -194,26 +228,23 @@
   }
 
   .wallet-address-nav {
+    font-size: 0.7rem;
+    padding: 4px 8px;
+  }
+
+  .nav-balance {
     font-size: 0.75rem;
-    padding: 0.25rem 0.5rem;
+    padding: 4px 10px;
   }
 }
 
 @media (max-width: 480px) {
   .nav-links {
-    gap: 0.25rem;
+    gap: 0;
   }
 
   .nav-links a {
-    padding: 0.35rem 0.5rem;
+    padding: 5px 8px;
     font-size: 0.75rem;
-  }
-
-  .connect-btn span:not(.metamask-icon) {
-    display: none;
-  }
-
-  .connect-btn::after {
-    content: 'Conectar';
   }
 }

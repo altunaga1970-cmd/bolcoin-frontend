@@ -1,81 +1,103 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
 :root {
-  /* Colores principales */
+  /* Primary palette - refined gold */
   --color-primary: #FFD700;
-  --color-primary-dark: #B8960F;
-  --color-primary-light: #FFF4B8;
-  --color-primary-hover: #E6C200;
+  --color-primary-dark: #C9A800;
+  --color-primary-light: #FFEC80;
+  --color-primary-hover: #FFE34D;
+  --color-primary-subtle: rgba(255, 215, 0, 0.08);
+  --color-primary-muted: rgba(255, 215, 0, 0.15);
 
-  /* Fondos */
-  --color-bg-dark: #1A1A1A;
-  --color-bg-darker: #0D0D0D;
-  --color-bg-card: #2A2A2A;
-  --color-bg-input: #333333;
-  --color-bg-hover: #3A3A3A;
+  /* Backgrounds - deeper, richer blacks */
+  --color-bg-dark: #141414;
+  --color-bg-darker: #0A0A0A;
+  --color-bg-card: rgba(255, 255, 255, 0.04);
+  --color-bg-card-solid: #1C1C1E;
+  --color-bg-input: #1C1C1E;
+  --color-bg-hover: rgba(255, 255, 255, 0.06);
+  --color-bg-glass: rgba(255, 255, 255, 0.03);
+  --color-bg-elevated: rgba(255, 255, 255, 0.06);
 
-  /* Texto */
+  /* Text - refined hierarchy */
   --color-text-light: #FFFFFF;
-  --color-text-primary: #FFFFFF;
-  --color-text-secondary: #CCCCCC;
-  --color-text-muted: #888888;
-  --color-text-dark: #1A1A1A;
+  --color-text-primary: #F5F5F7;
+  --color-text-secondary: #A1A1A6;
+  --color-text-muted: #6E6E73;
+  --color-text-dark: #0A0A0A;
 
-  /* Estados */
-  --color-success: #4CAF50;
-  --color-success-light: #81C784;
-  --color-error: #F44336;
-  --color-error-light: #E57373;
-  --color-warning: #FF9800;
-  --color-warning-light: #FFB74D;
-  --color-info: #2196F3;
-  --color-info-light: #64B5F6;
+  /* Game accent colors */
+  --color-bolita: #FFD700;
+  --color-fortuna: #00D4FF;
+  --color-keno: #BF7AF0;
+  --color-bingo: #34D399;
 
-  /* Bordes */
-  --color-border: #444444;
-  --color-border-light: #555555;
-  --color-border-focus: #FFD700;
+  /* Status */
+  --color-success: #34D399;
+  --color-success-light: #6EE7B7;
+  --color-error: #F87171;
+  --color-error-light: #FCA5A5;
+  --color-warning: #FBBF24;
+  --color-warning-light: #FDE68A;
+  --color-info: #60A5FA;
+  --color-info-light: #93C5FD;
 
-  /* Sombras */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.5);
-  --shadow-glow: 0 0 20px rgba(255, 215, 0, 0.3);
+  /* Borders - subtle */
+  --color-border: rgba(255, 255, 255, 0.08);
+  --color-border-light: rgba(255, 255, 255, 0.12);
+  --color-border-focus: var(--color-primary);
 
-  /* Espaciado */
+  /* Shadows - cinematic depth */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.4);
+  --shadow-xl: 0 24px 64px rgba(0, 0, 0, 0.5);
+  --shadow-glow: 0 0 30px rgba(255, 215, 0, 0.2);
+  --shadow-glow-strong: 0 0 60px rgba(255, 215, 0, 0.15), 0 0 120px rgba(255, 215, 0, 0.05);
+
+  /* Spacing - generous, Apple-like */
   --spacing-xs: 4px;
   --spacing-sm: 8px;
   --spacing-md: 16px;
   --spacing-lg: 24px;
   --spacing-xl: 32px;
   --spacing-2xl: 48px;
+  --spacing-3xl: 64px;
+  --spacing-4xl: 96px;
 
-  /* Bordes redondeados */
-  --radius-sm: 4px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
-  --radius-xl: 16px;
+  /* Radii - softer */
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-2xl: 24px;
   --radius-full: 9999px;
 
-  /* Tipografia */
-  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-size-xs: 12px;
-  --font-size-sm: 14px;
-  --font-size-md: 16px;
-  --font-size-lg: 18px;
-  --font-size-xl: 20px;
-  --font-size-2xl: 24px;
-  --font-size-3xl: 30px;
-  --font-size-4xl: 36px;
+  /* Typography */
+  --font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-md: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  --font-size-3xl: 2rem;
+  --font-size-4xl: 2.75rem;
+  --font-size-5xl: 3.5rem;
 
-  /* Pesos de fuente */
+  /* Font weights */
   --font-weight-normal: 400;
   --font-weight-medium: 500;
   --font-weight-semibold: 600;
   --font-weight-bold: 700;
 
-  /* Transiciones */
-  --transition-fast: 150ms ease;
-  --transition-normal: 250ms ease;
-  --transition-slow: 350ms ease;
+  /* Transitions - Apple-like spring curves */
+  --transition-fast: 180ms cubic-bezier(0.25, 0.1, 0.25, 1);
+  --transition-normal: 300ms cubic-bezier(0.25, 0.1, 0.25, 1);
+  --transition-slow: 500ms cubic-bezier(0.25, 0.1, 0.25, 1);
+  --transition-spring: 600ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  --transition-bounce: 500ms cubic-bezier(0.68, -0.55, 0.265, 1.55);
 
   /* Z-index */
   --z-dropdown: 100;
@@ -84,16 +106,21 @@
   --z-modal: 400;
   --z-toast: 500;
 
-  /* Anchos maximos */
+  /* Max widths */
   --max-width-sm: 640px;
   --max-width-md: 768px;
-  --max-width-lg: 1024px;
+  --max-width-lg: 1080px;
   --max-width-xl: 1280px;
 
   /* Header */
   --header-height: 64px;
 
-  /* Sidebar */
+  /* Sidebar (admin) */
   --sidebar-width: 250px;
   --sidebar-collapsed-width: 64px;
+
+  /* Glass morphism */
+  --glass-bg: rgba(255, 255, 255, 0.03);
+  --glass-border: rgba(255, 255, 255, 0.06);
+  --glass-blur: blur(20px);
 }

@@ -1,64 +1,228 @@
+/* ================================================
+   BOLCOIN HOMEPAGE - Dark Gold Theater
+   Apple-inspired minimalist with cinematic depth
+   ================================================ */
+
+/* ── Base ── */
 .home-page {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: var(--color-bg-dark);
+  background: var(--color-bg-darker);
+  color: var(--color-text-primary);
 }
 
 .home-main {
   flex: 1;
 }
 
-/* Hero Section */
+/* ── Scroll Animation System ── */
+.anim-section {
+  opacity: 0;
+  transform: translateY(32px);
+  transition:
+    opacity 0.7s cubic-bezier(0.25, 0.1, 0.25, 1),
+    transform 0.7s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.anim-section.anim-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── Section containers ── */
+.section-container {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 var(--spacing-xl);
+}
+
+.section-heading {
+  font-size: var(--font-size-2xl);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  text-align: center;
+  margin-bottom: var(--spacing-3xl);
+  letter-spacing: -0.02em;
+}
+
+/* ====================================
+   HERO
+   ==================================== */
+
 .home-hero {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: var(--spacing-3xl) var(--spacing-xl);
+  padding: var(--spacing-4xl) var(--spacing-xl);
   text-align: center;
-  background: linear-gradient(135deg, var(--color-bg-darker) 0%, var(--color-bg-dark) 100%);
-  border-bottom: 1px solid var(--color-border);
+  overflow: hidden;
+  min-height: 420px;
+}
+
+/* Ambient glow behind hero */
+.hero-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 600px;
+  height: 400px;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(255, 215, 0, 0.06) 0%,
+    rgba(255, 215, 0, 0.02) 40%,
+    transparent 70%
+  );
+  pointer-events: none;
+  filter: blur(40px);
 }
 
 .home-hero-content {
-  max-width: 600px;
+  position: relative;
+  z-index: 1;
+  max-width: 720px;
 }
 
 .home-hero-title {
-  font-size: var(--font-size-4xl);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-primary);
+  font-size: var(--font-size-5xl);
+  font-weight: 700;
+  color: var(--color-text-primary);
   margin-bottom: var(--spacing-md);
-  text-shadow: var(--shadow-glow);
-  letter-spacing: 2px;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+.home-hero-title span,
+.home-hero-title strong {
+  color: var(--color-primary);
 }
 
 .home-hero-subtitle {
   font-size: var(--font-size-lg);
   color: var(--color-text-secondary);
-  margin-bottom: var(--spacing-xl);
+  margin-bottom: var(--spacing-3xl);
   line-height: 1.6;
+  max-width: 520px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-.home-hero-actions {
+.hero-connect {
   display: flex;
   justify-content: center;
+}
+
+/* ── Hero Game Cards Grid ── */
+.hero-games-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
   gap: var(--spacing-md);
-  flex-wrap: wrap;
+  max-width: 680px;
+  margin: 0 auto;
 }
 
-/* Section Title */
-.section-title {
-  font-size: var(--font-size-2xl);
+.hero-game-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 20px 12px 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: var(--radius-xl);
+  text-decoration: none;
   color: var(--color-text-primary);
-  text-align: center;
-  margin-bottom: var(--spacing-xl);
+  transition:
+    transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.4s cubic-bezier(0.25, 0.1, 0.25, 1),
+    border-color 0.3s ease,
+    background 0.3s ease;
+  animation: hero-card-in 0.6s cubic-bezier(0.25, 0.1, 0.25, 1) backwards;
+  cursor: pointer;
 }
 
-/* Results Section */
+@keyframes hero-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.hero-game-card:hover {
+  transform: translateY(-4px) scale(1.02);
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--accent);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    0 0 0 1px var(--accent),
+    0 0 40px color-mix(in srgb, var(--accent) 15%, transparent);
+}
+
+.hero-game-card__icon {
+  width: 44px;
+  height: 44px;
+  color: var(--accent);
+  transition: transform var(--transition-spring);
+}
+
+.hero-game-card:hover .hero-game-card__icon {
+  transform: scale(1.12);
+}
+
+.hero-game-card__icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.hero-game-card__info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.hero-game-card__title {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--accent);
+  letter-spacing: 0.01em;
+}
+
+.hero-game-card__sub {
+  font-size: 0.7rem;
+  color: var(--color-text-muted);
+  text-align: center;
+  line-height: 1.3;
+}
+
+.hero-game-card__arrow {
+  width: 16px;
+  height: 16px;
+  color: var(--color-text-muted);
+  opacity: 0;
+  transform: translateX(-4px);
+  transition:
+    opacity var(--transition-fast),
+    transform var(--transition-fast);
+}
+
+.hero-game-card:hover .hero-game-card__arrow {
+  opacity: 0.6;
+  transform: translateX(0);
+}
+
+/* ====================================
+   RESULTS
+   ==================================== */
+
 .home-results {
-  padding: var(--spacing-2xl) var(--spacing-xl);
-  background-color: var(--color-bg-darker);
+  padding: var(--spacing-4xl) 0;
 }
 
 .results-loading {
@@ -66,540 +230,568 @@
   flex-direction: column;
   align-items: center;
   gap: var(--spacing-md);
-  padding: var(--spacing-2xl);
+  padding: var(--spacing-3xl);
   color: var(--color-text-muted);
 }
 
-.results-container {
+.results-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: var(--spacing-xl);
-  max-width: var(--max-width-lg);
-  margin: 0 auto;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: var(--spacing-lg);
 }
 
-.results-column {
-  background-color: var(--color-bg-card);
-  border-radius: var(--radius-lg);
+.results-card {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
   padding: var(--spacing-lg);
-  border: 1px solid var(--color-border);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  transition:
+    border-color var(--transition-normal),
+    box-shadow var(--transition-normal);
 }
 
-.results-column.fortuna {
-  border-color: rgba(0, 212, 255, 0.3);
+.results-card:hover {
+  border-color: rgba(255, 215, 0, 0.12);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
 }
 
-.results-game-title {
-  font-size: var(--font-size-lg);
-  color: var(--color-primary);
-  margin-bottom: var(--spacing-md);
-  padding-bottom: var(--spacing-sm);
+.results-card--fortuna:hover {
+  border-color: rgba(0, 212, 255, 0.15);
+}
+
+.results-card__header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: var(--spacing-lg);
+  padding-bottom: var(--spacing-md);
   border-bottom: 1px solid var(--color-border);
 }
 
-.results-game-title.fortuna-title {
-  color: #00d4ff;
+.results-card__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
 }
 
-.results-list {
+.results-card__header h3 {
+  font-size: var(--font-size-md);
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.results-card__list {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-sm);
+  gap: 8px;
   margin-bottom: var(--spacing-md);
 }
 
-.result-item {
+.result-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--spacing-sm);
-  background-color: var(--color-bg-darker);
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.02);
   border-radius: var(--radius-md);
 }
 
-.result-date {
-  font-size: var(--font-size-sm);
-  color: var(--color-text-muted);
-}
-
-.result-numbers-bolita {
-  display: flex;
-  gap: var(--spacing-md);
-}
-
-.result-number-group {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-xs);
-}
-
-.number-label {
+.result-row__date {
   font-size: var(--font-size-xs);
   color: var(--color-text-muted);
 }
 
-.number-value {
+.result-row__numbers {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.result-chip {
   font-family: var(--font-mono);
-  font-size: var(--font-size-md);
-  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
   color: var(--color-primary);
-  background-color: var(--color-bg-card);
-  padding: 2px 8px;
+  background: rgba(255, 215, 0, 0.08);
+  padding: 2px 10px;
   border-radius: var(--radius-sm);
 }
 
-.result-numbers-fortuna {
-  display: flex;
-  align-items: center;
-  gap: 4px;
+.result-chip--dim {
+  color: var(--color-text-secondary);
+  background: rgba(255, 255, 255, 0.04);
 }
 
+/* Fortuna balls */
 .fortuna-ball {
   width: 28px;
   height: 28px;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #00d4ff, #0099cc);
-  color: var(--color-bg-dark);
-  font-weight: var(--font-weight-bold);
-  font-size: var(--font-size-sm);
+  background: rgba(0, 212, 255, 0.12);
+  color: var(--color-fortuna);
+  font-weight: 700;
+  font-size: var(--font-size-xs);
   border-radius: 50%;
 }
 
-.fortuna-ball.key {
-  background: linear-gradient(135deg, #FFD700, #FFA500);
-}
-
-.fortuna-plus {
-  color: var(--color-text-muted);
-  margin: 0 4px;
-}
-
-.no-results {
-  color: var(--color-text-muted);
-  font-size: var(--font-size-sm);
-  text-align: center;
-  padding: var(--spacing-lg);
-}
-
-.view-all-link {
-  display: block;
-  text-align: center;
+.fortuna-ball--key {
+  background: rgba(255, 215, 0, 0.12);
   color: var(--color-primary);
+}
+
+.fortuna-sep {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+}
+
+.results-card__empty {
+  color: var(--color-text-muted);
   font-size: var(--font-size-sm);
-  margin-top: var(--spacing-sm);
+  text-align: center;
+  padding: var(--spacing-xl);
 }
 
-.view-all-link:hover {
-  text-decoration: underline;
+.results-card__link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  text-decoration: none;
+  padding-top: var(--spacing-sm);
+  transition: color var(--transition-fast);
 }
 
-/* Jackpot Display */
-.jackpot-display {
+.results-card__link:hover {
+  color: var(--color-primary);
+}
+
+/* Jackpot */
+.jackpot-banner {
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: var(--spacing-md);
-  background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 165, 0, 0.1));
-  border-radius: var(--radius-md);
-  margin-bottom: var(--spacing-md);
-  border: 1px solid rgba(255, 215, 0, 0.3);
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.06), rgba(255, 165, 0, 0.04));
+  border: 1px solid rgba(255, 215, 0, 0.12);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--spacing-lg);
 }
 
-.jackpot-label {
+.jackpot-banner__label {
   font-size: var(--font-size-xs);
   color: var(--color-text-muted);
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 0.08em;
+  font-weight: 500;
 }
 
-.jackpot-amount {
+.jackpot-banner__amount {
   font-size: var(--font-size-xl);
-  font-weight: var(--font-weight-bold);
-  color: #FFD700;
-  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+  font-weight: 700;
+  color: var(--color-primary);
 }
 
-/* Schedule Section */
+/* ====================================
+   SCHEDULE
+   ==================================== */
+
 .home-schedule {
-  padding: var(--spacing-2xl) var(--spacing-xl);
-  background-color: var(--color-bg-dark);
+  padding: var(--spacing-4xl) 0;
+  background: var(--color-bg-dark);
 }
 
 .schedule-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: var(--spacing-lg);
-  max-width: var(--max-width-md);
-  margin: 0 auto;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--spacing-md);
 }
 
-.schedule-card {
-  background-color: var(--color-bg-card);
-  border-radius: var(--radius-lg);
+.schedule-tile {
+  position: relative;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
   padding: var(--spacing-lg);
   text-align: center;
-  border: 1px solid var(--color-border);
+  overflow: hidden;
+  transition:
+    transform var(--transition-spring),
+    border-color var(--transition-normal),
+    box-shadow var(--transition-normal);
 }
 
-.schedule-card.fortuna {
-  border-color: rgba(0, 212, 255, 0.3);
+.schedule-tile:hover {
+  transform: translateY(-4px);
+  border-color: color-mix(in srgb, var(--tile-accent) 20%, transparent);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
 }
 
-.schedule-card.fortuna h3 {
-  color: #00d4ff;
+/* Colored top accent line */
+.schedule-tile__accent {
+  position: absolute;
+  top: 0;
+  left: 20%;
+  right: 20%;
+  height: 2px;
+  background: var(--tile-accent);
+  border-radius: 0 0 2px 2px;
+  opacity: 0.5;
+  transition: opacity var(--transition-normal), left var(--transition-normal), right var(--transition-normal);
 }
 
-.schedule-card.keno {
-  border-color: rgba(138, 43, 226, 0.3);
+.schedule-tile:hover .schedule-tile__accent {
+  opacity: 1;
+  left: 10%;
+  right: 10%;
 }
 
-.schedule-card.keno h3 {
-  color: #9b59b6;
-}
-
-.time-badge.instant {
-  background: linear-gradient(135deg, #9b59b6, #8e44ad);
-  color: white;
-  font-weight: var(--font-weight-bold);
-  animation: pulse-keno 2s ease-in-out infinite;
-}
-
-@keyframes pulse-keno {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.7; }
-}
-
-.schedule-card h3 {
-  font-size: var(--font-size-lg);
-  color: var(--color-primary);
+.schedule-tile__name {
+  font-size: var(--font-size-md);
+  font-weight: 600;
+  color: var(--color-text-primary);
   margin-bottom: var(--spacing-md);
 }
 
-.schedule-times {
+.schedule-tile__times {
   display: flex;
   justify-content: center;
-  gap: var(--spacing-sm);
+  gap: 6px;
   margin-bottom: var(--spacing-sm);
   flex-wrap: wrap;
 }
 
-.time-badge {
-  background-color: var(--color-bg-darker);
-  color: var(--color-text-primary);
-  padding: var(--spacing-xs) var(--spacing-sm);
-  border-radius: var(--radius-md);
+.schedule-tile__badge {
   font-family: var(--font-mono);
-  font-size: var(--font-size-md);
-  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  background: rgba(255, 255, 255, 0.04);
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
 }
 
-.schedule-frequency {
-  font-size: var(--font-size-sm);
+.schedule-tile__badge--live {
+  color: var(--tile-accent);
+  background: color-mix(in srgb, var(--tile-accent) 10%, transparent);
+  animation: live-pulse 2.5s ease-in-out infinite;
+}
+
+@keyframes live-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+.schedule-tile__freq {
+  font-size: var(--font-size-xs);
   color: var(--color-text-muted);
 }
 
-/* Games Section */
+/* ====================================
+   GAMES DETAIL
+   ==================================== */
+
 .home-games {
-  padding: var(--spacing-2xl) var(--spacing-xl);
-  background-color: var(--color-bg-darker);
+  padding: var(--spacing-4xl) 0;
 }
 
-.game-block {
-  max-width: var(--max-width-md);
-  margin: 0 auto var(--spacing-2xl);
-  background-color: var(--color-bg-card);
-  border-radius: var(--radius-lg);
-  padding: var(--spacing-xl);
-  border: 1px solid var(--color-border);
+.game-detail {
+  max-width: 680px;
+  margin: 0 auto var(--spacing-3xl);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-2xl);
+  padding: var(--spacing-xl) var(--spacing-xl) var(--spacing-lg);
+  transition:
+    border-color var(--transition-normal),
+    box-shadow var(--transition-normal);
 }
 
-.game-block.fortuna {
-  border-color: rgba(0, 212, 255, 0.3);
-  background: linear-gradient(135deg, rgba(0, 212, 255, 0.05), transparent);
+.game-detail:hover {
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
 }
 
-.game-block.keno {
-  border-color: rgba(155, 89, 182, 0.3);
-  background: linear-gradient(135deg, rgba(155, 89, 182, 0.05), transparent);
-}
+.game-detail--bolita:hover { border-color: rgba(255, 215, 0, 0.12); }
+.game-detail--fortuna:hover { border-color: rgba(0, 212, 255, 0.12); }
+.game-detail--keno:hover { border-color: rgba(191, 122, 240, 0.12); }
+.game-detail--bingo:hover { border-color: rgba(52, 211, 153, 0.12); }
 
-.game-header h3.keno-title {
-  color: #9b59b6;
-}
-
-.game-header {
-  text-align: center;
-  margin-bottom: var(--spacing-lg);
-}
-
-.game-header h3 {
-  font-size: var(--font-size-xl);
-  color: var(--color-primary);
-  margin-bottom: var(--spacing-xs);
-}
-
-.game-header h3.fortuna-title {
-  color: #00d4ff;
-}
-
-.game-header p {
-  color: var(--color-text-muted);
-  font-size: var(--font-size-sm);
-}
-
-.game-types-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+/* Header row */
+.game-detail__header {
+  display: flex;
+  align-items: center;
   gap: var(--spacing-md);
   margin-bottom: var(--spacing-lg);
 }
 
-.game-type-card {
-  background-color: var(--color-bg-darker);
-  border-radius: var(--radius-md);
+.game-detail__icon-wrap {
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  color: var(--gd-accent);
+}
+
+.game-detail__icon-wrap svg {
+  width: 100%;
+  height: 100%;
+}
+
+.game-detail__header h3 {
+  font-size: var(--font-size-xl);
+  font-weight: 600;
+  color: var(--color-primary);
+  margin-bottom: 2px;
+}
+
+.game-detail__header p {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+/* Game type pills (Bolita) */
+.game-detail__types {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-lg);
+}
+
+.game-type-pill {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: var(--radius-lg);
   padding: var(--spacing-md);
   text-align: center;
-  border: 1px solid var(--color-border);
+  transition: border-color var(--transition-fast);
 }
 
-.game-type-name {
+.game-type-pill:hover {
+  border-color: rgba(255, 215, 0, 0.15);
+}
+
+.game-type-pill__name {
   display: block;
-  font-size: var(--font-size-md);
-  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
   color: var(--color-primary);
-  margin-bottom: var(--spacing-xs);
+  margin-bottom: 4px;
 }
 
-.game-type-desc {
+.game-type-pill__desc {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  line-height: 1.4;
+}
+
+/* CTA row */
+.game-detail__cta {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-lg);
+  flex-wrap: wrap;
+}
+
+.game-detail__learn {
   font-size: var(--font-size-sm);
   color: var(--color-text-muted);
+  text-decoration: none;
+  transition: color var(--transition-fast);
 }
 
-/* Fortuna Info */
-.fortuna-info {
-  margin-bottom: var(--spacing-lg);
+.game-detail__learn:hover {
+  color: var(--color-primary);
 }
 
-.fortuna-info > p {
+/* Fortuna prizes */
+.fortuna-intro {
   text-align: center;
   color: var(--color-text-secondary);
-  margin-bottom: var(--spacing-lg);
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--spacing-md);
+  line-height: 1.6;
 }
 
-.fortuna-prizes {
+.fortuna-tiers {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: var(--spacing-sm);
-}
-
-.prize-tier {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background-color: var(--color-bg-darker);
-  border-radius: var(--radius-md);
-  padding: var(--spacing-sm);
-  border: 1px solid var(--color-border);
-}
-
-.prize-tier.jackpot {
-  border-color: rgba(255, 215, 0, 0.5);
-  background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), transparent);
-}
-
-.prize-tier.jackpot .tier-prize {
-  color: #FFD700;
-  font-weight: var(--font-weight-bold);
-}
-
-.tier-name {
-  font-size: var(--font-size-sm);
-  color: var(--color-text-primary);
-  font-weight: var(--font-weight-medium);
-}
-
-.tier-prize {
-  font-size: var(--font-size-xs);
-  color: #00d4ff;
-}
-
-.game-cta {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--spacing-lg);
-  flex-wrap: wrap;
-}
-
-.learn-more {
-  color: var(--color-text-muted);
-  font-size: var(--font-size-sm);
-}
-
-.learn-more:hover {
-  color: var(--color-primary);
-}
-
-/* Keno Info */
-.keno-info {
+  gap: 8px;
   margin-bottom: var(--spacing-lg);
 }
 
-.keno-info > p {
+.fortuna-tier {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: var(--radius-md);
+  padding: 10px 8px;
+  gap: 4px;
+}
+
+.fortuna-tier--jackpot {
+  border-color: rgba(255, 215, 0, 0.2);
+  background: rgba(255, 215, 0, 0.04);
+}
+
+.fortuna-tier__name {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-primary);
+  font-weight: 500;
+  text-align: center;
+}
+
+.fortuna-tier__prize {
+  font-size: var(--font-size-xs);
+  color: var(--color-fortuna);
+}
+
+.fortuna-tier--jackpot .fortuna-tier__prize {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+/* Steps (Keno & Bingo) */
+.game-steps {
+  margin-bottom: var(--spacing-lg);
+}
+
+.game-steps__intro {
   text-align: center;
   color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
   margin-bottom: var(--spacing-lg);
+  line-height: 1.6;
 }
 
-.keno-how-it-works {
+.game-steps__list {
   display: flex;
   justify-content: center;
-  gap: var(--spacing-lg);
+  gap: var(--spacing-xl);
   flex-wrap: wrap;
 }
 
-.keno-step {
+.game-step {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--spacing-xs);
+  gap: 8px;
 }
 
-.step-number {
+.game-step__num {
   width: 36px;
   height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #9b59b6, #8e44ad);
-  color: white;
-  font-weight: var(--font-weight-bold);
+  background: color-mix(in srgb, var(--step-accent) 12%, transparent);
+  color: var(--step-accent);
+  font-weight: 700;
   border-radius: 50%;
-  font-size: var(--font-size-md);
+  font-size: var(--font-size-sm);
+  transition: transform var(--transition-spring);
 }
 
-.step-text {
+.game-step:hover .game-step__num {
+  transform: scale(1.1);
+}
+
+.game-step__text {
   font-size: var(--font-size-sm);
   color: var(--color-text-muted);
   text-align: center;
   max-width: 120px;
+  line-height: 1.4;
 }
 
-.keno-btn {
-  border-color: #9b59b6 !important;
-  color: #9b59b6 !important;
-}
+/* ====================================
+   FEATURES
+   ==================================== */
 
-.keno-btn:hover {
-  background-color: rgba(155, 89, 182, 0.1) !important;
-}
-
-/* Bingo */
-.schedule-card.bingo {
-  border-color: rgba(46, 204, 113, 0.3);
-}
-
-.schedule-card.bingo h3 {
-  color: #2ecc71;
-}
-
-.game-block.bingo {
-  border-color: rgba(46, 204, 113, 0.3);
-  background: linear-gradient(135deg, rgba(46, 204, 113, 0.05), transparent);
-}
-
-.game-header h3.bingo-title {
-  color: #2ecc71;
-}
-
-.bingo-info {
-  margin-bottom: var(--spacing-lg);
-}
-
-.bingo-info > p {
-  text-align: center;
-  color: var(--color-text-secondary);
-  margin-bottom: var(--spacing-lg);
-}
-
-.bingo-btn {
-  border-color: #2ecc71 !important;
-  color: white !important;
-  background: linear-gradient(135deg, #2ecc71, #27ae60) !important;
-}
-
-.bingo-btn:hover {
-  background: linear-gradient(135deg, #27ae60, #229954) !important;
-}
-
-.bingo-cta-btn {
-  border-color: #2ecc71 !important;
-  color: #2ecc71 !important;
-}
-
-.bingo-cta-btn:hover {
-  background-color: rgba(46, 204, 113, 0.1) !important;
-}
-
-/* Features Section */
 .home-features {
-  padding: var(--spacing-2xl) var(--spacing-xl);
-  background-color: var(--color-bg-dark);
-  border-top: 1px solid var(--color-border);
+  padding: var(--spacing-4xl) 0;
+  background: var(--color-bg-dark);
 }
 
 .features-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: var(--spacing-lg);
-  max-width: var(--max-width-lg);
-  margin: 0 auto;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--spacing-md);
 }
 
-.feature-item {
-  background-color: var(--color-bg-card);
-  border-radius: var(--radius-lg);
-  padding: var(--spacing-lg);
+.feature-card {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-xl) var(--spacing-lg);
   text-align: center;
-  border: 1px solid var(--color-border);
-  transition: all var(--transition-normal);
+  transition:
+    transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+    border-color var(--transition-normal),
+    box-shadow var(--transition-normal);
 }
 
-.feature-item:hover {
-  border-color: var(--color-primary);
-  transform: translateY(-2px);
+.feature-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(255, 215, 0, 0.12);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2);
 }
 
-.feature-icon {
-  width: 48px;
-  height: 48px;
+.feature-card__icon {
+  width: 40px;
+  height: 40px;
   margin: 0 auto var(--spacing-md);
   color: var(--color-primary);
+  opacity: 0.8;
 }
 
-.feature-icon svg {
+.feature-card__icon svg {
   width: 100%;
   height: 100%;
 }
 
-.feature-item h4 {
-  font-size: var(--font-size-md);
+.feature-card__title {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
   color: var(--color-text-primary);
-  margin-bottom: var(--spacing-sm);
+  margin-bottom: 6px;
 }
 
-.feature-item p {
-  font-size: var(--font-size-sm);
+.feature-card__desc {
+  font-size: var(--font-size-xs);
   color: var(--color-text-muted);
   line-height: 1.5;
 }
 
-/* Responsive */
+/* ====================================
+   RESPONSIVE
+   ==================================== */
+
+@media (max-width: 1024px) {
+  .hero-games-grid {
+    grid-template-columns: repeat(2, 1fr);
+    max-width: 400px;
+  }
+
+  .schedule-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .features-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 @media (max-width: 768px) {
   .home-hero {
-    padding: var(--spacing-xl);
+    padding: var(--spacing-3xl) var(--spacing-lg);
+    min-height: auto;
   }
 
   .home-hero-title {
@@ -608,35 +800,83 @@
 
   .home-hero-subtitle {
     font-size: var(--font-size-md);
+    margin-bottom: var(--spacing-2xl);
   }
 
-  .results-container {
+  .hero-glow {
+    width: 400px;
+    height: 300px;
+  }
+
+  .section-heading {
+    font-size: var(--font-size-xl);
+    margin-bottom: var(--spacing-2xl);
+  }
+
+  .home-results,
+  .home-schedule,
+  .home-games,
+  .home-features {
+    padding: var(--spacing-3xl) 0;
+  }
+
+  .section-container {
+    padding: 0 var(--spacing-lg);
+  }
+
+  .results-grid {
     grid-template-columns: 1fr;
   }
 
-  .game-types-grid {
+  .schedule-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .game-detail__types {
     grid-template-columns: 1fr;
   }
 
-  .fortuna-prizes {
+  .features-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .fortuna-tiers {
     grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .home-hero {
+    padding: var(--spacing-2xl) var(--spacing-md);
+  }
+
+  .home-hero-title {
+    font-size: var(--font-size-2xl);
+  }
+
+  .hero-games-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    max-width: 320px;
+  }
+
+  .hero-game-card {
+    padding: 16px 8px 12px;
+  }
+
+  .schedule-grid {
+    grid-template-columns: 1fr;
   }
 
   .features-grid {
     grid-template-columns: 1fr;
   }
-}
 
-@media (max-width: 480px) {
-  .home-hero-actions {
-    flex-direction: column;
+  .game-steps__list {
+    gap: var(--spacing-md);
   }
 
-  .fortuna-prizes {
-    grid-template-columns: 1fr;
-  }
-
-  .schedule-grid {
+  .fortuna-tiers {
     grid-template-columns: 1fr;
   }
 }
