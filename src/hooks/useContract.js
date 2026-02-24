@@ -5,8 +5,12 @@ import { useToast } from '../contexts/ToastContext';
 import LaBolitaABI from '../contracts/LaBolitaABI.json';
 
 // Direcciones del contrato (actualizar despues del deploy)
-const CONTRACT_ADDRESS = import.meta.env.VITE_CONTRACT_ADDRESS || '';
-const TOKEN_ADDRESS = import.meta.env.VITE_TOKEN_ADDRESS || '';
+const ZERO_ADDRESS = '0x' + '0'.repeat(40);
+const CONTRACT_ADDRESS_RAW = import.meta.env.VITE_CONTRACT_ADDRESS || '';
+const TOKEN_ADDRESS_RAW = import.meta.env.VITE_TOKEN_ADDRESS || '';
+// Guard: treat zero-address as unconfigured
+const CONTRACT_ADDRESS = CONTRACT_ADDRESS_RAW === ZERO_ADDRESS ? '' : CONTRACT_ADDRESS_RAW;
+const TOKEN_ADDRESS = TOKEN_ADDRESS_RAW === ZERO_ADDRESS ? '' : TOKEN_ADDRESS_RAW;
 
 // ABI minimo para ERC20
 const ERC20_ABI = [
