@@ -1,5 +1,5 @@
 import React from 'react';
-import './i18n';
+import './i18n/index.js';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ToastProvider } from './contexts/ToastContext';
 import { Web3Provider } from './contexts/Web3Context';
