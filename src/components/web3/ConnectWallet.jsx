@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useWeb3 } from '../../contexts/Web3Context';
+import { useBalance } from '../../contexts/BalanceContext';
 import { Button } from '../common';
 import './Web3.css';
 
@@ -32,18 +33,17 @@ function ConnectWallet({ variant = 'default', showBalance = false, showExplorerL
     error: web3Error
   } = useWeb3();
 
-  const [balance, setBalance] = useState('0');
   const [copied, setCopied] = useState(false);
   const [localError, setLocalError] = useState(null);
 
-  // Load balance
-  React.useEffect(() => {
-    if (isConnected && showBalance) {
-      getNativeBalance()
-        .then(setBalance)
-        .catch(err => console.error('Error loading balance:', err));
-    }
-  }, [isConnected, showBalance, getNativeBalance]);
+  // Get real on-chain USDT balance from BalanceContext
+  let directUsdtBalance = '0';
+  try {
+    const balanceCtx = useBalance();
+    directUsdtBalance = balanceCtx?.directBalance?.usdt || '0';
+  } catch {
+    // BalanceProvider may not be mounted yet
+  }
 
   // Copy address to clipboard
   const copyAddress = useCallback(async () => {
@@ -218,8 +218,8 @@ function ConnectWallet({ variant = 'default', showBalance = false, showExplorerL
     return (
       <div className="wallet-connected-header">
         {showBalance && (
-          <span className="wallet-balance" title="Balance MATIC">
-            {parseFloat(balance).toFixed(4)} MATIC
+          <span className="wallet-balance" title="Balance USDT">
+            {parseFloat(directUsdtBalance).toFixed(2)} USDT
           </span>
         )}
         <div className="wallet-info-header">
@@ -313,8 +313,8 @@ function ConnectWallet({ variant = 'default', showBalance = false, showExplorerL
         </div>
         {showBalance && (
           <div className="wallet-row">
-            <span className="label">{t('balance_matic', { amount: '' }).split(' ')[0]}:</span>
-            <span className="value balance-value">{parseFloat(balance).toFixed(4)} MATIC</span>
+            <span className="label">USDT:</span>
+            <span className="value balance-value">{parseFloat(directUsdtBalance).toFixed(2)} USDT</span>
           </div>
         )}
       </div>

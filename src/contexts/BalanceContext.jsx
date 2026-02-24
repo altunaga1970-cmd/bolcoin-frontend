@@ -357,8 +357,13 @@ export function BalanceProvider({ children }) {
     effectiveBalance,         // Balance efectivo (incluye sesión Keno activa)
     sessionNetResult,         // Resultado neto de sesión Keno actual
 
+    // Balance principal: usar balance real de blockchain (directBalance) cuando está disponible
+    // El backend DB puede tener datos de prueba; la blockchain es la fuente de verdad
+    balance: (directBalance.isSupported && parseFloat(directBalance.usdtBalance) > 0)
+      ? parseFloat(directBalance.usdtBalance).toFixed(2)
+      : effectiveBalance,
+
     // Alias para compatibilidad
-    balance: effectiveBalance,           // Usar effectiveBalance para display general
     smartContractBalance: onChainBalance,  // Alias para lottery
     databaseBalance: offChainBalance,       // Alias para keno
 
@@ -392,8 +397,10 @@ export function BalanceProvider({ children }) {
     loadSmartContractBalance,
     loadEffectiveBalance,
 
-    // Helpers formateados - usar effectiveBalance para display principal
-    formattedContractBalance: `$${parseFloat(effectiveBalance).toFixed(2)}`,
+    // Helpers formateados - usar balance real de blockchain para display principal
+    formattedContractBalance: (directBalance.isSupported && parseFloat(directBalance.usdtBalance) > 0)
+      ? `$${parseFloat(directBalance.usdtBalance).toFixed(2)}`
+      : `$${parseFloat(effectiveBalance).toFixed(2)}`,
     formattedWalletBalance: `$${parseFloat(walletBalance).toFixed(2)}`,
     formattedOnChainBalance: `$${parseFloat(onChainBalance).toFixed(2)}`,
     formattedOffChainBalance: `$${parseFloat(offChainBalance).toFixed(2)}`,
