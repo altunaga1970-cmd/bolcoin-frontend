@@ -1,0 +1,28 @@
+{
+  "errors": {
+    "generic": "Something went wrong",
+    "network": "Network error. Please try again.",
+    "insufficient_balance": "Insufficient balance. You have {{balance}} USDT. Deposit more funds first.",
+    "select_numbers": "Select {{count}} numbers",
+    "select_key": "Select the key number",
+    "max_bets": "Maximum {{max}} bets per ticket",
+    "duplicate_bet": "This combination is already in your ticket",
+    "select_draw": "Select a draw",
+    "add_bets": "Add at least one bet to your ticket",
+    "buy_error": "Error buying ticket",
+    "enter_digits": "Enter {{count}} digits",
+    "enter_valid_amount": "Enter a valid amount",
+    "min_amount": "Minimum amount: {{amount}} USDT",
+    "number_sold": "Number sold - Not available for this draw",
+    "max_amount_available": "Max amount available: ${{amount}} USDT",
+    "max_amount_number": "Max amount for this number: ${{amount}} USDT",
+    "loading_error": "Error loading data",
+    "process_error": "Error processing bets",
+    "game_error": "Game error"
+  },
+  "success": {
+    "bet_added": "Bet added to cart",
+    "purchase_success": "Purchase successful! {{count}} bet(s) registered.",
+    "ticket_purchased": "Ticket purchased with {{count}} bet(s)!"
+  }
+}

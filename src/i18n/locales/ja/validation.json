@@ -1,0 +1,28 @@
+{
+  "errors": {
+    "generic": "問題が発生しました",
+    "network": "ネットワークエラー。もう一度お試しください。",
+    "insufficient_balance": "残高不足です。{{balance}} USDTあります。まず資金を入金してください。",
+    "select_numbers": "{{count}}個の数字を選択してください",
+    "select_key": "キー番号を選択してください",
+    "max_bets": "チケットあたり最大{{max}}ベット",
+    "duplicate_bet": "この組み合わせは既にチケットに入っています",
+    "select_draw": "抽選を選択してください",
+    "add_bets": "少なくとも1つのベットをチケットに追加してください",
+    "buy_error": "チケット購入エラー",
+    "enter_digits": "{{count}}桁を入力してください",
+    "enter_valid_amount": "有効な金額を入力してください",
+    "min_amount": "最小金額: {{amount}} USDT",
+    "number_sold": "番号売り切れ - この抽選では利用できません",
+    "max_amount_available": "利用可能な最大金額: ${{amount}} USDT",
+    "max_amount_number": "この番号の最大金額: ${{amount}} USDT",
+    "loading_error": "データ読み込みエラー",
+    "process_error": "ベット処理エラー",
+    "game_error": "ゲームエラー"
+  },
+  "success": {
+    "bet_added": "ベットをカートに追加しました",
+    "purchase_success": "購入成功! {{count}}ベットが登録されました。",
+    "ticket_purchased": "{{count}}ベットのチケットを購入しました!"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "errors": {
+    "generic": "Algo deu errado",
+    "network": "Erro de rede. Por favor, tente novamente.",
+    "insufficient_balance": "Saldo insuficiente. Você tem {{balance}} USDT. Deposite mais fundos primeiro.",
+    "select_numbers": "Selecione {{count}} números",
+    "select_key": "Selecione o número chave",
+    "max_bets": "Máximo de {{max}} apostas por bilhete",
+    "duplicate_bet": "Esta combinação já está no seu bilhete",
+    "select_draw": "Selecione um sorteio",
+    "add_bets": "Adicione pelo menos uma aposta ao seu bilhete",
+    "buy_error": "Erro ao comprar bilhete",
+    "enter_digits": "Digite {{count}} dígitos",
+    "enter_valid_amount": "Digite um valor válido",
+    "min_amount": "Valor mínimo: {{amount}} USDT",
+    "number_sold": "Número esgotado - Não disponível para este sorteio",
+    "max_amount_available": "Valor máximo disponível: ${{amount}} USDT",
+    "max_amount_number": "Valor máximo para este número: ${{amount}} USDT",
+    "loading_error": "Erro ao carregar dados",
+    "process_error": "Erro ao processar apostas",
+    "game_error": "Erro no jogo"
+  },
+  "success": {
+    "bet_added": "Aposta adicionada ao carrinho",
+    "purchase_success": "Compra realizada com sucesso! {{count}} aposta(s) registrada(s).",
+    "ticket_purchased": "Bilhete comprado com {{count}} aposta(s)!"
+  }
+}

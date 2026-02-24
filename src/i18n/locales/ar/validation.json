@@ -1,0 +1,28 @@
+{
+  "errors": {
+    "generic": "حدث خطأ ما",
+    "network": "خطأ في الشبكة. يرجى المحاولة مرة أخرى.",
+    "insufficient_balance": "رصيد غير كافٍ. لديك {{balance}} USDT. أودع المزيد من الأموال أولاً.",
+    "select_numbers": "اختر {{count}} أرقام",
+    "select_key": "اختر رقم المفتاح",
+    "max_bets": "الحد الأقصى {{max}} رهان لكل تذكرة",
+    "duplicate_bet": "هذه المجموعة موجودة بالفعل في تذكرتك",
+    "select_draw": "اختر سحب",
+    "add_bets": "أضف رهاناً واحداً على الأقل إلى تذكرتك",
+    "buy_error": "خطأ في شراء التذكرة",
+    "enter_digits": "أدخل {{count}} أرقام",
+    "enter_valid_amount": "أدخل مبلغاً صالحاً",
+    "min_amount": "الحد الأدنى للمبلغ: {{amount}} USDT",
+    "number_sold": "الرقم مباع - غير متاح لهذا السحب",
+    "max_amount_available": "الحد الأقصى للمبلغ المتاح: ${{amount}} USDT",
+    "max_amount_number": "الحد الأقصى للمبلغ لهذا الرقم: ${{amount}} USDT",
+    "loading_error": "خطأ في تحميل البيانات",
+    "process_error": "خطأ في معالجة الرهانات",
+    "game_error": "خطأ في اللعبة"
+  },
+  "success": {
+    "bet_added": "تمت إضافة الرهان إلى السلة",
+    "purchase_success": "تم الشراء بنجاح! تم تسجيل {{count}} رهان.",
+    "ticket_purchased": "تم شراء التذكرة مع {{count}} رهان!"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "errors": {
+    "generic": "कुछ गलत हो गया",
+    "network": "नेटवर्क त्रुटि। कृपया पुनः प्रयास करें।",
+    "insufficient_balance": "अपर्याप्त शेष राशि। आपके पास {{balance}} USDT है। पहले अधिक फंड जमा करें।",
+    "select_numbers": "{{count}} नंबर चुनें",
+    "select_key": "की नंबर चुनें",
+    "max_bets": "प्रति टिकट अधिकतम {{max}} बेट",
+    "duplicate_bet": "यह संयोजन पहले से ही आपके टिकट में है",
+    "select_draw": "एक ड्रॉ चुनें",
+    "add_bets": "अपने टिकट में कम से कम एक बेट जोड़ें",
+    "buy_error": "टिकट खरीदने में त्रुटि",
+    "enter_digits": "{{count}} अंक दर्ज करें",
+    "enter_valid_amount": "एक मान्य राशि दर्ज करें",
+    "min_amount": "न्यूनतम राशि: {{amount}} USDT",
+    "number_sold": "नंबर बिक गया - इस ड्रॉ के लिए उपलब्ध नहीं",
+    "max_amount_available": "अधिकतम उपलब्ध राशि: ${{amount}} USDT",
+    "max_amount_number": "इस नंबर के लिए अधिकतम राशि: ${{amount}} USDT",
+    "loading_error": "डेटा लोड करने में त्रुटि",
+    "process_error": "बेट प्रोसेस करने में त्रुटि",
+    "game_error": "खेल त्रुटि"
+  },
+  "success": {
+    "bet_added": "बेट कार्ट में जोड़ी गई",
+    "purchase_success": "खरीद सफल! {{count}} बेट पंजीकृत।",
+    "ticket_purchased": "{{count}} बेट के साथ टिकट खरीदा गया!"
+  }
+}

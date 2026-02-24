@@ -1,0 +1,28 @@
+{
+  "errors": {
+    "generic": "Quelque chose s'est mal passé",
+    "network": "Erreur réseau. Veuillez réessayer.",
+    "insufficient_balance": "Solde insuffisant. Vous avez {{balance}} USDT. Déposez plus de fonds d'abord.",
+    "select_numbers": "Sélectionnez {{count}} numéros",
+    "select_key": "Sélectionnez le numéro clé",
+    "max_bets": "Maximum {{max}} paris par ticket",
+    "duplicate_bet": "Cette combinaison est déjà dans votre ticket",
+    "select_draw": "Sélectionnez un tirage",
+    "add_bets": "Ajoutez au moins un pari à votre ticket",
+    "buy_error": "Erreur lors de l'achat du ticket",
+    "enter_digits": "Entrez {{count}} chiffres",
+    "enter_valid_amount": "Entrez un montant valide",
+    "min_amount": "Montant minimum : {{amount}} USDT",
+    "number_sold": "Numéro vendu - Non disponible pour ce tirage",
+    "max_amount_available": "Montant max disponible : {{amount}} $ USDT",
+    "max_amount_number": "Montant max pour ce numéro : {{amount}} $ USDT",
+    "loading_error": "Erreur de chargement des données",
+    "process_error": "Erreur de traitement des paris",
+    "game_error": "Erreur de jeu"
+  },
+  "success": {
+    "bet_added": "Pari ajouté au panier",
+    "purchase_success": "Achat réussi ! {{count}} pari(s) enregistré(s).",
+    "ticket_purchased": "Ticket acheté avec {{count}} pari(s) !"
+  }
+}
