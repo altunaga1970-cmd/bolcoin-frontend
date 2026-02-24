@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useWeb3 } from '../../contexts/Web3Context';
 import { useContract } from '../../hooks/useContract';
 import { Button, Spinner } from '../../components/common';
@@ -7,6 +8,7 @@ import { MainNav, Footer } from '../../components/layout';
 import './HomePage.css';
 
 function HomePage() {
+  const { t } = useTranslation('games');
   const { isConnected, connectWallet, isConnecting } = useWeb3();
   const {
     getAllDraws,
@@ -37,10 +39,8 @@ function HomePage() {
       setJackpotInfo(jackpot);
 
       // Para La Fortuna, intentar obtener sorteos completados
-      // (esto dependera de la implementacion del contrato)
       try {
         const openLottery = await getOpenLotteryDraws();
-        // Obtener los ultimos completados si hay funcion disponible
         setLatestFortunaResults([]);
       } catch (err) {
         console.log('La Fortuna results not available:', err);
@@ -68,22 +68,24 @@ function HomePage() {
         {/* Hero Section */}
         <section className="home-hero">
           <div className="home-hero-content">
-            <h1 className="home-hero-title">LA BOLITA</h1>
+            <h1 className="home-hero-title">{t('home.hero_title')}</h1>
             <p className="home-hero-subtitle">
-              Loteria descentralizada en Polygon.
-              Resultados verificables con Chainlink VRF.
+              {t('home.hero_subtitle')}
             </p>
             <div className="home-hero-actions">
               {isConnected ? (
                 <>
-                  <Link to="/bet">
-                    <Button size="lg" variant="primary">La Bolita</Button>
-                  </Link>
-                  <Link to="/lottery">
-                    <Button size="lg" variant="secondary">La Fortuna</Button>
-                  </Link>
                   <Link to="/keno">
-                    <Button size="lg" variant="outline">Keno</Button>
+                    <Button size="lg" variant="primary" className="keno-btn">{t('home.keno', 'Keno')}</Button>
+                  </Link>
+                  <Link to="/bingo">
+                    <Button size="lg" variant="secondary" className="bingo-btn">{t('home.bingo', 'Bingo')}</Button>
+                  </Link>
+                  <Link to="/bet">
+                    <Button size="lg" variant="outline">{t('home.la_bolita')}</Button>
+                  </Link>
+                  <Link to="/fortuna">
+                    <Button size="lg" variant="outline">{t('home.la_fortuna')}</Button>
                   </Link>
                 </>
               ) : (
@@ -92,7 +94,7 @@ function HomePage() {
                   onClick={connectWallet}
                   disabled={isConnecting}
                 >
-                  {isConnecting ? 'Conectando...' : 'Conectar Wallet'}
+                  {isConnecting ? t('home.connect_wallet') + '...' : t('home.connect_wallet')}
                 </Button>
               )}
             </div>
@@ -101,24 +103,24 @@ function HomePage() {
 
         {/* Ultimos Resultados */}
         <section className="home-results">
-          <h2 className="section-title">Ultimos Resultados</h2>
+          <h2 className="section-title">{t('home.latest_results')}</h2>
 
           {loading ? (
             <div className="results-loading">
               <Spinner size="md" />
-              <p>Cargando resultados...</p>
+              <p>{t('home.loading_results')}</p>
             </div>
           ) : (
             <div className="results-container">
               {/* La Bolita Results */}
               <div className="results-column">
-                <h3 className="results-game-title">La Bolita</h3>
+                <h3 className="results-game-title">{t('home.la_bolita')}</h3>
                 {latestBolitaResults.length > 0 ? (
                   <div className="results-list">
                     {latestBolitaResults.map(draw => (
                       <div key={draw.id} className="result-item">
                         <div className="result-date">
-                          {new Date(draw.scheduled_time).toLocaleDateString('es-ES', {
+                          {new Date(draw.scheduled_time).toLocaleDateString(undefined, {
                             day: 'numeric',
                             month: 'short',
                             hour: '2-digit',
@@ -128,13 +130,13 @@ function HomePage() {
                         <div className="result-numbers-bolita">
                           {draw.winning_fijos && (
                             <div className="result-number-group">
-                              <span className="number-label">Fijo:</span>
+                              <span className="number-label">{t('home.fijo')}:</span>
                               <span className="number-value">{draw.winning_fijos}</span>
                             </div>
                           )}
                           {draw.winning_centenas && (
                             <div className="result-number-group">
-                              <span className="number-label">Centena:</span>
+                              <span className="number-label">{t('home.centena')}:</span>
                               <span className="number-value">{draw.winning_centenas}</span>
                             </div>
                           )}
@@ -143,19 +145,19 @@ function HomePage() {
                     ))}
                   </div>
                 ) : (
-                  <p className="no-results">Sin resultados recientes</p>
+                  <p className="no-results">{t('home.no_recent_results')}</p>
                 )}
                 <Link to="/results" className="view-all-link">
-                  Ver todos los resultados
+                  {t('home.view_all_results')}
                 </Link>
               </div>
 
               {/* La Fortuna Results */}
               <div className="results-column fortuna">
-                <h3 className="results-game-title fortuna-title">La Fortuna</h3>
+                <h3 className="results-game-title fortuna-title">{t('home.la_fortuna')}</h3>
                 {jackpotInfo && (
                   <div className="jackpot-display">
-                    <span className="jackpot-label">Jackpot Actual</span>
+                    <span className="jackpot-label">{t('home.current_jackpot')}</span>
                     <span className="jackpot-amount">
                       ${parseFloat(jackpotInfo.jackpot || 0).toLocaleString()} USDT
                     </span>
@@ -166,7 +168,7 @@ function HomePage() {
                     {latestFortunaResults.map(draw => (
                       <div key={draw.id} className="result-item fortuna">
                         <div className="result-date">
-                          {new Date(draw.scheduledTime).toLocaleDateString('es-ES', {
+                          {new Date(draw.scheduledTime).toLocaleDateString(undefined, {
                             day: 'numeric',
                             month: 'short'
                           })}
@@ -182,10 +184,10 @@ function HomePage() {
                     ))}
                   </div>
                 ) : (
-                  <p className="no-results">Proximo sorteo: Miercoles y Sabados</p>
+                  <p className="no-results">{t('home.next_draw')}</p>
                 )}
                 <Link to="/results" className="view-all-link">
-                  Ver todos los resultados
+                  {t('home.view_all_results')}
                 </Link>
               </div>
             </div>
@@ -194,64 +196,71 @@ function HomePage() {
 
         {/* Horarios de Sorteo */}
         <section className="home-schedule">
-          <h2 className="section-title">Horarios de Sorteo</h2>
+          <h2 className="section-title">{t('home.draw_schedule')}</h2>
           <div className="schedule-grid">
             <div className="schedule-card">
-              <h3>La Bolita</h3>
+              <h3>{t('home.la_bolita')}</h3>
               <div className="schedule-times">
                 <span className="time-badge">08:00</span>
                 <span className="time-badge">12:00</span>
                 <span className="time-badge">20:00</span>
               </div>
-              <p className="schedule-frequency">Todos los dias</p>
+              <p className="schedule-frequency">{t('home.every_day')}</p>
             </div>
             <div className="schedule-card fortuna">
-              <h3>La Fortuna</h3>
+              <h3>{t('home.la_fortuna')}</h3>
               <div className="schedule-times">
                 <span className="time-badge">21:00</span>
               </div>
-              <p className="schedule-frequency">Miercoles y Sabados</p>
+              <p className="schedule-frequency">{t('home.wed_sat')}</p>
             </div>
             <div className="schedule-card keno">
-              <h3>Keno</h3>
+              <h3>{t('home.keno', 'Keno')}</h3>
               <div className="schedule-times">
-                <span className="time-badge instant">INSTANTANEO</span>
+                <span className="time-badge instant">{t('home.instant', 'Instant')}</span>
               </div>
-              <p className="schedule-frequency">Juega cuando quieras</p>
+              <p className="schedule-frequency">{t('home.play_anytime', 'Play anytime')}</p>
+            </div>
+            <div className="schedule-card bingo">
+              <h3>{t('home.bingo', 'Bingo')}</h3>
+              <div className="schedule-times">
+                <span className="time-badge instant">{t('home.every_45s', 'Every 45s')}</span>
+              </div>
+              <p className="schedule-frequency">{t('home.four_rooms', '4 rooms, 24/7')}</p>
             </div>
           </div>
         </section>
 
         {/* Juegos Disponibles */}
         <section className="home-games">
-          <h2 className="section-title">Juegos Disponibles</h2>
+          <h2 className="section-title">{t('home.available_games')}</h2>
 
           {/* La Bolita */}
           <div className="game-block">
             <div className="game-header">
-              <h3>La Bolita</h3>
-              <p>Loteria tradicional de numeros</p>
+              <h3>{t('home.la_bolita')}</h3>
+              <p>{t('home.traditional_lottery')}</p>
             </div>
             <div className="game-types-grid">
               <div className="game-type-card">
-                <span className="game-type-name">Fijo</span>
-                <span className="game-type-desc">2 digitos (00-99)</span>
+                <span className="game-type-name">{t('home.fijo')}</span>
+                <span className="game-type-desc">{t('home.fijo_desc')}</span>
               </div>
               <div className="game-type-card">
-                <span className="game-type-name">Centena</span>
-                <span className="game-type-desc">3 digitos (000-999)</span>
+                <span className="game-type-name">{t('home.centena')}</span>
+                <span className="game-type-desc">{t('home.centena_desc')}</span>
               </div>
               <div className="game-type-card">
-                <span className="game-type-name">Parle</span>
-                <span className="game-type-desc">2 Fijos combinados</span>
+                <span className="game-type-name">{t('home.parle')}</span>
+                <span className="game-type-desc">{t('home.parle_desc')}</span>
               </div>
             </div>
             <div className="game-cta">
               <Link to="/bet">
-                <Button variant="primary">Jugar La Bolita</Button>
+                <Button variant="primary">{t('home.play_la_bolita')}</Button>
               </Link>
               <Link to="/how-it-works" className="learn-more">
-                Como funciona
+                {t('home.how_it_works')}
               </Link>
             </div>
           </div>
@@ -259,47 +268,44 @@ function HomePage() {
           {/* La Fortuna */}
           <div className="game-block fortuna">
             <div className="game-header">
-              <h3 className="fortuna-title">La Fortuna</h3>
-              <p>Loteria 5/54 + Clave</p>
+              <h3 className="fortuna-title">{t('home.la_fortuna')}</h3>
+              <p>{t('home.lottery_5_54')}</p>
             </div>
             <div className="fortuna-info">
-              <p>
-                Elige <strong>5 numeros</strong> del 1 al 54 y <strong>1 numero clave</strong> del 0 al 9.
-                Mientras mas numeros aciertes, mayor es tu premio.
-              </p>
+              <p dangerouslySetInnerHTML={{ __html: t('home.choose_numbers') }} />
               <div className="fortuna-prizes">
                 <div className="prize-tier jackpot">
-                  <span className="tier-name">5 + Clave</span>
-                  <span className="tier-prize">JACKPOT</span>
+                  <span className="tier-name">{t('home.five_plus_key')}</span>
+                  <span className="tier-prize">{t('home.jackpot_tier')}</span>
                 </div>
                 <div className="prize-tier">
-                  <span className="tier-name">5 numeros</span>
-                  <span className="tier-prize">2da Categoria</span>
+                  <span className="tier-name">{t('home.five_numbers')}</span>
+                  <span className="tier-prize">{t('home.second_tier')}</span>
                 </div>
                 <div className="prize-tier">
-                  <span className="tier-name">4 + Clave</span>
-                  <span className="tier-prize">3ra Categoria</span>
+                  <span className="tier-name">{t('home.four_plus_key')}</span>
+                  <span className="tier-prize">{t('home.third_tier')}</span>
                 </div>
                 <div className="prize-tier">
-                  <span className="tier-name">4 numeros</span>
-                  <span className="tier-prize">4ta Categoria</span>
+                  <span className="tier-name">{t('home.four_numbers')}</span>
+                  <span className="tier-prize">{t('home.fourth_tier')}</span>
                 </div>
                 <div className="prize-tier">
-                  <span className="tier-name">3 + Clave</span>
-                  <span className="tier-prize">5ta Categoria</span>
+                  <span className="tier-name">{t('home.three_plus_key')}</span>
+                  <span className="tier-prize">{t('home.fifth_tier')}</span>
                 </div>
                 <div className="prize-tier">
-                  <span className="tier-name">3 numeros</span>
-                  <span className="tier-prize">6ta Categoria</span>
+                  <span className="tier-name">{t('home.three_numbers')}</span>
+                  <span className="tier-prize">{t('home.sixth_tier')}</span>
                 </div>
               </div>
             </div>
             <div className="game-cta">
               <Link to="/lottery">
-                <Button variant="secondary">Jugar La Fortuna</Button>
+                <Button variant="secondary">{t('home.play_la_fortuna')}</Button>
               </Link>
               <Link to="/how-it-works" className="learn-more">
-                Como funciona
+                {t('home.how_it_works')}
               </Link>
             </div>
           </div>
@@ -307,35 +313,62 @@ function HomePage() {
           {/* Keno */}
           <div className="game-block keno">
             <div className="game-header">
-              <h3 className="keno-title">Keno</h3>
-              <p>Resultado instantaneo - Juega cuando quieras</p>
+              <h3 className="keno-title">{t('home.keno')}</h3>
+              <p>{t('home.instant_result')}</p>
             </div>
             <div className="keno-info">
-              <p>
-                Elige de <strong>1 a 10 numeros</strong> del 1 al 80.
-                Se extraen <strong>10 numeros</strong> al instante. Mientras mas aciertes, mayor es tu premio.
-              </p>
+              <p dangerouslySetInnerHTML={{ __html: t('home.keno_choose') }} />
               <div className="keno-how-it-works">
                 <div className="keno-step">
                   <span className="step-number">1</span>
-                  <span className="step-text">Elige tus numeros (1-10)</span>
+                  <span className="step-text">{t('home.keno_step1')}</span>
                 </div>
                 <div className="keno-step">
                   <span className="step-number">2</span>
-                  <span className="step-text">Selecciona tu apuesta</span>
+                  <span className="step-text">{t('home.keno_step2')}</span>
                 </div>
                 <div className="keno-step">
                   <span className="step-number">3</span>
-                  <span className="step-text">Resultado instantaneo via VRF</span>
+                  <span className="step-text">{t('home.keno_step3')}</span>
                 </div>
               </div>
             </div>
             <div className="game-cta">
               <Link to="/keno">
-                <Button variant="outline" className="keno-btn">Jugar Keno</Button>
+                <Button variant="outline" className="keno-btn">{t('home.play_keno')}</Button>
               </Link>
               <Link to="/how-it-works" className="learn-more">
-                Como funciona
+                {t('home.how_it_works')}
+              </Link>
+            </div>
+          </div>
+
+          {/* Bingo */}
+          <div className="game-block bingo">
+            <div className="game-header">
+              <h3 className="bingo-title">{t('home.bingo', 'Bingo')}</h3>
+              <p>{t('home.bingo_subtitle', 'Multiplayer bingo with 4 rooms')}</p>
+            </div>
+            <div className="bingo-info">
+              <p>{t('home.bingo_desc', 'Buy cards, watch the draw live, and win line or full bingo prizes. Jackpot available!')}</p>
+              <div className="keno-how-it-works">
+                <div className="keno-step">
+                  <span className="step-number">1</span>
+                  <span className="step-text">{t('home.bingo_step1', 'Buy 1-4 cards')}</span>
+                </div>
+                <div className="keno-step">
+                  <span className="step-number">2</span>
+                  <span className="step-text">{t('home.bingo_step2', 'Watch the draw')}</span>
+                </div>
+                <div className="keno-step">
+                  <span className="step-number">3</span>
+                  <span className="step-text">{t('home.bingo_step3', 'Win line or bingo')}</span>
+                </div>
+              </div>
+            </div>
+            <div className="game-cta">
+              <Link to="/bingo">
+                <Button variant="outline" className="bingo-cta-btn">{t('home.play_bingo', 'Play Bingo')}</Button>
               </Link>
             </div>
           </div>
@@ -343,7 +376,7 @@ function HomePage() {
 
         {/* Caracteristicas */}
         <section className="home-features">
-          <h2 className="section-title">Plataforma Segura y Transparente</h2>
+          <h2 className="section-title">{t('home.secure_platform')}</h2>
           <div className="features-grid">
             <div className="feature-item">
               <div className="feature-icon">
@@ -351,8 +384,8 @@ function HomePage() {
                   <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
                 </svg>
               </div>
-              <h4>Sin Custodia</h4>
-              <p>Tu controlas tus fondos. Deposita y retira cuando quieras.</p>
+              <h4>{t('home.non_custodial')}</h4>
+              <p>{t('home.non_custodial_desc')}</p>
             </div>
             <div className="feature-item">
               <div className="feature-icon">
@@ -362,8 +395,8 @@ function HomePage() {
                   <line x1="12" y1="22.08" x2="12" y2="12"/>
                 </svg>
               </div>
-              <h4>100% On-Chain</h4>
-              <p>Todas las apuestas y resultados registrados en Polygon.</p>
+              <h4>{t('home.on_chain')}</h4>
+              <p>{t('home.on_chain_desc')}</p>
             </div>
             <div className="feature-item">
               <div className="feature-icon">
@@ -373,8 +406,8 @@ function HomePage() {
                   <line x1="12" y1="17" x2="12.01" y2="17"/>
                 </svg>
               </div>
-              <h4>Chainlink VRF</h4>
-              <p>Numeros aleatorios verificables e imposibles de manipular.</p>
+              <h4>{t('home.chainlink_vrf')}</h4>
+              <p>{t('home.chainlink_vrf_desc')}</p>
             </div>
             <div className="feature-item">
               <div className="feature-icon">
@@ -382,8 +415,8 @@ function HomePage() {
                   <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
                 </svg>
               </div>
-              <h4>Pagos Instantaneos</h4>
-              <p>Los premios se acreditan automaticamente via smart contract.</p>
+              <h4>{t('home.instant_payouts')}</h4>
+              <p>{t('home.instant_payouts_desc')}</p>
             </div>
           </div>
         </section>

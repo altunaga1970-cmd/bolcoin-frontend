@@ -1,4 +1,5 @@
 import React from 'react';
+import './i18n';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ToastProvider } from './contexts/ToastContext';
 import { Web3Provider } from './contexts/Web3Context';
@@ -7,6 +8,7 @@ import { AdminAuthProvider } from './contexts/AdminAuthContext';
 import { ConfigProvider } from './contexts/ConfigContext';
 import { GeoBlock } from './components/common';
 import { AdminRoute, Web3Route } from './components/auth';
+import PublicLayout from './components/layout/PublicLayout';
 
 // MVP: Componentes ComingSoon para juegos deshabilitados
 const BolitaComingSoon = React.lazy(() =>
@@ -47,6 +49,7 @@ const HistoryPage = React.lazy(() => import('./pages/user/HistoryPage'));
 const LotteryPage = React.lazy(() => import('./pages/user/LotteryPage'));
 const KenoPage = React.lazy(() => import('./pages/user/KenoPage'));
 const ClaimsPage = React.lazy(() => import('./pages/user/ClaimsPage'));
+const BingoPage = React.lazy(() => import('./pages/user/BingoPage'));
 
 // Paginas de admin
 const AdminLoginPage = React.lazy(() => import('./pages/admin/AdminLoginPage'));
@@ -57,6 +60,7 @@ const AuditLogsPage = React.lazy(() => import('./pages/admin/AuditLogsPage'));
 const Web3AdminPage = React.lazy(() => import('./pages/admin/Web3AdminPage'));
 const BankrollDashboard = React.lazy(() => import('./pages/admin/BankrollDashboard'));
 const KenoPoolDashboard = React.lazy(() => import('./pages/admin/KenoPoolDashboard'));
+const BolitaPoolDashboard = React.lazy(() => import('./pages/admin/BolitaPoolDashboard'));
 const OpsDashboard = React.lazy(() => import('./pages/admin/OpsDashboard'));
 const FinanceDashboard = React.lazy(() => import('./pages/admin/FinanceDashboard'));
 const SystemStatus = React.lazy(() => import('./pages/admin/SystemStatus'));
@@ -101,15 +105,15 @@ function App() {
                 <AdminAuthProvider>
                   <React.Suspense fallback={<LoadingFallback />}>
                   <Routes>
-                  {/* MVP: Keno es la pagina principal */}
-                  <Route path="/" element={<KenoPage />} />
+                  {/* Landing: menu de juegos con connect wallet */}
+                  <Route path="/" element={<HomePage />} />
 
                   {/* Paginas de juego Web3 - Protegidas */}
-                  {/* MVP: La Bolita deshabilitado - muestra ComingSoon */}
-                  <Route path="/bet" element={<BolitaComingSoon />} />
-                  <Route path="/bet/:drawId" element={<BolitaComingSoon />} />
+                  {/* La Bolita — non-custodial betting via smart contract */}
+                  <Route path="/bet" element={<Web3Route><Web3BettingPage /></Web3Route>} />
+                  <Route path="/bet/:drawId" element={<Web3Route><Web3BettingPage /></Web3Route>} />
 
-                  <Route path="/wallet" element={<Web3Route><Web3WalletPage /></Web3Route>} />
+                  <Route path="/wallet" element={<Navigate to="/" replace />} />
                   <Route path="/history" element={<Web3Route><HistoryPage /></Web3Route>} />
                   <Route path="/referrals" element={<Web3Route><ReferralsPage /></Web3Route>} />
 
@@ -119,26 +123,30 @@ function App() {
 
                   {/* MVP: Keno habilitado */}
                   <Route path="/keno" element={<Web3Route><KenoPage /></Web3Route>} />
+                  <Route path="/bingo" element={<Web3Route><BingoPage /></Web3Route>} />
                   <Route path="/claims" element={<Web3Route><ClaimsPage /></Web3Route>} />
-                  <Route path="/results" element={<ResultsPage />} />
 
-                  {/* Paginas de informacion */}
-                  <Route path="/how-it-works" element={<HowItWorksPage />} />
-                  <Route path="/transparency" element={<TransparencyPage />} />
-                  <Route path="/fairness" element={<FairnessPage />} />
-                  <Route path="/statistics" element={<StatisticsPage />} />
-                  <Route path="/faq" element={<FAQPage />} />
-                  <Route path="/contact" element={<ContactPage />} />
-                  <Route path="/official-links" element={<OfficialLinksPage />} />
+                  {/* Paginas publicas con layout (Header + Footer) */}
+                  <Route element={<PublicLayout />}>
+                    {/* Paginas de informacion */}
+                    <Route path="/how-it-works" element={<HowItWorksPage />} />
+                    <Route path="/transparency" element={<TransparencyPage />} />
+                    <Route path="/fairness" element={<FairnessPage />} />
+                    <Route path="/statistics" element={<StatisticsPage />} />
+                    <Route path="/faq" element={<FAQPage />} />
+                    <Route path="/contact" element={<ContactPage />} />
+                    <Route path="/official-links" element={<OfficialLinksPage />} />
+                    <Route path="/results" element={<ResultsPage />} />
 
-                  {/* Paginas legales */}
-                  <Route path="/legal/terms" element={<TermsPage />} />
-                  <Route path="/legal/rules" element={<RulesPage />} />
-                  <Route path="/legal/privacy" element={<PrivacyPage />} />
-                  <Route path="/legal/cookies" element={<CookiesPage />} />
-                  <Route path="/legal/responsible-gaming" element={<ResponsibleGamingPage />} />
-                  <Route path="/legal/jurisdictions" element={<JurisdictionsPage />} />
-                  <Route path="/legal/disclaimer" element={<DisclaimerPage />} />
+                    {/* Paginas legales */}
+                    <Route path="/legal/terms" element={<TermsPage />} />
+                    <Route path="/legal/rules" element={<RulesPage />} />
+                    <Route path="/legal/privacy" element={<PrivacyPage />} />
+                    <Route path="/legal/cookies" element={<CookiesPage />} />
+                    <Route path="/legal/responsible-gaming" element={<ResponsibleGamingPage />} />
+                    <Route path="/legal/jurisdictions" element={<JurisdictionsPage />} />
+                    <Route path="/legal/disclaimer" element={<DisclaimerPage />} />
+                  </Route>
 
                   {/* Rutas de admin - protegidas con AdminRoute */}
                   <Route path="/admin/login" element={<AdminLoginPage />} />
@@ -159,6 +167,7 @@ function App() {
                   <Route path="/admin/web3" element={<AdminRoute><Web3AdminPage /></AdminRoute>} />
                   <Route path="/admin/bankroll" element={<AdminRoute><BankrollDashboard /></AdminRoute>} />
                   <Route path="/admin/keno-pool" element={<AdminRoute><KenoPoolDashboard /></AdminRoute>} />
+                  <Route path="/admin/bolita-pool" element={<AdminRoute><BolitaPoolDashboard /></AdminRoute>} />
 
                   {/* Admin catch-all: any unknown /admin/* path redirects to /admin/ops */}
                   <Route path="/admin/*" element={<AdminRoute><Navigate to="/admin/ops" replace /></AdminRoute>} />
@@ -166,11 +175,11 @@ function App() {
                   {/* Redirecciones de compatibilidad */}
                   <Route path="/web3" element={<Navigate to="/bet" replace />} />
                   <Route path="/web3/bet" element={<Navigate to="/bet" replace />} />
-                  <Route path="/web3/wallet" element={<Navigate to="/wallet" replace />} />
-                  <Route path="/web3-wallet" element={<Navigate to="/wallet" replace />} />
+                  <Route path="/web3/wallet" element={<Navigate to="/" replace />} />
+                  <Route path="/web3-wallet" element={<Navigate to="/" replace />} />
                   <Route path="/dashboard" element={<Navigate to="/" replace />} />
                   <Route path="/my-bets" element={<Navigate to="/history" replace />} />
-                  <Route path="/profile" element={<Navigate to="/wallet" replace />} />
+                  <Route path="/profile" element={<Navigate to="/" replace />} />
                   <Route path="/login" element={<Navigate to="/" replace />} />
                   <Route path="/register" element={<Navigate to="/" replace />} />
 

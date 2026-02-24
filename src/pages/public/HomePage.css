@@ -496,6 +496,53 @@
   background-color: rgba(155, 89, 182, 0.1) !important;
 }
 
+/* Bingo */
+.schedule-card.bingo {
+  border-color: rgba(46, 204, 113, 0.3);
+}
+
+.schedule-card.bingo h3 {
+  color: #2ecc71;
+}
+
+.game-block.bingo {
+  border-color: rgba(46, 204, 113, 0.3);
+  background: linear-gradient(135deg, rgba(46, 204, 113, 0.05), transparent);
+}
+
+.game-header h3.bingo-title {
+  color: #2ecc71;
+}
+
+.bingo-info {
+  margin-bottom: var(--spacing-lg);
+}
+
+.bingo-info > p {
+  text-align: center;
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-lg);
+}
+
+.bingo-btn {
+  border-color: #2ecc71 !important;
+  color: white !important;
+  background: linear-gradient(135deg, #2ecc71, #27ae60) !important;
+}
+
+.bingo-btn:hover {
+  background: linear-gradient(135deg, #27ae60, #229954) !important;
+}
+
+.bingo-cta-btn {
+  border-color: #2ecc71 !important;
+  color: #2ecc71 !important;
+}
+
+.bingo-cta-btn:hover {
+  background-color: rgba(46, 204, 113, 0.1) !important;
+}
+
 /* Features Section */
 .home-features {
   padding: var(--spacing-2xl) var(--spacing-xl);
