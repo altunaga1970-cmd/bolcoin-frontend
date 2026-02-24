@@ -116,19 +116,21 @@ function Web3BettingPage() {
     try {
       let openDraws = [];
 
-      // Balance
-      if (isOnChain) {
+      // Balance: prioritize real on-chain USDT balance
+      const directUsdt = parseFloat(directBalance?.usdt || '0');
+      if (directUsdt > 0) {
+        setBalance(directUsdt.toFixed(2));
+      } else if (isOnChain) {
         const tokenBal = await getTokenBalance();
         setBalance(tokenBal);
       } else {
-        // Off-chain: fetch DB balance directly (no auth required)
+        // Off-chain fallback: fetch DB balance
         try {
           const resp = await api.get('/wallet/balance-by-address', { params: { address: account } });
           const dbBal = resp.data?.data?.balance || '0';
           setBalance(dbBal);
         } catch {
-          // Fallback to on-chain balance
-          setBalance(directBalance.usdt || '0');
+          setBalance('0');
         }
       }
 
