@@ -1,149 +1,118 @@
-/* =================================
-   LA BOLITA — PREMIUM DARK-GOLD BETTING
+/* ================================================
+   LA BOLITA - Apple-inspired Dark Gold Betting
+   ================================================ */
 
-   Aesthetic: High-stakes casino noir.
-   Deep blacks, rich gold accents, subtle
-   grain texture, sharp geometric edges.
-   ================================= */
-
-/* ── PAGE HEADER OVERRIDES ── */
-
+/* ── Page Header ── */
 .user-page .page-header h1 {
-  background: linear-gradient(135deg, #FFD700 0%, #FFA500 50%, #FFD700 100%);
-  background-size: 200% auto;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  animation: shimmer 3s linear infinite;
+  color: var(--color-primary);
   font-size: var(--font-size-3xl);
-  font-weight: 800;
+  font-weight: 700;
   letter-spacing: -0.02em;
 }
 
 .user-page .page-subtitle {
   color: var(--color-text-muted);
   font-size: var(--font-size-sm);
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  font-weight: 500;
+  letter-spacing: 0.02em;
 }
 
-@keyframes shimmer {
-  to { background-position: 200% center; }
-}
-
-/* ── DRAWS SELECTOR ── */
+/* ================================================
+   DRAWS SELECTOR
+   ================================================ */
 
 .draws-selector {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 6px;
   max-height: 320px;
   overflow-y: auto;
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  padding: 0.75rem;
-  background: var(--color-bg-darker);
+  border-radius: var(--radius-xl);
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.01);
 }
 
 .draw-option {
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  padding: 0.875rem 1rem;
+  border-radius: var(--radius-lg);
+  padding: 12px 14px;
   cursor: pointer;
-  transition: all 0.25s ease;
-  background: var(--color-bg-card);
-  position: relative;
-  overflow: hidden;
-}
-
-.draw-option::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, rgba(255, 215, 0, 0) 0%, rgba(255, 215, 0, 0.03) 100%);
-  opacity: 0;
-  transition: opacity 0.25s ease;
+  transition:
+    border-color var(--transition-fast),
+    background var(--transition-fast),
+    transform var(--transition-fast),
+    box-shadow var(--transition-normal);
+  background: rgba(255, 255, 255, 0.02);
 }
 
 .draw-option:hover {
-  border-color: var(--color-primary-dark);
+  border-color: rgba(255, 215, 0, 0.2);
+  background: rgba(255, 255, 255, 0.03);
   transform: translateY(-1px);
-  box-shadow: 0 4px 16px rgba(255, 215, 0, 0.08);
-}
-
-.draw-option:hover::before {
-  opacity: 1;
 }
 
 .draw-option.selected {
   border-color: var(--color-primary);
-  background: var(--color-bg-card);
-  box-shadow: 0 0 0 1px var(--color-primary), 0 4px 20px rgba(255, 215, 0, 0.12);
-}
-
-.draw-option.selected::before {
-  opacity: 1;
-  background: linear-gradient(135deg, rgba(255, 215, 0, 0.06) 0%, rgba(255, 215, 0, 0.02) 100%);
+  background: rgba(255, 215, 0, 0.04);
+  box-shadow: 0 0 0 1px var(--color-primary), 0 4px 20px rgba(255, 215, 0, 0.08);
 }
 
 .draw-option.closed {
   opacity: 0.5;
-  border-color: var(--color-border);
 }
 
 .draw-option.completed {
   opacity: 0.35;
 }
 
-/* ── DRAW HEADER + STATUS ── */
-
+/* ── Draw Header + Status ── */
 .draw-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 0.5rem;
+  margin-bottom: 6px;
 }
 
 .draw-number {
   font-size: 0.875rem;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--color-text-primary);
   font-variant-numeric: tabular-nums;
-  letter-spacing: 0.02em;
 }
 
 .draw-status {
-  padding: 0.2rem 0.6rem;
+  padding: 3px 10px;
   border-radius: var(--radius-full);
   font-size: 0.65rem;
-  font-weight: 700;
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
 }
 
 .draw-status.open {
-  background: rgba(76, 175, 80, 0.15);
-  color: #4CAF50;
-  border: 1px solid rgba(76, 175, 80, 0.3);
+  background: rgba(52, 211, 153, 0.1);
+  color: var(--color-success);
+  border: 1px solid rgba(52, 211, 153, 0.2);
 }
 
 .draw-status.closed {
-  background: rgba(255, 152, 0, 0.15);
-  color: #FF9800;
-  border: 1px solid rgba(255, 152, 0, 0.3);
+  background: rgba(251, 191, 36, 0.1);
+  color: var(--color-warning);
+  border: 1px solid rgba(251, 191, 36, 0.2);
 }
 
 .draw-status.completed,
 .draw-status.resolved {
-  background: rgba(96, 125, 139, 0.15);
-  color: #90A4AE;
-  border: 1px solid rgba(96, 125, 139, 0.3);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border);
 }
 
 .draw-details {
   display: flex;
   flex-direction: column;
-  gap: 0.375rem;
+  gap: 4px;
 }
 
 .draw-info {
@@ -153,7 +122,7 @@
 }
 
 .draw-time {
-  font-size: 0.813rem;
+  font-size: 0.8rem;
   color: var(--color-text-secondary);
   font-variant-numeric: tabular-nums;
 }
@@ -162,22 +131,22 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 0.375rem 0.5rem;
-  background: rgba(255, 215, 0, 0.06);
-  border-radius: var(--radius-sm);
-  border: 1px solid rgba(255, 215, 0, 0.15);
+  padding: 6px 10px;
+  background: rgba(255, 215, 0, 0.04);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(255, 215, 0, 0.08);
 }
 
 .time-label {
-  font-size: 0.65rem;
-  color: var(--color-primary-dark);
+  font-size: 0.6rem;
+  color: var(--color-text-muted);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.06em;
 }
 
 .time-remaining {
-  font-size: 0.813rem;
+  font-size: 0.8rem;
   font-weight: 700;
   color: var(--color-primary);
   font-variant-numeric: tabular-nums;
@@ -185,66 +154,58 @@
 
 .time-remaining.urgent {
   color: var(--color-error);
-  animation: pulse 1s infinite;
+  animation: pulse-fade 1s ease-in-out infinite;
 }
 
 .urgent-warning {
-  margin-top: 0.25rem;
+  margin-top: 4px;
   font-size: 0.7rem;
   color: var(--color-error);
   font-weight: 600;
   text-align: center;
-  animation: pulse 1s infinite;
+  animation: pulse-fade 1s ease-in-out infinite;
 }
 
 .closed-info {
   text-align: center;
-  padding: 0.375rem;
+  padding: 4px;
 }
 
 .closed-label {
-  font-size: 0.813rem;
+  font-size: 0.8rem;
   color: var(--color-text-muted);
   font-weight: 500;
 }
 
-/* ── BET TYPE SELECTOR ── */
+/* ================================================
+   BET TYPE SELECTOR
+   ================================================ */
 
 .bet-type-selector {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 0.5rem;
+  gap: 8px;
 }
 
 .bet-type-btn {
-  padding: 0.875rem 0.5rem;
-  background: var(--color-bg-darker);
-  border: 2px solid var(--color-border);
-  border-radius: var(--radius-md);
+  padding: 14px 8px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-lg);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition:
+    border-color var(--transition-fast),
+    background var(--transition-fast),
+    transform var(--transition-fast),
+    box-shadow var(--transition-normal);
   text-align: center;
-  position: relative;
-  overflow: hidden;
-}
-
-.bet-type-btn::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: var(--color-primary);
-  transform: scaleX(0);
-  transition: transform 0.25s ease;
 }
 
 .bet-type-btn .type-name {
   display: block;
   color: var(--color-text-primary);
-  font-weight: 700;
-  margin-bottom: 0.25rem;
+  font-weight: 600;
+  margin-bottom: 4px;
   font-size: 0.875rem;
 }
 
@@ -257,73 +218,71 @@
 }
 
 .bet-type-btn:hover {
-  border-color: var(--color-primary-dark);
-  background: var(--color-bg-card);
-}
-
-.bet-type-btn:hover::after {
-  transform: scaleX(0.6);
+  border-color: rgba(255, 215, 0, 0.25);
+  background: rgba(255, 255, 255, 0.03);
+  transform: translateY(-1px);
 }
 
 .bet-type-btn.active {
   border-color: var(--color-primary);
-  background: rgba(255, 215, 0, 0.08);
-  box-shadow: 0 0 0 1px var(--color-primary), inset 0 0 20px rgba(255, 215, 0, 0.04);
+  background: rgba(255, 215, 0, 0.06);
+  box-shadow: 0 0 0 1px var(--color-primary), 0 0 20px rgba(255, 215, 0, 0.06);
 }
 
-.bet-type-btn.active::after {
-  transform: scaleX(1);
-}
-
-/* ── NUMBER INPUT ── */
+/* ================================================
+   NUMBER INPUT
+   ================================================ */
 
 .number-input {
+  font-family: var(--font-mono) !important;
   font-size: var(--font-size-2xl) !important;
   text-align: center;
-  letter-spacing: 0.6rem;
+  letter-spacing: 0.5rem;
   font-weight: 700 !important;
   color: var(--color-primary) !important;
-  background: var(--color-bg-darker) !important;
-  border: 2px solid var(--color-border) !important;
-  border-radius: var(--radius-md) !important;
-  padding: 0.875rem !important;
+  background: rgba(255, 255, 255, 0.02) !important;
+  border: 1.5px solid var(--color-border) !important;
+  border-radius: var(--radius-lg) !important;
+  padding: 14px !important;
   font-variant-numeric: tabular-nums;
   caret-color: var(--color-primary);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
 }
 
 .number-input:focus {
   border-color: var(--color-primary) !important;
-  box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.15), 0 0 20px rgba(255, 215, 0, 0.05) !important;
+  box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.08) !important;
   outline: none !important;
 }
 
-/* ── AMOUNT QUICK SELECT ── */
+/* ================================================
+   AMOUNT QUICK SELECT
+   ================================================ */
 
 .amount-quick-select {
   display: flex;
-  gap: 0.375rem;
-  margin-top: 0.625rem;
+  gap: 6px;
+  margin-top: 10px;
 }
 
 .quick-amount-btn {
   flex: 1;
-  padding: 0.5rem 0.25rem;
-  background: var(--color-bg-darker);
+  padding: 8px 4px;
+  background: rgba(255, 255, 255, 0.02);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
   color: var(--color-text-secondary);
   font-size: 0.75rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all var(--transition-fast);
   font-variant-numeric: tabular-nums;
 }
 
 .quick-amount-btn:hover:not(.active) {
-  border-color: var(--color-primary-dark);
+  border-color: rgba(255, 215, 0, 0.2);
   color: var(--color-text-primary);
-  background: var(--color-bg-card);
+  background: rgba(255, 255, 255, 0.04);
 }
 
 .quick-amount-btn.active {
@@ -331,15 +290,17 @@
   border-color: var(--color-primary);
   color: var(--color-text-dark);
   font-weight: 700;
-  box-shadow: 0 2px 8px rgba(255, 215, 0, 0.25);
+  box-shadow: 0 2px 12px rgba(255, 215, 0, 0.2);
 }
 
-/* ── BET SUMMARY ── */
+/* ================================================
+   BET SUMMARY
+   ================================================ */
 
 .bet-summary {
-  background: var(--color-bg-darker);
-  padding: 1rem;
-  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.02);
+  padding: 16px;
+  border-radius: var(--radius-lg);
   margin-bottom: var(--spacing-lg);
   border: 1px solid var(--color-border);
 }
@@ -347,15 +308,15 @@
 .summary-row {
   display: flex;
   justify-content: space-between;
-  padding: 0.3rem 0;
+  padding: 4px 0;
   color: var(--color-text-secondary);
   font-size: 0.875rem;
 }
 
 .summary-row.total-cost {
   border-top: 1px solid var(--color-border);
-  margin-top: 0.375rem;
-  padding-top: 0.5rem;
+  margin-top: 6px;
+  padding-top: 8px;
   font-weight: 600;
   color: var(--color-text-primary);
 }
@@ -363,16 +324,16 @@
 .summary-row.highlight {
   color: var(--color-primary);
   font-weight: 700;
-  border-top: 1px solid rgba(255, 215, 0, 0.2);
-  margin-top: 0.375rem;
-  padding-top: 0.5rem;
+  border-top: 1px solid rgba(255, 215, 0, 0.12);
+  margin-top: 6px;
+  padding-top: 8px;
   font-size: 1rem;
 }
 
 .summary-row.fee-info {
   border-top: 1px dashed var(--color-border);
-  margin-top: 0.25rem;
-  padding-top: 0.375rem;
+  margin-top: 4px;
+  padding-top: 6px;
   font-size: 0.75rem;
   color: var(--color-text-muted);
 }
@@ -381,40 +342,40 @@
   color: var(--color-warning);
 }
 
-/* ── BLOCKCHAIN NOTICE ── */
-
+/* ── Blockchain Notice ── */
 .blockchain-notice {
   margin-top: var(--spacing-md);
   font-size: var(--font-size-xs);
   color: var(--color-text-muted);
   text-align: center;
-  letter-spacing: 0.02em;
 }
 
-/* ── LAST DRAW RESULTS ── */
+/* ================================================
+   LAST DRAW RESULTS
+   ================================================ */
 
 .last-draw-results {
-  border-radius: var(--radius-md);
-  padding: 1rem;
-  margin-top: 1rem;
-  margin-bottom: 1rem;
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  margin-top: 16px;
+  margin-bottom: 16px;
   border: 1px solid;
 }
 
 .last-draw-results.has-winners {
-  background: rgba(76, 175, 80, 0.06);
-  border-color: rgba(76, 175, 80, 0.3);
+  background: rgba(52, 211, 153, 0.04);
+  border-color: rgba(52, 211, 153, 0.15);
 }
 
 .last-draw-results.no-winners {
-  background: rgba(244, 67, 54, 0.06);
-  border-color: rgba(244, 67, 54, 0.3);
+  background: rgba(248, 113, 113, 0.04);
+  border-color: rgba(248, 113, 113, 0.15);
 }
 
 .last-draw-results h4 {
-  margin: 0 0 0.625rem 0;
-  font-size: 0.75rem;
-  font-weight: 700;
+  margin: 0 0 10px 0;
+  font-size: 0.7rem;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.06em;
 }
@@ -425,43 +386,45 @@
 .winners-info, .no-winners-info {
   display: flex;
   flex-direction: column;
-  gap: 0.375rem;
+  gap: 4px;
 }
 
 .result-icon {
-  font-size: 1.125rem;
-  margin-right: 0.375rem;
+  font-size: 1rem;
+  margin-right: 6px;
 }
 
 .result-text {
-  font-size: 0.813rem;
+  font-size: 0.8rem;
   line-height: 1.5;
 }
 
 .has-winners .result-text { color: var(--color-success-light); }
 .no-winners .result-text { color: var(--color-error-light); }
 
-/* ── LIMITS INFO ── */
+/* ================================================
+   LIMITS INFO
+   ================================================ */
 
 .limits-info {
-  background: rgba(255, 215, 0, 0.04);
-  border: 1px solid rgba(255, 215, 0, 0.15);
-  border-radius: var(--radius-md);
-  padding: 1rem;
-  margin-top: 1rem;
+  background: rgba(255, 215, 0, 0.02);
+  border: 1px solid rgba(255, 215, 0, 0.08);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  margin-top: 16px;
 }
 
 .limits-info h4 {
   color: var(--color-primary);
-  margin-bottom: 0.5rem;
-  font-size: 0.75rem;
-  font-weight: 700;
+  margin-bottom: 8px;
+  font-size: 0.7rem;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.06em;
 }
 
 .limits-info p {
-  margin: 0.375rem 0;
+  margin: 4px 0;
   color: var(--color-text-muted);
   font-size: 0.75rem;
   line-height: 1.5;
@@ -472,12 +435,11 @@
   font-weight: 600;
 }
 
-/* ── POOL STATUS ── */
-
+/* ── Pool Status ── */
 .pool-status {
-  margin-top: 0.625rem;
-  padding-top: 0.625rem;
-  border-top: 1px solid rgba(255, 215, 0, 0.1);
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 215, 0, 0.06);
 }
 
 .pool-status p {
@@ -492,102 +454,105 @@
 .pool-status-message {
   display: flex;
   align-items: center;
-  gap: 0.375rem;
-  padding: 0.5rem 0.625rem;
-  border-radius: var(--radius-sm);
+  gap: 6px;
+  padding: 8px 10px;
+  border-radius: var(--radius-md);
   font-size: 0.75rem;
-  margin-top: 0.375rem;
+  margin-top: 6px;
 }
 
 .pool-status-message.success {
-  background: rgba(76, 175, 80, 0.08);
-  border: 1px solid rgba(76, 175, 80, 0.2);
+  background: rgba(52, 211, 153, 0.06);
+  border: 1px solid rgba(52, 211, 153, 0.12);
   color: var(--color-success);
 }
 
 .pool-status-message.info {
-  background: rgba(33, 150, 243, 0.08);
-  border: 1px solid rgba(33, 150, 243, 0.2);
+  background: rgba(96, 165, 250, 0.06);
+  border: 1px solid rgba(96, 165, 250, 0.12);
   color: var(--color-info);
 }
 
 .pool-status-message.warning {
-  background: rgba(255, 152, 0, 0.08);
-  border: 1px solid rgba(255, 152, 0, 0.2);
+  background: rgba(251, 191, 36, 0.06);
+  border: 1px solid rgba(251, 191, 36, 0.12);
   color: var(--color-warning);
 }
 
 .status-icon { font-size: 0.875rem; flex-shrink: 0; }
 .status-text { flex: 1; font-weight: 500; }
 
-/* ── AVAILABILITY MESSAGES ── */
-
+/* ── Availability Messages ── */
 .number-availability-section {
-  margin-bottom: 0.75rem;
+  margin-bottom: 12px;
 }
 
 .availability-message {
   display: flex;
   align-items: center;
-  gap: 0.375rem;
-  padding: 0.625rem 0.75rem;
-  border-radius: var(--radius-sm);
-  font-size: 0.813rem;
+  gap: 6px;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  font-size: 0.8rem;
   font-weight: 500;
-  animation: slideIn 0.25s ease-out;
+  animation: anim-slide-in 0.25s ease-out;
 }
 
 .availability-message.error {
-  background: rgba(244, 67, 54, 0.08);
-  border: 1px solid rgba(244, 67, 54, 0.25);
+  background: rgba(248, 113, 113, 0.06);
+  border: 1px solid rgba(248, 113, 113, 0.15);
   color: var(--color-error);
 }
 
 .availability-message.warning {
-  background: rgba(255, 152, 0, 0.08);
-  border: 1px solid rgba(255, 152, 0, 0.25);
+  background: rgba(251, 191, 36, 0.06);
+  border: 1px solid rgba(251, 191, 36, 0.15);
   color: var(--color-warning);
 }
 
 .availability-message.info {
-  background: rgba(33, 150, 243, 0.08);
-  border: 1px solid rgba(33, 150, 243, 0.25);
+  background: rgba(96, 165, 250, 0.06);
+  border: 1px solid rgba(96, 165, 250, 0.15);
   color: var(--color-info);
 }
 
 .availability-icon { font-size: 0.875rem; flex-shrink: 0; }
 .availability-text { flex: 1; }
 
-/* ── DRAW INFO SECTION (Right Panel) ── */
+/* ================================================
+   DRAW INFO SECTION (Right Panel)
+   ================================================ */
 
 .draw-info-section h3 {
-  color: var(--color-primary);
+  color: var(--color-text-primary);
   margin-bottom: var(--spacing-md);
   font-size: 1rem;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .draw-card {
-  background: var(--color-bg-darker);
+  background: rgba(255, 255, 255, 0.02);
   padding: var(--spacing-md);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   margin-bottom: var(--spacing-lg);
   border: 1px solid var(--color-border);
+  transition: border-color var(--transition-fast);
 }
 
-.draw-card.closed { border-color: rgba(255, 152, 0, 0.3); }
+.draw-card.open { border-color: rgba(52, 211, 153, 0.15); }
+.draw-card.closed { border-color: rgba(251, 191, 36, 0.15); }
 .draw-card.completed { border-color: var(--color-border); opacity: 0.7; }
 
 .draw-details .detail-row {
   display: flex;
   justify-content: space-between;
-  padding: 0.3rem 0;
+  padding: 4px 0;
   font-size: var(--font-size-sm);
 }
 
 .draw-details .detail-row.highlight {
-  padding-top: 0.5rem;
-  margin-top: 0.25rem;
+  padding-top: 8px;
+  margin-top: 4px;
   border-top: 1px solid var(--color-border);
 }
 
@@ -597,12 +562,11 @@
 .open-status { color: var(--color-success) !important; font-weight: 700 !important; }
 .closed-status { color: var(--color-warning) !important; font-weight: 600 !important; }
 
-/* ── MULTIPLIERS INFO ── */
-
+/* ── Multipliers Info ── */
 .multipliers-info h4 {
-  color: var(--color-text-secondary);
-  font-size: 0.75rem;
-  margin-bottom: 0.375rem;
+  color: var(--color-text-muted);
+  font-size: 0.7rem;
+  margin-bottom: 6px;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   font-weight: 600;
@@ -611,7 +575,7 @@
 .multiplier-row {
   display: flex;
   justify-content: space-between;
-  padding: 0.3rem 0;
+  padding: 4px 0;
   font-size: var(--font-size-sm);
   color: var(--color-text-muted);
 }
@@ -622,18 +586,17 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* ── STAKE LIMITS INFO ── */
-
+/* ── Stake Limits Info ── */
 .stake-limits-info {
-  margin-top: 1rem;
-  padding-top: 0.75rem;
+  margin-top: 16px;
+  padding-top: 12px;
   border-top: 1px solid var(--color-border);
 }
 
 .stake-limits-info h4 {
   color: var(--color-primary);
-  font-size: 0.7rem;
-  margin-bottom: 0.375rem;
+  font-size: 0.65rem;
+  margin-bottom: 6px;
   text-transform: uppercase;
   letter-spacing: 0.06em;
 }
@@ -641,7 +604,7 @@
 .stake-limits-info p {
   color: var(--color-text-muted);
   font-size: 0.75rem;
-  margin: 0.25rem 0;
+  margin: 4px 0;
   line-height: 1.4;
 }
 
@@ -649,19 +612,18 @@
   color: var(--color-primary);
 }
 
-/* ── SCHEDULE INFO ── */
-
+/* ── Schedule Info ── */
 .schedule-info {
-  margin-top: 1rem;
-  padding-top: 0.75rem;
+  margin-top: 16px;
+  padding-top: 12px;
   border-top: 1px solid var(--color-border);
 }
 
 .schedule-info h4 {
-  color: var(--color-text-secondary);
-  margin-bottom: 0.5rem;
-  font-size: 0.7rem;
-  font-weight: 700;
+  color: var(--color-text-muted);
+  margin-bottom: 8px;
+  font-size: 0.65rem;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.06em;
 }
@@ -670,8 +632,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.3rem 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  padding: 4px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
 }
 
 .schedule-row:last-of-type {
@@ -679,39 +641,39 @@
 }
 
 .time-slot {
-  font-weight: 600;
+  font-weight: 500;
   color: var(--color-text-secondary);
-  font-size: 0.813rem;
+  font-size: 0.8rem;
 }
 
 .schedule-row span:last-child {
   color: var(--color-text-muted);
   font-weight: 500;
-  font-size: 0.813rem;
+  font-size: 0.8rem;
   font-variant-numeric: tabular-nums;
 }
 
 .schedule-note {
-  margin-top: 0.375rem;
-  font-size: 0.688rem;
+  margin-top: 6px;
+  font-size: 0.7rem;
   color: var(--color-text-muted);
   font-style: italic;
   text-align: center;
   opacity: 0.7;
 }
 
-/* ── COUNTDOWN SECTION ── */
-
+/* ── Countdown Section ── */
 .countdown-section {
-  background: rgba(255, 215, 0, 0.04);
-  border: 1px solid rgba(255, 215, 0, 0.15);
-  border-radius: var(--radius-sm);
-  padding: 0.625rem;
-  margin-top: 0.5rem;
+  background: rgba(255, 215, 0, 0.03);
+  border: 1px solid rgba(255, 215, 0, 0.08);
+  border-radius: var(--radius-md);
+  padding: 10px;
+  margin-top: 8px;
   text-align: center;
 }
 
 .countdown-timer {
+  font-family: var(--font-mono);
   font-size: 1rem;
   font-weight: 700;
   color: var(--color-primary);
@@ -720,39 +682,42 @@
 
 .countdown-timer.urgent {
   color: var(--color-error);
-  animation: pulse 1s infinite;
+  animation: pulse-fade 1s ease-in-out infinite;
 }
 
-/* ── BET CART PANEL ── */
+/* ================================================
+   BET CART PANEL (Fixed)
+   ================================================ */
 
 .bet-cart-panel {
   position: fixed;
-  bottom: 1rem;
-  right: 1rem;
+  bottom: 16px;
+  right: 16px;
   width: 340px;
   max-height: 60vh;
-  background: var(--color-bg-dark, #0d0d0d);
-  border: 1px solid var(--color-primary);
-  border-radius: var(--radius-lg);
+  background: rgba(10, 10, 10, 0.95);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border: 1px solid rgba(255, 215, 0, 0.2);
+  border-radius: var(--radius-2xl);
   box-shadow:
-    0 0 0 1px rgba(255, 215, 0, 0.1),
-    0 8px 32px rgba(0, 0, 0, 0.5),
-    0 0 60px rgba(255, 215, 0, 0.06);
+    0 24px 64px rgba(0, 0, 0, 0.5),
+    0 0 60px rgba(255, 215, 0, 0.04);
   z-index: 200;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  animation: cartSlideUp 0.3s ease-out;
+  animation: cart-appear 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-@keyframes cartSlideUp {
+@keyframes cart-appear {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(20px) scale(0.95);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
   }
 }
 
@@ -760,42 +725,40 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.75rem 1rem;
-  border-bottom: 1px solid rgba(255, 215, 0, 0.15);
-  background: rgba(255, 215, 0, 0.04);
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(255, 215, 0, 0.1);
+  background: rgba(255, 215, 0, 0.03);
 }
 
 .cart-title {
-  font-weight: 700;
-  font-size: 0.813rem;
+  font-weight: 600;
+  font-size: 0.8rem;
   color: var(--color-primary);
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.04em;
 }
 
 .cart-clear-btn {
   background: none;
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-full);
   color: var(--color-text-muted);
-  font-size: 0.688rem;
-  padding: 0.25rem 0.5rem;
+  font-size: 0.65rem;
+  padding: 3px 10px;
   cursor: pointer;
-  transition: all 0.15s ease;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
+  transition: all var(--transition-fast);
   font-weight: 600;
 }
 
 .cart-clear-btn:hover {
-  border-color: var(--color-error);
+  border-color: rgba(248, 113, 113, 0.3);
   color: var(--color-error);
 }
 
 .cart-items-list {
   flex: 1;
   overflow-y: auto;
-  padding: 0.5rem;
+  padding: 8px;
   max-height: 200px;
 }
 
@@ -803,52 +766,53 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.5rem 0.625rem;
-  margin-bottom: 0.25rem;
-  background: rgba(255, 255, 255, 0.03);
-  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  margin-bottom: 4px;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: var(--radius-md);
   border: 1px solid rgba(255, 255, 255, 0.04);
-  transition: background 0.15s ease;
+  transition: background var(--transition-fast);
 }
 
 .cart-item:hover {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.04);
 }
 
 .cart-item-info {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 8px;
 }
 
 .cart-item-type {
-  font-size: 0.688rem;
-  font-weight: 700;
+  font-size: 0.65rem;
+  font-weight: 600;
   color: var(--color-primary);
   text-transform: uppercase;
-  letter-spacing: 0.04em;
-  padding: 0.125rem 0.375rem;
-  background: rgba(255, 215, 0, 0.08);
+  letter-spacing: 0.03em;
+  padding: 2px 6px;
+  background: rgba(255, 215, 0, 0.06);
   border-radius: var(--radius-sm);
-  border: 1px solid rgba(255, 215, 0, 0.15);
+  border: 1px solid rgba(255, 215, 0, 0.1);
 }
 
 .cart-item-number {
+  font-family: var(--font-mono);
   font-size: 0.875rem;
   font-weight: 700;
   color: var(--color-text-primary);
   font-variant-numeric: tabular-nums;
-  letter-spacing: 0.04em;
 }
 
 .cart-item-right {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 8px;
 }
 
 .cart-item-amount {
-  font-size: 0.813rem;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
   font-weight: 600;
   color: var(--color-text-secondary);
   font-variant-numeric: tabular-nums;
@@ -860,32 +824,32 @@
   color: var(--color-text-muted);
   cursor: pointer;
   font-size: 0.75rem;
-  width: 1.25rem;
-  height: 1.25rem;
+  width: 20px;
+  height: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  transition: all 0.15s ease;
-  opacity: 0.5;
+  transition: all var(--transition-fast);
+  opacity: 0.4;
 }
 
 .cart-item-remove:hover {
   opacity: 1;
   color: var(--color-error);
-  background: rgba(244, 67, 54, 0.1);
+  background: rgba(248, 113, 113, 0.08);
 }
 
 .cart-panel-footer {
-  padding: 0.75rem 1rem;
-  border-top: 1px solid rgba(255, 215, 0, 0.15);
-  background: rgba(255, 215, 0, 0.03);
+  padding: 12px 16px;
+  border-top: 1px solid rgba(255, 215, 0, 0.1);
+  background: rgba(255, 215, 0, 0.02);
 }
 
 .cart-total-row {
   display: flex;
   justify-content: flex-end;
-  margin-bottom: 0.625rem;
+  margin-bottom: 10px;
   font-size: 0.875rem;
   font-weight: 700;
   color: var(--color-text-primary);
@@ -895,214 +859,124 @@
 .cart-buy-btn {
   width: 100%;
   font-weight: 700 !important;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.03em;
   text-transform: uppercase;
-  font-size: 0.813rem !important;
+  font-size: 0.8rem !important;
+  border-radius: var(--radius-lg) !important;
 }
 
-/* ── RESPONSIVE ── */
-
-@media (max-width: 768px) {
-  .bet-type-selector {
-    gap: 0.375rem;
-  }
-
-  .bet-type-btn {
-    padding: 0.625rem 0.375rem;
-  }
-
-  .bet-type-btn .type-name {
-    font-size: 0.813rem;
-  }
-
-  .bet-type-btn .type-multiplier {
-    font-size: 0.688rem;
-  }
-
-  .number-input {
-    font-size: var(--font-size-xl) !important;
-    letter-spacing: 0.4rem;
-  }
-
-  .quick-amount-btn {
-    font-size: 0.688rem;
-    padding: 0.375rem;
-  }
-
-  .availability-message {
-    padding: 0.5rem 0.625rem;
-    font-size: 0.75rem;
-  }
-
-  .limits-info {
-    padding: 0.75rem;
-  }
-
-  .limits-info h4 {
-    font-size: 0.688rem;
-  }
-
-  .limits-info p {
-    font-size: 0.688rem;
-  }
-
-  .draws-selector {
-    max-height: 240px;
-  }
-
-  .bet-cart-panel {
-    left: 0.5rem;
-    right: 0.5rem;
-    bottom: 0.5rem;
-    width: auto;
-    max-height: 50vh;
-  }
-
-  .cart-items-list {
-    max-height: 120px;
-  }
-}
-
-/* ── ANIMATIONS ── */
-
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateY(-6px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
-}
-
-/* =================================
-   RESULTS BANNER — Last 3 draws
-   ================================= */
+/* ================================================
+   RESULTS BANNER
+   ================================================ */
 
 .results-banner {
-  margin-bottom: 1.5rem;
-  animation: slideIn 0.35s ease-out;
+  margin-bottom: 24px;
+  animation: anim-slide-in 0.35s ease-out;
 }
 
 .results-banner-title {
-  font-size: 0.75rem;
-  font-weight: 700;
+  font-size: 0.7rem;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: var(--color-primary);
-  margin-bottom: 0.75rem;
+  margin-bottom: 12px;
 }
 
 .results-banner-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 0.75rem;
+  gap: 10px;
 }
 
 .result-card {
-  background: var(--color-bg-darker);
+  background: rgba(255, 255, 255, 0.02);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  padding: 0.875rem;
+  border-radius: var(--radius-xl);
+  padding: 14px;
   text-align: center;
-  position: relative;
-  overflow: hidden;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.result-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, var(--color-primary), transparent);
+  transition:
+    border-color var(--transition-fast),
+    box-shadow var(--transition-normal);
 }
 
 .result-card:hover {
-  border-color: rgba(255, 215, 0, 0.3);
-  box-shadow: 0 4px 16px rgba(255, 215, 0, 0.06);
+  border-color: rgba(255, 215, 0, 0.15);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
 }
 
 .result-card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 0.625rem;
+  margin-bottom: 10px;
 }
 
 .result-draw-label {
-  font-size: 0.688rem;
-  font-weight: 700;
+  font-size: 0.65rem;
+  font-weight: 600;
   color: var(--color-text-secondary);
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.03em;
 }
 
 .result-bets-count {
-  font-size: 0.625rem;
+  font-size: 0.6rem;
   color: var(--color-text-muted);
   font-variant-numeric: tabular-nums;
 }
 
 .result-winning-number {
+  font-family: var(--font-mono);
   font-size: 1.75rem;
-  font-weight: 800;
+  font-weight: 700;
   color: var(--color-primary);
-  letter-spacing: 0.3rem;
+  letter-spacing: 0.25rem;
   font-variant-numeric: tabular-nums;
-  margin: 0.375rem 0;
-  text-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
+  margin: 6px 0;
 }
 
 .result-breakdown {
   display: flex;
   justify-content: center;
-  gap: 0.5rem;
-  margin: 0.5rem 0;
+  gap: 6px;
+  margin: 8px 0;
   flex-wrap: wrap;
 }
 
 .result-part {
-  font-size: 0.688rem;
+  font-size: 0.65rem;
   color: var(--color-text-muted);
-  padding: 0.125rem 0.375rem;
-  background: rgba(255, 255, 255, 0.04);
+  padding: 2px 8px;
+  background: rgba(255, 255, 255, 0.03);
   border-radius: var(--radius-sm);
   font-variant-numeric: tabular-nums;
 }
 
 .result-part em {
   font-style: normal;
-  color: var(--color-primary-dark);
+  color: var(--color-text-secondary);
   font-weight: 600;
-  margin-right: 0.25rem;
+  margin-right: 4px;
 }
 
 .result-payout {
   font-size: 0.75rem;
   font-weight: 600;
   color: var(--color-success);
-  margin-top: 0.375rem;
+  margin-top: 6px;
 }
 
-/* =================================
-   ODDS SECTION — Probability info
-   ================================= */
+/* ================================================
+   ODDS SECTION
+   ================================================ */
 
 .odds-section {
-  margin-top: 1.25rem;
-  background: var(--color-bg-darker);
+  margin-top: 20px;
+  background: rgba(255, 255, 255, 0.02);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  padding: 1.25rem;
+  border-radius: var(--radius-xl);
+  padding: 20px;
   position: relative;
   overflow: hidden;
 }
@@ -1111,77 +985,78 @@
   content: '';
   position: absolute;
   top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, var(--color-primary), rgba(255, 215, 0, 0.3), transparent);
+  left: 15%;
+  right: 15%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--color-primary), transparent);
+  opacity: 0.3;
 }
 
 .odds-title {
-  font-size: 0.875rem;
-  font-weight: 800;
+  font-size: 0.85rem;
+  font-weight: 700;
   color: var(--color-primary);
-  margin-bottom: 0.25rem;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
+  margin-bottom: 4px;
+  letter-spacing: 0.02em;
 }
 
 .odds-subtitle {
   font-size: 0.75rem;
   color: var(--color-text-muted);
-  margin-bottom: 1rem;
+  margin-bottom: 16px;
   line-height: 1.5;
 }
 
 .odds-grid {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-  margin-bottom: 1rem;
+  gap: 10px;
+  margin-bottom: 16px;
 }
 
 .odds-card {
-  padding: 0.875rem;
-  border-radius: var(--radius-md);
-  border: 1px solid rgba(255, 215, 0, 0.1);
+  padding: 14px;
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(255, 215, 0, 0.06);
   background: rgba(255, 215, 0, 0.02);
-  transition: border-color 0.2s ease;
+  transition: border-color var(--transition-fast);
 }
 
 .odds-card:hover {
-  border-color: rgba(255, 215, 0, 0.25);
+  border-color: rgba(255, 215, 0, 0.15);
 }
 
 .odds-card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 0.375rem;
+  margin-bottom: 6px;
 }
 
 .odds-type {
-  font-size: 0.813rem;
-  font-weight: 700;
+  font-size: 0.8rem;
+  font-weight: 600;
   color: var(--color-text-primary);
 }
 
 .odds-multiplier {
+  font-family: var(--font-mono);
   font-size: 0.875rem;
-  font-weight: 800;
+  font-weight: 700;
   color: var(--color-primary);
   font-variant-numeric: tabular-nums;
 }
 
 .odds-probability {
   display: inline-block;
-  font-size: 0.75rem;
-  font-weight: 700;
+  font-size: 0.7rem;
+  font-weight: 600;
   color: var(--color-success);
-  padding: 0.125rem 0.5rem;
-  background: rgba(76, 175, 80, 0.1);
-  border: 1px solid rgba(76, 175, 80, 0.2);
+  padding: 2px 10px;
+  background: rgba(52, 211, 153, 0.08);
+  border: 1px solid rgba(52, 211, 153, 0.12);
   border-radius: var(--radius-full);
-  margin-bottom: 0.375rem;
+  margin-bottom: 6px;
 }
 
 .odds-desc {
@@ -1196,132 +1071,185 @@
 }
 
 .odds-comparison {
-  padding: 0.875rem;
-  background: rgba(244, 67, 54, 0.04);
-  border: 1px solid rgba(244, 67, 54, 0.12);
-  border-radius: var(--radius-md);
-  margin-bottom: 0.875rem;
+  padding: 14px;
+  background: rgba(248, 113, 113, 0.03);
+  border: 1px solid rgba(248, 113, 113, 0.08);
+  border-radius: var(--radius-lg);
+  margin-bottom: 14px;
 }
 
 .odds-comparison h5 {
-  font-size: 0.688rem;
-  font-weight: 700;
+  font-size: 0.65rem;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: var(--color-text-secondary);
-  margin-bottom: 0.5rem;
+  margin-bottom: 8px;
 }
 
 .odds-vs-list {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 4px;
 }
 
 .odds-vs-item {
   font-size: 0.75rem;
   font-variant-numeric: tabular-nums;
-  padding: 0.25rem 0.5rem;
-  border-radius: var(--radius-sm);
+  padding: 4px 8px;
+  border-radius: var(--radius-md);
 }
 
 .odds-vs-item.bad {
   color: var(--color-error);
-  background: rgba(244, 67, 54, 0.06);
+  background: rgba(248, 113, 113, 0.04);
   text-decoration: line-through;
-  text-decoration-color: rgba(244, 67, 54, 0.4);
+  text-decoration-color: rgba(248, 113, 113, 0.3);
 }
 
 .odds-comparison-note {
   font-size: 0.75rem;
   color: var(--color-text-muted);
-  margin-top: 0.625rem;
+  margin-top: 10px;
   line-height: 1.5;
 }
 
 .odds-features {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.375rem;
+  gap: 6px;
 }
 
 .odds-feature {
-  font-size: 0.688rem;
+  font-size: 0.65rem;
   font-weight: 600;
   color: var(--color-success);
-  padding: 0.25rem 0.625rem;
-  background: rgba(76, 175, 80, 0.08);
-  border: 1px solid rgba(76, 175, 80, 0.15);
+  padding: 4px 12px;
+  background: rgba(52, 211, 153, 0.06);
+  border: 1px solid rgba(52, 211, 153, 0.1);
   border-radius: var(--radius-full);
 }
 
-/* =================================
-   VERIFY SECTION — On-chain links
-   ================================= */
+/* ================================================
+   VERIFY SECTION
+   ================================================ */
 
 .verify-section {
-  margin-top: 1rem;
-  padding-top: 0.75rem;
+  margin-top: 16px;
+  padding-top: 12px;
   border-top: 1px solid var(--color-border);
 }
 
 .verify-section h4 {
   color: var(--color-primary);
-  font-size: 0.7rem;
-  margin-bottom: 0.375rem;
+  font-size: 0.65rem;
+  margin-bottom: 6px;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .verify-desc {
   font-size: 0.75rem;
   color: var(--color-text-muted);
   line-height: 1.5;
-  margin-bottom: 0.625rem;
+  margin-bottom: 10px;
 }
 
 .verify-links {
   display: flex;
   flex-direction: column;
-  gap: 0.375rem;
+  gap: 6px;
 }
 
 .verify-link {
   display: flex;
   align-items: center;
-  gap: 0.375rem;
-  padding: 0.5rem 0.75rem;
-  background: rgba(255, 215, 0, 0.04);
-  border: 1px solid rgba(255, 215, 0, 0.12);
-  border-radius: var(--radius-sm);
+  gap: 6px;
+  padding: 8px 12px;
+  background: rgba(255, 215, 0, 0.03);
+  border: 1px solid rgba(255, 215, 0, 0.08);
+  border-radius: var(--radius-md);
   color: var(--color-primary);
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: 500;
   text-decoration: none;
-  transition: all 0.15s ease;
-  letter-spacing: 0.02em;
+  transition: all var(--transition-fast);
 }
 
 .verify-link:hover {
-  background: rgba(255, 215, 0, 0.08);
-  border-color: rgba(255, 215, 0, 0.3);
+  background: rgba(255, 215, 0, 0.06);
+  border-color: rgba(255, 215, 0, 0.2);
   transform: translateX(2px);
 }
 
 .verify-link::before {
-  content: '\2197'; /* ↗ arrow */
-  font-size: 0.813rem;
+  content: '\2197';
+  font-size: 0.8rem;
 }
 
-/* =================================
-   RESPONSIVE — new sections
-   ================================= */
+/* ================================================
+   ANIMATIONS
+   ================================================ */
+
+@keyframes anim-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse-fade {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* ================================================
+   RESPONSIVE
+   ================================================ */
 
 @media (max-width: 768px) {
+  .bet-type-selector {
+    gap: 6px;
+  }
+
+  .bet-type-btn {
+    padding: 10px 6px;
+  }
+
+  .bet-type-btn .type-name {
+    font-size: 0.8rem;
+  }
+
+  .bet-type-btn .type-multiplier {
+    font-size: 0.7rem;
+  }
+
+  .number-input {
+    font-size: var(--font-size-xl) !important;
+    letter-spacing: 0.4rem;
+  }
+
+  .quick-amount-btn {
+    font-size: 0.7rem;
+    padding: 6px;
+  }
+
+  .limits-info {
+    padding: 12px;
+  }
+
+  .draws-selector {
+    max-height: 240px;
+  }
+
   .results-banner-grid {
     grid-template-columns: 1fr;
-    gap: 0.5rem;
+    gap: 8px;
   }
 
   .result-winning-number {
@@ -1330,14 +1258,22 @@
   }
 
   .odds-section {
-    padding: 1rem;
+    padding: 16px;
   }
 
   .odds-features {
     flex-direction: column;
   }
 
-  .verify-links {
-    gap: 0.25rem;
+  .bet-cart-panel {
+    left: 8px;
+    right: 8px;
+    bottom: 8px;
+    width: auto;
+    max-height: 50vh;
+  }
+
+  .cart-items-list {
+    max-height: 120px;
   }
 }
