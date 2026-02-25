@@ -1,8 +1,8 @@
 /* ============================================================
-   BINGO PAGE — Base container
+   BINGO PAGE - Base container
    ============================================================ */
 
 .bingo-page {
   min-height: 100vh;
-  background: #0a0e1a;
+  background: var(--color-bg-darker);
 }

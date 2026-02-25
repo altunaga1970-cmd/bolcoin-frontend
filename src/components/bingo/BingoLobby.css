@@ -1,10 +1,10 @@
 /* ============================================================
-   BINGO LOBBY — Codere-style Dark Premium Theme
+   BINGO LOBBY - Apple-inspired Glass Morphism
    ============================================================ */
 
 .bingo-lobby {
   min-height: calc(100vh - 80px);
-  background: linear-gradient(135deg, #0a0e1a 0%, #0f1628 50%, #0a0e1a 100%);
+  background: var(--color-bg-darker);
   padding: 2rem;
 }
 
@@ -22,44 +22,42 @@
 
 .lobby-title {
   font-size: 2.5rem;
-  font-weight: 900;
-  letter-spacing: 0.1em;
-  background: linear-gradient(135deg, #f59e0b, #fbbf24, #f59e0b);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--color-text-primary);
   margin: 0;
 }
 
 .lobby-subtitle {
-  color: rgba(255, 255, 255, 0.45);
-  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
   margin: 0.25rem 0 0;
-  letter-spacing: 0.02em;
+  font-weight: 500;
 }
 
 .lobby-jackpot {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  background: rgba(245, 158, 11, 0.08);
-  border: 1px solid rgba(245, 158, 11, 0.25);
-  border-radius: 12px;
+  background: rgba(255, 215, 0, 0.04);
+  border: 1px solid rgba(255, 215, 0, 0.1);
+  border-radius: var(--radius-xl);
   padding: 0.75rem 1.5rem;
 }
 
 .lobby-jackpot .jackpot-label {
   font-size: 0.7rem;
-  color: rgba(245, 158, 11, 0.7);
-  letter-spacing: 0.15em;
-  font-weight: 700;
+  color: rgba(255, 215, 0, 0.6);
+  letter-spacing: 0.1em;
+  font-weight: 600;
+  text-transform: uppercase;
 }
 
 .lobby-jackpot .jackpot-amount {
   font-size: 1.5rem;
-  font-weight: 800;
-  color: #f59e0b;
-  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-weight: 700;
+  color: var(--color-primary);
+  font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
 }
 
@@ -70,21 +68,23 @@
 .my-rooms-banner {
   max-width: 1100px;
   margin: 0 auto 1.25rem;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
   padding: 0.75rem 1.25rem;
   display: flex;
   align-items: center;
   gap: 1rem;
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
 }
 
 .my-rooms-label {
   font-size: 0.7rem;
-  font-weight: 700;
-  color: rgba(255, 255, 255, 0.45);
+  font-weight: 600;
+  color: var(--color-text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
   white-space: nowrap;
 }
 
@@ -98,19 +98,19 @@
   display: flex;
   align-items: center;
   gap: 0.4rem;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-full);
   padding: 0.35rem 0.75rem;
-  color: rgba(255, 255, 255, 0.85);
+  color: var(--color-text-secondary);
   font-size: 0.75rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
 }
 
 .my-room-chip:hover {
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.06);
   transform: translateY(-1px);
 }
 
@@ -128,14 +128,14 @@
 }
 
 .chip-info {
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--color-text-muted);
   font-size: 0.65rem;
   font-weight: 400;
   margin-left: 0.25rem;
 }
 
 /* =============================================================================
-   MY CARDS BADGE on RoomCard
+   MY CARDS BADGE
    ============================================================================= */
 
 .room-badges {
@@ -147,9 +147,9 @@
 .my-cards-badge {
   font-size: 0.55rem;
   font-weight: 700;
-  color: #22c55e;
-  background: rgba(34, 197, 94, 0.12);
-  border: 1px solid rgba(34, 197, 94, 0.3);
+  color: var(--color-success);
+  background: rgba(52, 211, 153, 0.08);
+  border: 1px solid rgba(52, 211, 153, 0.2);
   border-radius: 4px;
   padding: 1px 5px;
   text-transform: uppercase;
@@ -163,7 +163,7 @@
 }
 
 /* =============================================================================
-   ROOM GRID (2x2)
+   ROOM GRID
    ============================================================================= */
 
 .lobby-grid {
@@ -179,10 +179,11 @@
    ============================================================================= */
 
 .room-card {
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 16px;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-2xl);
   padding: 1.5rem;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -198,24 +199,23 @@
   right: 0;
   height: 3px;
   background: var(--room-color, #666);
-  opacity: 0.8;
+  opacity: 0.7;
 }
 
 .room-card:hover {
-  border-color: var(--room-color, #666);
-  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
   transform: translateY(-2px);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
 }
 
-/* Buying phase: pulsing glow */
 .room-card.phase-buying {
-  border-color: var(--room-color);
+  border-color: color-mix(in srgb, var(--room-color), transparent 60%);
   animation: room-pulse 2s ease-in-out infinite;
 }
 
 .room-card.phase-drawing {
-  border-color: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.1);
 }
 
 /* Room Header */
@@ -228,45 +228,45 @@
 
 .room-name {
   font-size: 1rem;
-  font-weight: 700;
-  color: rgba(255, 255, 255, 0.9);
-  letter-spacing: 0.02em;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  letter-spacing: -0.01em;
 }
 
 /* Phase Badge */
 .room-phase-badge {
   font-size: 0.65rem;
-  font-weight: 800;
-  letter-spacing: 0.1em;
+  font-weight: 700;
+  letter-spacing: 0.08em;
   padding: 4px 10px;
-  border-radius: 20px;
+  border-radius: var(--radius-full);
   text-transform: uppercase;
 }
 
 .room-phase-badge.phase-buying {
-  background: rgba(34, 197, 94, 0.15);
-  color: #22c55e;
+  background: rgba(52, 211, 153, 0.1);
+  color: var(--color-success);
   animation: badge-pulse 1.5s ease-in-out infinite;
 }
 
 .room-phase-badge.phase-drawing {
-  background: rgba(59, 130, 246, 0.15);
+  background: rgba(96, 165, 250, 0.1);
   color: #60a5fa;
 }
 
 .room-phase-badge.phase-results {
-  background: rgba(245, 158, 11, 0.15);
-  color: #fbbf24;
+  background: rgba(255, 215, 0, 0.08);
+  color: var(--color-primary);
 }
 
 .room-phase-badge.phase-waiting,
 .room-phase-badge.phase-starting {
-  background: rgba(255, 255, 255, 0.06);
-  color: rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--color-text-muted);
 }
 
 .room-phase-badge.phase-error {
-  background: rgba(239, 68, 68, 0.15);
+  background: rgba(239, 68, 68, 0.1);
   color: #ef4444;
 }
 
@@ -279,23 +279,23 @@
 .room-countdown .countdown-label {
   display: block;
   font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.35);
+  color: var(--color-text-muted);
   margin-bottom: 0.35rem;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
+  font-weight: 500;
 }
 
 .room-countdown .countdown-value {
   font-size: 2.5rem;
-  font-weight: 800;
-  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-weight: 700;
+  font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
-  color: rgba(255, 255, 255, 0.9);
-  letter-spacing: 0.05em;
-  text-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+  color: var(--color-text-primary);
+  letter-spacing: 0.03em;
 }
 
 .room-countdown .countdown-value.countdown-active {
-  color: #22c55e;
+  color: var(--color-success);
   animation: countdown-tick 1s ease-in-out infinite;
 }
 
@@ -310,8 +310,8 @@
   justify-content: space-between;
   margin-bottom: 1.25rem;
   padding: 0.75rem 0;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
 }
 
 .room-stat {
@@ -324,16 +324,18 @@
 .room-stat .stat-value {
   font-size: 1rem;
   font-weight: 700;
-  color: var(--room-color, rgba(255, 255, 255, 0.9));
-  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  color: var(--room-color, var(--color-text-primary));
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
 }
 
 .room-stat .stat-label {
   font-size: 0.65rem;
-  color: rgba(255, 255, 255, 0.35);
+  color: var(--color-text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
   margin-top: 2px;
+  font-weight: 500;
 }
 
 /* Prize breakdown */
@@ -342,8 +344,8 @@
   justify-content: space-between;
   margin-bottom: 1rem;
   padding: 0.5rem 0.75rem;
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: var(--radius-lg);
   gap: 0.5rem;
 }
 
@@ -356,15 +358,15 @@
 
 .room-prize-item .prize-label {
   font-size: 0.55rem;
-  color: rgba(255, 255, 255, 0.3);
+  color: var(--color-text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
 }
 
 .room-prize-item .prize-value {
   font-size: 0.8rem;
   font-weight: 700;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
 }
 
@@ -373,7 +375,7 @@
 }
 
 .prize-bingo {
-  color: #22c55e;
+  color: var(--color-success);
 }
 
 .prize-jackpot {
@@ -385,10 +387,10 @@
   width: 100%;
   padding: 0.75rem;
   border: none;
-  border-radius: 10px;
+  border-radius: var(--radius-xl);
   font-size: 0.85rem;
-  font-weight: 800;
-  letter-spacing: 0.1em;
+  font-weight: 700;
+  letter-spacing: 0.06em;
   cursor: pointer;
   transition: all 0.3s ease;
   text-transform: uppercase;
@@ -406,25 +408,25 @@
 }
 
 .room-cta.cta-watch {
-  background: rgba(59, 130, 246, 0.15);
+  background: rgba(96, 165, 250, 0.1);
   color: #60a5fa;
-  border: 1px solid rgba(59, 130, 246, 0.3);
+  border: 1px solid rgba(96, 165, 250, 0.2);
 }
 
 .room-cta.cta-watch:hover {
-  background: rgba(59, 130, 246, 0.25);
+  background: rgba(96, 165, 250, 0.18);
 }
 
 .room-cta.cta-disabled {
-  background: rgba(255, 255, 255, 0.04);
-  color: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--color-text-muted);
   cursor: default;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.04);
 }
 
 /* Placeholder cards */
 .room-card.room-placeholder {
-  opacity: 0.4;
+  opacity: 0.35;
   cursor: default;
 }
 
@@ -438,9 +440,9 @@
   display: flex;
   justify-content: center;
   gap: 2rem;
-  color: rgba(255, 255, 255, 0.25);
+  color: var(--color-text-muted);
   font-size: 0.75rem;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.02em;
 }
 
 .lobby-loading {
@@ -449,12 +451,12 @@
   align-items: center;
   justify-content: center;
   padding: 4rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--color-text-muted);
 }
 
 .lobby-loading p {
   margin-top: 1rem;
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
 }
 
 /* =============================================================================
