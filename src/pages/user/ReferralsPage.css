@@ -1,4 +1,4 @@
-/* ============ Referrals Page ============ */
+/* ============ Referrals Page - Apple-inspired Glass Morphism ============ */
 
 .loading-state {
   text-align: center;
@@ -16,9 +16,9 @@
   align-items: center;
   gap: var(--spacing-lg);
   padding: var(--spacing-lg);
-  background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(255, 215, 0, 0.05));
-  border: 1px solid var(--color-primary);
-  border-radius: var(--radius-lg);
+  background: rgba(255, 215, 0, 0.04);
+  border: 1px solid rgba(255, 215, 0, 0.1);
+  border-radius: var(--radius-2xl);
   margin-bottom: var(--spacing-xl);
 }
 
@@ -29,6 +29,7 @@
 .banner-content h3 {
   color: var(--color-primary);
   margin-bottom: var(--spacing-xs);
+  font-weight: 600;
 }
 
 .banner-content p {
@@ -38,16 +39,19 @@
 
 /* Referral Card */
 .referral-card {
-  background: var(--color-bg-card);
+  background: var(--glass-bg);
   padding: var(--spacing-xl);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--color-border);
+  border-radius: var(--radius-2xl);
+  border: 1px solid var(--glass-border);
   margin-bottom: var(--spacing-lg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
 }
 
 .referral-card h3 {
   color: var(--color-text-primary);
   margin-bottom: var(--spacing-sm);
+  font-weight: 600;
 }
 
 .referral-description {
@@ -60,9 +64,9 @@
   display: flex;
   gap: var(--spacing-sm);
   align-items: center;
-  background: var(--color-bg-darker);
+  background: rgba(255, 255, 255, 0.02);
   padding: var(--spacing-md);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-xl);
   margin-bottom: var(--spacing-lg);
 }
 
@@ -71,6 +75,7 @@
   color: var(--color-primary);
   font-size: var(--font-size-sm);
   word-break: break-all;
+  font-family: var(--font-mono);
 }
 
 /* Share Buttons */
@@ -82,38 +87,38 @@
 
 .share-btn {
   padding: var(--spacing-sm) var(--spacing-md);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   font-size: var(--font-size-sm);
-  font-weight: bold;
+  font-weight: 600;
   text-decoration: none;
-  transition: all var(--transition-fast);
+  transition: all 0.2s ease;
 }
 
 .share-btn.twitter {
-  background: #1da1f2;
-  color: white;
+  background: rgba(29, 161, 242, 0.12);
+  color: #1DA1F2;
 }
 
 .share-btn.twitter:hover {
-  background: #0c8de4;
+  background: rgba(29, 161, 242, 0.2);
 }
 
 .share-btn.whatsapp {
-  background: #25d366;
-  color: white;
+  background: rgba(37, 211, 102, 0.12);
+  color: #25D366;
 }
 
 .share-btn.whatsapp:hover {
-  background: #1da851;
+  background: rgba(37, 211, 102, 0.2);
 }
 
 .share-btn.telegram {
-  background: #0088cc;
-  color: white;
+  background: rgba(0, 136, 204, 0.12);
+  color: #0088CC;
 }
 
 .share-btn.telegram:hover {
-  background: #006699;
+  background: rgba(0, 136, 204, 0.2);
 }
 
 /* Stats Grid */
@@ -125,28 +130,33 @@
 }
 
 .stat-card {
-  background: var(--color-bg-card);
+  background: var(--glass-bg);
   padding: var(--spacing-lg);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--color-border);
+  border-radius: var(--radius-2xl);
+  border: 1px solid var(--glass-border);
   text-align: center;
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
 }
 
 .stat-card.highlight {
-  border-color: var(--color-primary);
-  background: rgba(255, 215, 0, 0.05);
+  border-color: rgba(255, 215, 0, 0.12);
+  background: rgba(255, 215, 0, 0.03);
 }
 
 .stat-value {
   font-size: var(--font-size-2xl);
-  font-weight: bold;
+  font-weight: 700;
   color: var(--color-primary);
   margin-bottom: var(--spacing-xs);
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
 }
 
 .stat-label {
   color: var(--color-text-muted);
   font-size: var(--font-size-sm);
+  font-weight: 500;
 }
 
 .claim-btn {
@@ -155,7 +165,7 @@
 
 /* Register Section */
 .register-section {
-  border: 2px dashed var(--color-border);
+  border: 1px dashed rgba(255, 255, 255, 0.08);
   background: transparent;
 }
 
@@ -172,34 +182,37 @@
 .referrer-input {
   flex: 1;
   padding: var(--spacing-md);
-  background: var(--color-bg-input);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-lg);
   color: var(--color-text-primary);
-  font-family: monospace;
+  font-family: var(--font-mono);
   font-size: var(--font-size-sm);
+  transition: border-color 0.2s ease;
 }
 
 .referrer-input:focus {
   border-color: var(--color-primary);
   outline: none;
+  box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.08);
 }
 
 /* My Referrer */
 .my-referrer {
-  background: rgba(76, 175, 80, 0.1);
-  border-color: #4caf50;
+  background: rgba(52, 211, 153, 0.03);
+  border-color: rgba(52, 211, 153, 0.12);
 }
 
 .my-referrer h3 {
-  color: #4caf50;
+  color: var(--color-success);
 }
 
 .my-referrer code {
-  background: var(--color-bg-darker);
+  background: rgba(255, 255, 255, 0.03);
   padding: var(--spacing-xs) var(--spacing-sm);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
   color: var(--color-text-primary);
+  font-family: var(--font-mono);
 }
 
 /* Referred List */
@@ -214,7 +227,7 @@
   align-items: center;
   gap: var(--spacing-md);
   padding: var(--spacing-sm);
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
 }
 
 .referred-item:last-child {
@@ -230,6 +243,7 @@
 .referred-address {
   color: var(--color-text-secondary);
   font-size: var(--font-size-sm);
+  font-family: var(--font-mono);
 }
 
 /* How it Works */
@@ -241,6 +255,7 @@
   color: var(--color-text-primary);
   text-align: center;
   margin-bottom: var(--spacing-lg);
+  font-weight: 600;
 }
 
 .steps-grid {
@@ -263,7 +278,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: bold;
+  font-weight: 700;
   font-size: var(--font-size-lg);
   margin: 0 auto var(--spacing-md);
 }
@@ -271,6 +286,7 @@
 .step-card h4 {
   color: var(--color-text-primary);
   margin-bottom: var(--spacing-xs);
+  font-weight: 600;
 }
 
 .step-card p {
