@@ -1338,7 +1338,7 @@
   }
 
   .room-game-right {
-    order: -1;
+    /* Cards appear first on mobile (natural DOM order) */
     overflow-y: visible;
   }
 
@@ -1352,8 +1352,16 @@
     gap: 0.5rem;
   }
 
+  /* Compact ball history on mobile — constrain height so it doesn't push cards off-screen */
   .ball-history-v2 {
     grid-template-columns: repeat(10, 1fr);
+    max-height: 110px;
+    overflow-y: auto;
+  }
+
+  /* Compact ball draw panel on mobile */
+  .ball-draw-v2 {
+    margin-top: 0.75rem;
   }
 
   .announcement-card {
