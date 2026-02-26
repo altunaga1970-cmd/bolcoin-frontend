@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   BLOCKED_COUNTRY_CODES,
   getBlockedMessage,
@@ -9,26 +9,45 @@ import {
 } from '../../config/geoblocking';
 import './GeoBlock.css';
 
+// Fetch con timeout via AbortController — evita que un fetch colgado bloquee la UI
+function fetchWithTimeout(url, ms = 4000) {
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), ms);
+  return fetch(url, { signal: controller.signal }).finally(() => clearTimeout(id));
+}
+
 function GeoBlock({ children }) {
   const [isBlocked, setIsBlocked] = useState(false);
   const [blockInfo, setBlockInfo] = useState(null);
   const [isChecking, setIsChecking] = useState(true);
+  const cancelledRef = useRef(false);
 
   useEffect(() => {
-    checkGeoLocation();
-  }, []);
+    cancelledRef.current = false;
+
+    // Timeout de seguridad: si el check tarda más de 5s, mostrar la app
+    const safetyTimer = setTimeout(() => {
+      if (!cancelledRef.current) setIsChecking(false);
+    }, 5000);
+
+    checkGeoLocation().finally(() => {
+      clearTimeout(safetyTimer);
+    });
+
+    return () => { cancelledRef.current = true; clearTimeout(safetyTimer); };
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const checkGeoLocation = async () => {
     // Verificar cache primero
     const cached = getCachedGeoData();
     if (cached) {
-      processGeoData(cached);
+      if (!cancelledRef.current) processGeoData(cached);
       return;
     }
 
     try {
-      // Intentar con API principal
-      let response = await fetch(GEO_API_URL);
+      // Intentar con API principal (4s timeout)
+      let response = await fetchWithTimeout(GEO_API_URL, 4000);
       let data = await response.json();
 
       if (data.status === 'success') {
@@ -38,12 +57,12 @@ function GeoBlock({ children }) {
           timestamp: Date.now()
         };
         cacheGeoData(geoData);
-        processGeoData(geoData);
+        if (!cancelledRef.current) processGeoData(geoData);
         return;
       }
 
-      // Fallback a API alternativa
-      response = await fetch(GEO_API_URL_ALT);
+      // Fallback a API alternativa (4s timeout)
+      response = await fetchWithTimeout(GEO_API_URL_ALT, 4000);
       data = await response.json();
 
       if (data.country_code) {
@@ -53,20 +72,21 @@ function GeoBlock({ children }) {
           timestamp: Date.now()
         };
         cacheGeoData(geoData);
-        processGeoData(geoData);
+        if (!cancelledRef.current) processGeoData(geoData);
         return;
       }
 
       // Si ambas APIs fallan, permitir acceso
-      setIsChecking(false);
+      if (!cancelledRef.current) setIsChecking(false);
     } catch (error) {
       console.error('Geo check failed:', error);
-      // En caso de error, permitir acceso (fail-open para mejor UX)
-      setIsChecking(false);
+      // En caso de error o timeout, permitir acceso (fail-open para mejor UX)
+      if (!cancelledRef.current) setIsChecking(false);
     }
   };
 
   const processGeoData = (geoData) => {
+    if (cancelledRef.current) return;
     const { countryCode } = geoData;
 
     if (BLOCKED_COUNTRY_CODES.includes(countryCode)) {
