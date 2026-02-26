@@ -24,7 +24,7 @@ function useWeb3Internal() {
   const { error: showError, success: showSuccess } = useToast();
 
   // Hooks de wagmi
-  const { address, isConnected: wagmiIsConnected, isConnecting: wagmiIsConnecting } = useAccount();
+  const { address, isConnected: wagmiIsConnected, isConnecting: wagmiIsConnecting, isReconnecting: wagmiIsReconnecting } = useAccount();
   const chainId = useChainId();
   const { disconnect } = useDisconnect();
   const { switchChain } = useSwitchChain();
@@ -37,6 +37,8 @@ function useWeb3Internal() {
   const account = address || null;
   const isConnected = wagmiIsConnected && Boolean(account);
   const isConnecting = wagmiIsConnecting;
+  // isReconnecting: wagmi re-establece sesion guardada (ej: volver desde MetaMask Mobile)
+  const isReconnecting = wagmiIsReconnecting;
   const isCorrectNetwork = chainId === DEFAULT_CHAIN_ID;
 
   // Verificar si hay wallet injected (MetaMask, etc.)
@@ -191,6 +193,7 @@ function useWeb3Internal() {
     account,
     chainId,
     isConnecting,
+    isReconnecting,
     isConnected,
     isCorrectNetwork,
     isMetaMaskInstalled,

@@ -1,11 +1,58 @@
 import React from 'react';
-import { Navigate, useLocation } from 'react-router-dom';
 import { useWeb3 } from '../../contexts/Web3Context';
 import { Button } from '../common';
 
+// Pantalla mostrada mientras wagmi reconecta la sesion guardada o confirma conexion
+function ConnectingScreen() {
+  return (
+    <div style={{
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignItems: 'center',
+      minHeight: '60vh',
+      padding: '2rem',
+      textAlign: 'center',
+      backgroundColor: '#0D0D0D',
+      color: '#FFD700',
+      gap: '1.5rem',
+    }}>
+      {/* Spinner animado */}
+      <div style={{
+        width: '56px',
+        height: '56px',
+        borderRadius: '50%',
+        border: '3px solid rgba(255,215,0,0.15)',
+        borderTopColor: '#FFD700',
+        animation: 'web3-spin 0.9s linear infinite',
+      }} />
+
+      <div>
+        <h2 style={{ margin: '0 0 0.5rem', fontSize: '1.25rem', fontWeight: 600 }}>
+          Conectando wallet…
+        </h2>
+        <p style={{ margin: 0, color: '#888', fontSize: '0.9rem', maxWidth: '280px' }}>
+          Confirma la conexión en tu wallet y vuelve a esta ventana.
+        </p>
+      </div>
+
+      <style>{`
+        @keyframes web3-spin {
+          to { transform: rotate(360deg); }
+        }
+      `}</style>
+    </div>
+  );
+}
+
 function Web3Route({ children }) {
-  const { isConnected, isConnecting, connectWallet, isCorrectNetwork, switchNetwork } = useWeb3();
-  const location = useLocation();
+  const { isConnected, isConnecting, isReconnecting, connectWallet, isCorrectNetwork, switchNetwork } = useWeb3();
+
+  // Mientras wagmi resuelve la sesion (reconexion automatica o conexion en curso)
+  // no mostrar el panel de "Wallet Requerida" — evita confusion en movil
+  if (isConnecting || isReconnecting) {
+    return <ConnectingScreen />;
+  }
 
   if (!isConnected) {
     return (
@@ -18,21 +65,21 @@ function Web3Route({ children }) {
         padding: '2rem',
         textAlign: 'center',
         backgroundColor: '#0D0D0D',
-        color: '#FFD700'
+        color: '#FFD700',
+        gap: '1rem',
       }}>
-        <h2 style={{ marginBottom: '1rem', fontSize: '1.5rem' }}>
+        <h2 style={{ margin: 0, fontSize: '1.5rem' }}>
           Wallet Requerida
         </h2>
-        <p style={{ marginBottom: '1.5rem', color: '#999' }}>
+        <p style={{ margin: 0, color: '#999' }}>
           Necesitas conectar tu wallet para acceder a esta página.
         </p>
         <Button
           onClick={connectWallet}
-          disabled={isConnecting}
           size="lg"
-          style={{ marginBottom: '1rem' }}
+          style={{ marginTop: '0.5rem' }}
         >
-          {isConnecting ? 'Conectando...' : 'Conectar Wallet'}
+          Conectar Wallet
         </Button>
         <Button
           variant="ghost"
@@ -56,20 +103,21 @@ function Web3Route({ children }) {
         padding: '2rem',
         textAlign: 'center',
         backgroundColor: '#0D0D0D',
-        color: '#FFD700'
+        color: '#FFD700',
+        gap: '1rem',
       }}>
-        <h2 style={{ marginBottom: '1rem', fontSize: '1.5rem' }}>
+        <h2 style={{ margin: 0, fontSize: '1.5rem' }}>
           Red Incorrecta
         </h2>
-        <p style={{ marginBottom: '1.5rem', color: '#999' }}>
-          Por favor, cambia a la red correcta para continuar.
+        <p style={{ margin: 0, color: '#999' }}>
+          Por favor, cambia a la red Polygon para continuar.
         </p>
         <Button
           onClick={switchNetwork}
           size="lg"
-          style={{ marginBottom: '1rem' }}
+          style={{ marginTop: '0.5rem' }}
         >
-          Cambiar de Red
+          Cambiar a Polygon
         </Button>
         <Button
           variant="ghost"
