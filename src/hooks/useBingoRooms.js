@@ -17,6 +17,7 @@ export function useBingoRooms() {
   const [rooms, setRooms] = useState([]);
   const [jackpot, setJackpot] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [countdowns, setCountdowns] = useState({});
   const roomsRef = useRef([]);
 
@@ -28,6 +29,7 @@ export function useBingoRooms() {
       roomsRef.current = fetchedRooms;
       setRooms(fetchedRooms);
       setJackpot(data.jackpot || 0);
+      setError(null);
       setIsLoading(false);
 
       // Update countdowns from phaseEndTime (covers all phases)
@@ -51,6 +53,7 @@ export function useBingoRooms() {
       setCountdowns(newCountdowns);
     } catch (err) {
       console.warn('[useBingoRooms] Error fetching rooms:', err);
+      setError(err);
       setIsLoading(false);
     }
   }, []);
@@ -94,6 +97,7 @@ export function useBingoRooms() {
     rooms: roomsWithCountdown,
     isLoading,
     jackpot,
+    error,
     refetch: fetchRooms,
   };
 }

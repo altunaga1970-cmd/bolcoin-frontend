@@ -16,7 +16,7 @@ import './BingoLobby.css';
 
 function BingoLobby({ onSelectRoom }) {
   const { t } = useTranslation('games');
-  const { rooms, isLoading, jackpot } = useBingoRooms();
+  const { rooms, isLoading, jackpot, error } = useBingoRooms();
   const { isConnected } = useWeb3();
   const [myRooms, setMyRooms] = useState([]);
 
@@ -60,6 +60,21 @@ function BingoLobby({ onSelectRoom }) {
         <div className="lobby-loading">
           <Spinner />
           <p>{t('bingo.lobby.loading')}</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error && rooms.length === 0) {
+    const isGeoBlocked = error?.status === 403 || error?.data?.code === 'GEO_BLOCKED';
+    return (
+      <div className="bingo-lobby">
+        <div className="lobby-loading">
+          <p style={{ color: 'var(--color-text-muted)', textAlign: 'center' }}>
+            {isGeoBlocked
+              ? 'El servicio de Bingo no está disponible en tu región.'
+              : 'No se pudieron cargar las salas. Verifica tu conexión e intenta de nuevo.'}
+          </p>
         </div>
       </div>
     );
