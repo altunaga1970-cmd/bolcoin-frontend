@@ -187,11 +187,14 @@ export function useBingoContract() {
         : ethers.parseUnits('35', 'gwei'),
     };
 
-    // Step 1: Approve if allowance insufficient (approve exact amount for safety)
+    // Step 1: Approve if allowance insufficient.
+    // Approve 20× the card price so repeat purchases in subsequent rounds
+    // don't need a second MetaMask confirmation (critical with the 45s buy window).
     const allowance = await tokenContract.allowance(account, BINGO_ADDRESS);
     if (allowance < totalCost) {
       callbacks.onApproving?.();
-      const approveTx = await tokenContract.approve(BINGO_ADDRESS, totalCost, gasOverrides);
+      const approveAmount = priceRaw * BigInt(20); // ~20 cards worth
+      const approveTx = await tokenContract.approve(BINGO_ADDRESS, approveAmount, gasOverrides);
       await approveTx.wait();
     }
 
