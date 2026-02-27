@@ -174,11 +174,24 @@ export function useBingoContract() {
       throw new Error(`Saldo USDT insuficiente. Necesitas ${needed} USDT`);
     }
 
+    // Build gas overrides — Polygon Amoy requires minimum 25 Gwei priority fee.
+    // MetaMask underestimates via eth_maxPriorityFeePerGas (not supported on Amoy).
+    const MIN_PRIORITY_FEE = ethers.parseUnits('30', 'gwei');
+    const feeData = await signer.provider.getFeeData();
+    const gasOverrides = {
+      maxPriorityFeePerGas: feeData.maxPriorityFeePerGas > MIN_PRIORITY_FEE
+        ? feeData.maxPriorityFeePerGas
+        : MIN_PRIORITY_FEE,
+      maxFeePerGas: feeData.maxFeePerGas > MIN_PRIORITY_FEE
+        ? feeData.maxFeePerGas
+        : ethers.parseUnits('35', 'gwei'),
+    };
+
     // Step 1: Approve if allowance insufficient (approve exact amount for safety)
     const allowance = await tokenContract.allowance(account, BINGO_ADDRESS);
     if (allowance < totalCost) {
       callbacks.onApproving?.();
-      const approveTx = await tokenContract.approve(BINGO_ADDRESS, totalCost);
+      const approveTx = await tokenContract.approve(BINGO_ADDRESS, totalCost, gasOverrides);
       await approveTx.wait();
     }
 
@@ -186,7 +199,7 @@ export function useBingoContract() {
     callbacks.onBuying?.();
     let tx;
     try {
-      tx = await bingoContract.buyCards(roundId, count);
+      tx = await bingoContract.buyCards(roundId, count, gasOverrides);
     } catch (err) {
       // Re-throw with context so useBingoGame can show a precise message
       err._step = 'buy';
