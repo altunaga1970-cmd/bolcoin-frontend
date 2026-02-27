@@ -524,17 +524,45 @@ export function useKenoGame() {
           betId, selectedNumbers, timestamp: Date.now()
         }));
 
-        // Wait for BetResolved event
+        // Wait for BetResolved — event listener + polling fallback (5s interval).
+        // MetaMask's BrowserProvider doesn't reliably deliver contract events,
+        // so we poll getBet() as backup and resolve whichever comes first.
         const resolvedResult = await new Promise((resolve, reject) => {
-          const timeout = setTimeout(() => {
-            cleanup();
+          let settled = false;
+          const settle = (result) => {
+            if (settled) return;
+            settled = true;
+            clearTimeout(timeoutId);
+            clearInterval(pollId);
+            cleanupEvent();
+            resolve(result);
+          };
+
+          const timeoutId = setTimeout(() => {
+            if (settled) return;
+            settled = true;
+            clearInterval(pollId);
+            cleanupEvent();
             reject(new Error('Timeout esperando resultado VRF (5 min). Verifica tu apuesta.'));
           }, 300_000);
 
-          const cleanup = onBetResolved(betId, (result) => {
-            clearTimeout(timeout);
-            resolve(result);
-          });
+          // Primary: event listener
+          const cleanupEvent = onBetResolved(betId, (result) => settle(result));
+
+          // Fallback: poll contract every 5s
+          const pollId = setInterval(async () => {
+            try {
+              const betData = await getBet(betId);
+              if (betData && Number(betData.status) !== 0) {
+                settle({
+                  betId,
+                  hits: betData.hits,
+                  payout: betData.payout,
+                  paid: Number(betData.status) === 1,
+                });
+              }
+            } catch { /* ignore transient RPC errors */ }
+          }, 5_000);
         });
 
         // Remove pending bet from localStorage
