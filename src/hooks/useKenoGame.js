@@ -528,8 +528,8 @@ export function useKenoGame() {
         const resolvedResult = await new Promise((resolve, reject) => {
           const timeout = setTimeout(() => {
             cleanup();
-            reject(new Error('Timeout esperando resultado VRF (2 min). Verifica tu apuesta.'));
-          }, 120_000);
+            reject(new Error('Timeout esperando resultado VRF (5 min). Verifica tu apuesta.'));
+          }, 300_000);
 
           const cleanup = onBetResolved(betId, (result) => {
             clearTimeout(timeout);
