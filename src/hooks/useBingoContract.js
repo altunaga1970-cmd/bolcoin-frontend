@@ -178,7 +178,7 @@ export function useBingoContract() {
     // MetaMask underestimates via eth_maxPriorityFeePerGas (not supported on Amoy).
     const MIN_PRIORITY_FEE = ethers.parseUnits('30', 'gwei');
     const feeData = await signer.provider.getFeeData();
-    const gasOverrides = {
+    const baseGas = {
       maxPriorityFeePerGas: feeData.maxPriorityFeePerGas > MIN_PRIORITY_FEE
         ? feeData.maxPriorityFeePerGas
         : MIN_PRIORITY_FEE,
@@ -187,6 +187,10 @@ export function useBingoContract() {
         : ethers.parseUnits('35', 'gwei'),
     };
 
+    // Fetch nonce directly from chain ('latest') to bypass MetaMask's stale pending-nonce
+    // tracking, which causes NONCE_EXPIRED on Amoy testnet after prior failed attempts.
+    const getChainNonce = () => signer.provider.getTransactionCount(account, 'latest');
+
     // Step 1: Approve if allowance insufficient.
     // Approve 20× the card price so repeat purchases in subsequent rounds
     // don't need a second MetaMask confirmation (critical with the 45s buy window).
@@ -194,15 +198,31 @@ export function useBingoContract() {
     if (allowance < totalCost) {
       callbacks.onApproving?.();
       const approveAmount = priceRaw * BigInt(20); // ~20 cards worth
-      const approveTx = await tokenContract.approve(BINGO_ADDRESS, approveAmount, gasOverrides);
-      await approveTx.wait();
+      const approveNonce = await getChainNonce();
+      const approveTx = await tokenContract.approve(BINGO_ADDRESS, approveAmount, { ...baseGas, nonce: approveNonce });
+      try {
+        await approveTx.wait();
+      } catch (waitErr) {
+        // NONCE_EXPIRED means a prior tx already consumed this nonce.
+        // Re-read allowance: if sufficient the approve went through and we can continue.
+        if (waitErr.code === 'NONCE_EXPIRED' || waitErr.message?.includes('nonce too low') || waitErr.message?.includes('nonce has already been used')) {
+          const updatedAllowance = await tokenContract.allowance(account, BINGO_ADDRESS);
+          if (updatedAllowance < totalCost) {
+            throw waitErr; // approve did NOT go through — surface error to user
+          }
+          // else: approve went through on a previous attempt, proceed to buy
+        } else {
+          throw waitErr;
+        }
+      }
     }
 
     // Step 2: Buy cards — wrap separately so caller can distinguish approve vs buy failure
     callbacks.onBuying?.();
     let tx;
     try {
-      tx = await bingoContract.buyCards(roundId, count, gasOverrides);
+      const buyNonce = await getChainNonce(); // re-fetch: approve may have advanced the nonce
+      tx = await bingoContract.buyCards(roundId, count, { ...baseGas, nonce: buyNonce });
     } catch (err) {
       // Re-throw with context so useBingoGame can show a precise message
       err._step = 'buy';

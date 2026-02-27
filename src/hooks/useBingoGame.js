@@ -527,6 +527,20 @@ export function useBingoGame(roomNumber = null, initialRoundId = null) {
         return;
       }
 
+      // Stuck pending tx in MetaMask (e.g. prior approve still pending)
+      if (err.code === 'REPLACEMENT_UNDERPRICED' || err.message?.includes('replacement fee too low') || err.message?.includes('replacement transaction underpriced')) {
+        showError('Hay una transacción pendiente en MetaMask. Cancela o acelera la aprobación de USDT pendiente y vuelve a intentar.');
+        setGameState(BINGO_STATES.BROWSING);
+        return;
+      }
+
+      // Stale nonce in MetaMask — previous tx was already mined but nonce cache not updated
+      if (err.code === 'NONCE_EXPIRED' || err.message?.includes('nonce too low') || err.message?.includes('nonce has already been used')) {
+        showError('El nonce de MetaMask está desactualizado. Ve a MetaMask → Configuración → Avanzado → Restablecer cuenta y vuelve a intentar.');
+        setGameState(BINGO_STATES.BROWSING);
+        return;
+      }
+
       const msg = err.response?.data?.message || err.reason || err.message || 'Error al comprar cartas';
       showError(msg);
       setError(msg);
