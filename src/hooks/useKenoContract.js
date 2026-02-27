@@ -120,10 +120,23 @@ export function useKenoContract() {
     // Read bet amount from contract
     const betAmountRaw = await kenoContract.betAmount();
 
+    // Build gas overrides — Polygon requires minimum 25 Gwei priority fee.
+    // MetaMask sometimes underestimates on testnet; we enforce a 30 Gwei floor.
+    const MIN_PRIORITY_FEE = ethers.parseUnits('30', 'gwei');
+    const feeData = await signer.provider.getFeeData();
+    const gasOverrides = {
+      maxPriorityFeePerGas: feeData.maxPriorityFeePerGas > MIN_PRIORITY_FEE
+        ? feeData.maxPriorityFeePerGas
+        : MIN_PRIORITY_FEE,
+      maxFeePerGas: feeData.maxFeePerGas > MIN_PRIORITY_FEE
+        ? feeData.maxFeePerGas
+        : ethers.parseUnits('35', 'gwei'),
+    };
+
     // Check allowance
     const allowance = await tokenContract.allowance(account, KENO_ADDRESS);
     if (allowance < betAmountRaw) {
-      const approveTx = await tokenContract.approve(KENO_ADDRESS, betAmountRaw);
+      const approveTx = await tokenContract.approve(KENO_ADDRESS, betAmountRaw, gasOverrides);
       await approveTx.wait();
     }
 
@@ -131,7 +144,7 @@ export function useKenoContract() {
     const nums = selectedNumbers.map((n) => Number(n));
 
     // Send placeBet tx
-    const tx = await kenoContract.placeBet(nums);
+    const tx = await kenoContract.placeBet(nums, gasOverrides);
     const receipt = await tx.wait();
 
     // Parse BetPlaced event
