@@ -534,6 +534,15 @@ export function useBingoGame(roomNumber = null, initialRoundId = null) {
         return;
       }
 
+      // Round not found on-chain (e.g. stale off-chain round shown in lobby)
+      if (err.data === '0x666710f4' || err.message?.includes('RoundNotFound')) {
+        showError('Esta ronda ya no existe. La página se actualizará con la ronda actual.');
+        setGameState(BINGO_STATES.BROWSING);
+        // Force lobby refresh so stale round disappears
+        window.dispatchEvent(new CustomEvent('bingo:refresh-lobby'));
+        return;
+      }
+
       // Stale nonce in MetaMask — previous tx was already mined but nonce cache not updated
       if (err.code === 'NONCE_EXPIRED' || err.message?.includes('nonce too low') || err.message?.includes('nonce has already been used')) {
         showError('El nonce de MetaMask está desactualizado. Ve a MetaMask → Configuración → Avanzado → Restablecer cuenta y vuelve a intentar.');
