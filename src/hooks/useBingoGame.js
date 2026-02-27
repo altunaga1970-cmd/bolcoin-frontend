@@ -585,9 +585,12 @@ export function useBingoGame(roomNumber = null, initialRoundId = null) {
 
         console.log(`[useBingoGame] Poll: round #${roundId} status=${status}, gameState=${currentState}`);
 
-        if (status === 'closed' && currentState === BINGO_STATES.WAITING_CLOSE) {
+        // On-chain rounds go vrf_requested → vrf_fulfilled → resolving (never 'closed').
+        // Any of these intermediate statuses means the round is closed and resolving.
+        const isResolvingOnChain = status === 'vrf_requested' || status === 'vrf_fulfilled' || status === 'resolving';
+        if ((status === 'closed' || isResolvingOnChain) && currentState === BINGO_STATES.WAITING_CLOSE) {
           setGameState(BINGO_STATES.WAITING_VRF);
-          showInfo('Ronda cerrada. Resolviendo...');
+          showInfo('Ronda cerrada. Esperando resolución...');
         }
 
         if (status === 'drawing') {
