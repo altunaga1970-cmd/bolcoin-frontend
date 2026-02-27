@@ -21,7 +21,7 @@ const PUBLIC_RPCS = {
 // Direcciones USDT por red
 const USDT_ADDRESSES = {
   137: '0xc2132D05D31c914a87C6611C10748AEb04B58e8F',   // Polygon Mainnet (USDT)
-  80002: '0x41E94Eb019C0762f9Bfcf9Fb1E58725BfB0e7582', // Polygon Amoy (test USDT)
+  80002: '0x78B85ACB36263D7A77671941E2B20940afAef359', // Polygon Amoy (tUSDT mock)
   1: '0xdAC17F958D2ee523a2206206994597C13D831ec7',    // Ethereum Mainnet
   11155111: '0x7169D38820dfd117C3FA1f22a697dBA58d90BA06', // Sepolia
   31337: import.meta.env.VITE_TOKEN_ADDRESS || '', // Hardhat local (empty = no USDT contract deployed)
