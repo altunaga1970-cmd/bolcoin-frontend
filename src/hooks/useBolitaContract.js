@@ -103,18 +103,17 @@ export function useBolitaContract() {
   const getDrawInfo = useCallback(async (drawId) => {
     if (!bolitaContract) return null;
     try {
-      const d = await bolitaContract.getDrawInfo(drawId);
+      const d = await bolitaContract.getDraw(drawId);
       return {
-        id: Number(drawId),
+        id: Number(d.id),
         draw_number: d.drawNumber,
         scheduled_time: new Date(Number(d.scheduledTime) * 1000).toISOString(),
         status: DRAW_STATUS[Number(d.status)] || 'unknown',
         is_open: Number(d.status) === 1,
         winningNumber: Number(d.winningNumber),
-        totalBetAmount: ethers.formatUnits(d.totalBetAmount, TOKEN_DECIMALS),
+        totalAmount: ethers.formatUnits(d.totalAmount, TOKEN_DECIMALS),
         totalPaidOut: ethers.formatUnits(d.totalPaidOut, TOKEN_DECIMALS),
-        betCount: Number(d.betCount),
-        resolvedCount: Number(d.resolvedCount)
+        totalBets: Number(d.totalBets),
       };
     } catch (err) {
       console.error('[BolitaContract] Error reading draw:', err);
@@ -125,16 +124,11 @@ export function useBolitaContract() {
   const getOpenDraws = useCallback(async () => {
     if (!bolitaContract) return [];
     try {
-      const total = await bolitaContract.drawCounter();
+      const drawIds = await bolitaContract.getOpenDraws();
       const draws = [];
-
-      // Scan recent draws (last 20) for open ones
-      const start = Math.max(1, Number(total) - 20);
-      for (let id = start; id <= Number(total); id++) {
-        const info = await getDrawInfo(id);
-        if (info && (info.status === 'open' || info.status === 'created')) {
-          draws.push(info);
-        }
+      for (const id of drawIds) {
+        const info = await getDrawInfo(Number(id));
+        if (info) draws.push(info);
       }
       return draws;
     } catch (err) {
@@ -143,19 +137,20 @@ export function useBolitaContract() {
     }
   }, [bolitaContract, getDrawInfo]);
 
-  const getDrawBet = useCallback(async (drawId, betIndex) => {
+  const getBet = useCallback(async (betId) => {
     if (!bolitaContract) return null;
     try {
-      const b = await bolitaContract.getDrawBet(drawId, betIndex);
+      const b = await bolitaContract.getBet(betId);
       return {
-        drawId: Number(drawId),
-        betIndex: Number(betIndex),
-        user: b.user,
+        betId: Number(betId),
+        drawId: Number(b.drawId),
+        player: b.player,
         amount: ethers.formatUnits(b.amount, TOKEN_DECIMALS),
         payout: ethers.formatUnits(b.payout, TOKEN_DECIMALS),
         betType: Number(b.betType),
-        betNumber: Number(b.betNumber),
-        status: PAYOUT_STATUS[Number(b.status)] || 'unknown'
+        number: Number(b.number),
+        resolved: b.resolved,
+        won: b.won,
       };
     } catch (err) {
       console.error('[BolitaContract] Error reading bet:', err);
@@ -168,27 +163,18 @@ export function useBolitaContract() {
     try {
       const addr = userAddress || account;
       if (!addr) return [];
-
-      const total = await bolitaContract.drawCounter();
+      const betIds = await bolitaContract.getUserBetIds(addr, 0, 50);
       const userBets = [];
-
-      // Scan recent draws for user bets
-      const start = Math.max(1, Number(total) - 20);
-      for (let drawId = start; drawId <= Number(total); drawId++) {
-        const betCount = await bolitaContract.getDrawBetCount(drawId);
-        for (let i = 0; i < Number(betCount); i++) {
-          const bet = await getDrawBet(drawId, i);
-          if (bet && bet.user.toLowerCase() === addr.toLowerCase()) {
-            userBets.push(bet);
-          }
-        }
+      for (const betId of betIds) {
+        const bet = await getBet(Number(betId));
+        if (bet) userBets.push(bet);
       }
       return userBets.reverse();
     } catch (err) {
       console.error('[BolitaContract] Error getting user bets:', err);
       return [];
     }
-  }, [bolitaContract, account, getDrawBet]);
+  }, [bolitaContract, account, getBet]);
 
   const getNumberExposure = useCallback(async (drawId, betType, betNumber) => {
     if (!bolitaContract) return '0';
@@ -205,10 +191,10 @@ export function useBolitaContract() {
   const getMaxExposure = useCallback(async () => {
     if (!bolitaContract) return '2';
     try {
-      const limit = await bolitaContract.currentLimitPerNumber();
+      const limit = await bolitaContract.maxExposurePerNumber();
       return ethers.formatUnits(limit, TOKEN_DECIMALS);
     } catch (err) {
-      console.error('[BolitaContract] Error reading currentLimitPerNumber:', err);
+      console.error('[BolitaContract] Error reading maxExposurePerNumber:', err);
       return '2';
     }
   }, [bolitaContract]);
@@ -216,15 +202,20 @@ export function useBolitaContract() {
   const getBetLimits = useCallback(async () => {
     if (!bolitaContract) return { min: '0.01', max: '2', maxPerNumber: '2', pool: '0' };
     try {
-      const result = await bolitaContract.getLimits();
+      const [min, max, maxPerNum, pool] = await Promise.all([
+        bolitaContract.minBetAmount(),
+        bolitaContract.maxBetAmount(),
+        bolitaContract.maxExposurePerNumber(),
+        bolitaContract.availablePool(),
+      ]);
       return {
-        min: ethers.formatUnits(result.minBet, TOKEN_DECIMALS),
-        max: ethers.formatUnits(result.maxBet, TOKEN_DECIMALS),
-        maxPerNumber: ethers.formatUnits(result.currentMaxPerNumber, TOKEN_DECIMALS),
-        pool: ethers.formatUnits(result.pool, TOKEN_DECIMALS)
+        min: ethers.formatUnits(min, TOKEN_DECIMALS),
+        max: ethers.formatUnits(max, TOKEN_DECIMALS),
+        maxPerNumber: ethers.formatUnits(maxPerNum, TOKEN_DECIMALS),
+        pool: ethers.formatUnits(pool, TOKEN_DECIMALS),
       };
     } catch (err) {
-      console.error('[BolitaContract] Error reading getLimits:', err);
+      console.error('[BolitaContract] Error reading bet limits:', err);
       return { min: '0.01', max: '2', maxPerNumber: '2', pool: '0' };
     }
   }, [bolitaContract]);
@@ -268,7 +259,7 @@ export function useBolitaContract() {
     const receipt = await tx.wait();
 
     // Parse BetPlaced event
-    let betIndex = null;
+    let betId = null;
     for (const log of receipt.logs) {
       try {
         const parsed = bolitaContract.interface.parseLog({
@@ -276,7 +267,7 @@ export function useBolitaContract() {
           data: log.data,
         });
         if (parsed && parsed.name === 'BetPlaced') {
-          betIndex = parsed.args.betIndex.toString();
+          betId = parsed.args.betId.toString();
           break;
         }
       } catch {
@@ -284,7 +275,7 @@ export function useBolitaContract() {
       }
     }
 
-    return { tx: receipt, drawId, betIndex };
+    return { tx: receipt, drawId, betId };
   }, [bolitaContract, tokenContract, signer, account]);
 
   /**
@@ -306,7 +297,7 @@ export function useBolitaContract() {
       totalAmount += amountRaw;
       return {
         betType: betTypeNum,
-        betNumber: b.betNumber,
+        number: b.betNumber ?? b.number,
         amount: amountRaw
       };
     });
@@ -322,7 +313,7 @@ export function useBolitaContract() {
     const receipt = await tx.wait();
 
     // Parse BetPlaced events
-    const betIndexes = [];
+    const betIds = [];
     for (const log of receipt.logs) {
       try {
         const parsed = bolitaContract.interface.parseLog({
@@ -330,21 +321,21 @@ export function useBolitaContract() {
           data: log.data,
         });
         if (parsed && parsed.name === 'BetPlaced') {
-          betIndexes.push(parsed.args.betIndex.toString());
+          betIds.push(parsed.args.betId.toString());
         }
       } catch {
         // not our event
       }
     }
 
-    return { tx: receipt, drawId, betIndexes };
+    return { tx: receipt, drawId, betIds };
   }, [bolitaContract, tokenContract, signer, account]);
 
-  const retryUnpaidBet = useCallback(async (drawId, betIndex) => {
+  const retryUnpaidBet = useCallback(async (betId) => {
     if (!bolitaContract || !signer) {
       throw new Error('Wallet o contrato no disponible');
     }
-    const tx = await bolitaContract.retryUnpaidBet(drawId, betIndex);
+    const tx = await bolitaContract.retryUnpaidBet(betId);
     const receipt = await tx.wait();
     return receipt;
   }, [bolitaContract, signer]);
@@ -383,17 +374,17 @@ export function useBolitaContract() {
   }, [bolitaContract]);
 
   /**
-   * Listen for BetPaid events for the current user.
+   * Listen for BetResolved events for the current user.
    */
-  const onBetPaid = useCallback((callback) => {
+  const onBetResolved = useCallback((callback) => {
     if (!bolitaContract || !account) return () => {};
 
-    const filter = bolitaContract.filters.BetPaid(null, null, account);
+    const filter = bolitaContract.filters.BetResolved(null, account);
 
-    const handler = (drawId, betIndex, user, payout) => {
+    const handler = (betId, player, won, payout) => {
       callback({
-        drawId: drawId.toString(),
-        betIndex: betIndex.toString(),
+        betId: betId.toString(),
+        won,
         payout: ethers.formatUnits(payout, TOKEN_DECIMALS),
       });
     };
@@ -403,24 +394,13 @@ export function useBolitaContract() {
   }, [bolitaContract, account]);
 
   /**
-   * Listen for WinningNumberSet to know when VRF delivered.
+   * WinningNumberSet was removed in the deployed contract.
+   * Resolution is tracked via DrawResolved instead.
    */
-  const onWinningNumberSet = useCallback((drawId, callback) => {
-    if (!bolitaContract) return () => {};
-
-    const filter = bolitaContract.filters.WinningNumberSet(drawId);
-
-    const handler = (resolvedDrawId, winningNumber) => {
-      callback({
-        drawId: resolvedDrawId.toString(),
-        winningNumber: Number(winningNumber),
-      });
-      bolitaContract.off(filter, handler);
-    };
-
-    bolitaContract.on(filter, handler);
-    return () => bolitaContract.off(filter, handler);
-  }, [bolitaContract]);
+  // eslint-disable-next-line no-unused-vars
+  const onWinningNumberSet = useCallback((_drawId, _callback) => {
+    return () => {};
+  }, []);
 
   /**
    * Get the last N resolved draws (for results banner).
@@ -456,7 +436,7 @@ export function useBolitaContract() {
     getDrawInfo,
     getOpenDraws,
     getResolvedDraws,
-    getDrawBet,
+    getBet,
     getUserBets,
     getNumberExposure,
     getMaxExposure,
@@ -471,7 +451,7 @@ export function useBolitaContract() {
 
     // Events
     onDrawResolved,
-    onBetPaid,
+    onBetResolved,
     onWinningNumberSet,
 
     // Constants
