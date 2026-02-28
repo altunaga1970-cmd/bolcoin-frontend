@@ -58,13 +58,18 @@ function BingoLobby({ onSelectRoom }) {
   // Rooms where user has active cards (for the "Mis Salas" section)
   const activeUserRooms = rooms.filter(r => myRoomMap[r.roomNumber]);
 
-  // Room entry guard: block unavailable rooms and show an inline notification.
-  // A room is enterable if it's in buying phase with time remaining, OR the user
-  // already has active cards there (to watch the draw or view results).
+  // Room entry guard: block rooms with no active round (waiting/starting).
+  // Allowed: buying (buy cards), drawing (spectate), results (view).
+  // The backend enforces the buy window; we don't double-check countdown here
+  // to avoid false-positives when the countdown hits 0 before the on-chain close.
   const handleRoomSelect = useCallback((roomNumber, roundId) => {
     const room = rooms.find(r => r.roomNumber === roomNumber);
     const hasCards = !!myRoomMap[roomNumber];
-    const canEnter = hasCards || (room?.phase === 'buying' && (room?.countdown || 0) > 0);
+    const phase = room?.phase;
+    const canEnter = hasCards
+      || phase === 'buying'
+      || phase === 'drawing'
+      || phase === 'results';
 
     if (!canEnter) {
       if (noticeTimerRef.current) clearTimeout(noticeTimerRef.current);
