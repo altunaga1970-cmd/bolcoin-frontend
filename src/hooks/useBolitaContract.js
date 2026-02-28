@@ -255,6 +255,23 @@ export function useBolitaContract() {
     }
   }, [tokenContract, account]);
 
+  /**
+   * Mint test tUSDT (Amoy testnet only).
+   * MockERC20 has no access control on mint() — anyone can call it.
+   * This is intentionally only available in testnet environments.
+   */
+  const mintTestTokens = useCallback(async (amount = '100') => {
+    if (!tokenContract || !signer || !account) {
+      throw new Error('Wallet no disponible');
+    }
+    const gasOverrides = await getAmoyGasOverrides(signer);
+    const amountRaw = ethers.parseUnits(amount.toString(), TOKEN_DECIMALS);
+    const tokenWithSigner = tokenContract.connect(signer);
+    const tx = await tokenWithSigner.mint(account, amountRaw, gasOverrides);
+    await tx.wait();
+    return tx.hash;
+  }, [tokenContract, signer, account]);
+
   // ── Write functions ─────────────────────────────────────────────────
 
   /**
@@ -469,6 +486,7 @@ export function useBolitaContract() {
     getMaxExposure,
     getBetLimits,
     getTokenBalance,
+    mintTestTokens,
 
     // Write
     placeBet,

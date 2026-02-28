@@ -137,6 +137,7 @@ function Web3BettingPage() {
     getMaxExposure,
     getBetLimits,
     placeBetsBatch,
+    mintTestTokens,
     onDrawResolved,
     onWinningNumberSet,
     bolitaContractAddress,
@@ -153,6 +154,7 @@ function Web3BettingPage() {
 
   const [isLoadingDraws, setIsLoadingDraws] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
+  const [isMinting, setIsMinting] = useState(false);
 
   // Sistema de límites y disponibilidad
   const [maxPerNumber, setMaxPerNumber] = useState(INITIAL_MAX_STAKE); // Exposure limit per number
@@ -293,6 +295,20 @@ function Web3BettingPage() {
   };
 
   const calculateCartTotal = () => betCart.reduce((t, b) => t + b.amount, 0);
+
+  // Testnet only: mint mock tUSDT to wallet
+  const handleMintTestTokens = async () => {
+    setIsMinting(true);
+    try {
+      await mintTestTokens('100');
+      showSuccess('100 tUSDT acuñados en tu wallet');
+      await loadData();
+    } catch (err) {
+      showError(err?.reason || err?.message || 'Error al acuñar tUSDT');
+    } finally {
+      setIsMinting(false);
+    }
+  };
 
   const potentialWin = () => {
     const betAmount = parseFloat(amount) || 0;
@@ -525,6 +541,15 @@ function Web3BettingPage() {
                   <span className="amount">${parseFloat(balance).toFixed(2)} USDT</span>
                 </div>
                 <small className="balance-hint">{t('betting.balance_hint')}</small>
+                {isOnChain && chainId === 80002 && parseFloat(balance) === 0 && (
+                  <button
+                    className="mint-test-btn"
+                    onClick={handleMintTestTokens}
+                    disabled={isMinting}
+                  >
+                    {isMinting ? 'Acuñando...' : '+ Obtener 100 tUSDT de prueba'}
+                  </button>
+                )}
               </div>
 
               {/* Sorteos */}
@@ -686,11 +711,19 @@ function Web3BettingPage() {
 
               <Button
                 onClick={addBetToCart}
-                disabled={!numbers || !amount || numbers.length !== selectedBetType.digits}
+                disabled={
+                  !numbers ||
+                  !amount ||
+                  numbers.length !== selectedBetType.digits ||
+                  !selectedDraw?.is_open
+                }
                 fullWidth
               >
                 {t('betting.add_to_cart')}
               </Button>
+              {selectedDraw && !selectedDraw.is_open && numbers && amount && (
+                <p className="draw-not-open-hint">{t('betting.error_draw_not_open')}</p>
+              )}
 
               <p className="blockchain-notice">
                 {t('betting.blockchain_notice')}
@@ -1011,11 +1044,19 @@ function Web3BettingPage() {
             <div className="cart-panel-footer">
               <div className="cart-total-row">
                 <span>{t('betting.cart_total', { amount: calculateCartTotal().toFixed(2) })}</span>
+                <span className={`cart-balance-inline ${calculateCartTotal() > parseFloat(balance) ? 'balance-low' : ''}`}>
+                  {t('betting.available_balance')}: <strong>${parseFloat(balance).toFixed(2)}</strong>
+                </span>
               </div>
+              {calculateCartTotal() > parseFloat(balance) && (
+                <p className="cart-insufficient-msg">
+                  {t('betting.error_insufficient_balance', { balance: parseFloat(balance).toFixed(2) })}
+                </p>
+              )}
               <Button
                 onClick={processCartPurchase}
                 loading={isLoading}
-                disabled={calculateCartTotal() > parseFloat(balance)}
+                disabled={betCart.length === 0 || calculateCartTotal() > parseFloat(balance)}
                 variant="primary"
                 className="cart-buy-btn"
               >

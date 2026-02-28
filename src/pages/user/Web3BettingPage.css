@@ -848,12 +848,42 @@
 
 .cart-total-row {
   display: flex;
-  justify-content: flex-end;
-  margin-bottom: 10px;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
   font-size: 0.875rem;
   font-weight: 700;
   color: var(--color-text-primary);
   font-variant-numeric: tabular-nums;
+}
+
+.cart-balance-inline {
+  font-size: 0.8rem;
+  font-weight: 400;
+  color: var(--color-text-secondary);
+}
+
+.cart-balance-inline.balance-low {
+  color: #ef4444;
+  font-weight: 600;
+}
+
+.cart-insufficient-msg {
+  font-size: 0.8rem;
+  color: #ef4444;
+  margin: 0 0 8px;
+  padding: 6px 8px;
+  background: rgba(239, 68, 68, 0.08);
+  border-radius: var(--radius-sm, 4px);
+  border-left: 3px solid #ef4444;
+}
+
+.draw-not-open-hint {
+  font-size: 0.78rem;
+  color: var(--color-text-secondary);
+  margin: 4px 0 0;
+  text-align: center;
+  opacity: 0.8;
 }
 
 .cart-buy-btn {

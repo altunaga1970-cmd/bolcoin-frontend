@@ -520,7 +520,7 @@
     "warn_number_max_reached": "Este número ha alcanzado el máximo permitido para este sorteo. Elige otro número u otro sorteo.",
     "warn_number_partial": "Solo quedan ${{max}} USDT disponibles para este número en este sorteo. Ajusta el monto o elige otro número.",
     "error_empty_cart": "No hay apuestas en el carrito",
-    "error_insufficient_balance": "Balance insuficiente en contrato. Tienes {{balance}} USDT. Deposita mas fondos primero.",
+    "error_insufficient_balance": "Saldo insuficiente. Tienes ${{balance}} USDT disponibles.",
     "error_processing": "Error al procesar las apuestas",
     "success_added": "Apuesta agregada al carrito",
     "success_purchase": "Compra exitosa! {{count}} apuesta(s) registrada(s).",

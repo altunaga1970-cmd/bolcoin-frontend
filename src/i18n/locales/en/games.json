@@ -517,7 +517,7 @@
     "warn_number_max_reached": "This number has reached the maximum allowed for this draw. Choose a different number or draw.",
     "warn_number_partial": "Only ${{max}} USDT remaining for this number in this draw. Adjust your amount or choose a different number.",
     "error_empty_cart": "No bets in cart",
-    "error_insufficient_balance": "Insufficient contract balance. You have {{balance}} USDT. Deposit more funds first.",
+    "error_insufficient_balance": "Insufficient balance. You have ${{balance}} USDT available.",
     "error_processing": "Error processing bets",
     "success_added": "Bet added to cart",
     "success_purchase": "Purchase successful! {{count}} bet(s) registered.",
