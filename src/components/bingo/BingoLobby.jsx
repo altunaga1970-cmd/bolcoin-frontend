@@ -23,6 +23,8 @@ function BingoLobby({ onSelectRoom }) {
   // Fetch user's active rooms
   const fetchMyRooms = useCallback(async () => {
     if (!isConnected) { setMyRooms([]); return; }
+    // Skip if auth headers are not available — avoids a 401 spam loop
+    if (!localStorage.getItem('walletSignature')) return;
     try {
       const data = await bingoApi.getMyRooms();
       setMyRooms(data || []);

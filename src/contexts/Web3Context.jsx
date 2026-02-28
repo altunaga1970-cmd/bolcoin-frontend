@@ -166,24 +166,48 @@ function useWeb3Internal() {
   // Sign authentication message when signer becomes available
   useEffect(() => {
     if (!signerState || !account) return;
-    // Only sign if we don't already have a valid signature for this account
+
+    // The message embeds today's day-number — it changes at midnight UTC.
+    // Always compare the STORED message against today's expected message so that
+    // a signature from yesterday is detected as stale and triggers a fresh sign.
+    const expectedMessage = `Bolcoin Auth: ${account.toLowerCase()} at ${Math.floor(Date.now() / 86400000)}`;
     const existingSig = localStorage.getItem('walletSignature');
     const existingAddr = localStorage.getItem('walletSignatureAddr');
-    if (existingSig && existingAddr === account.toLowerCase()) return;
+    const existingMsg = localStorage.getItem('walletMessage');
+    if (existingSig && existingAddr === account.toLowerCase() && existingMsg === expectedMessage) return;
 
     const signAuth = async () => {
       try {
-        const message = `Bolcoin Auth: ${account.toLowerCase()} at ${Math.floor(Date.now() / 86400000)}`;
-        const signature = await signerState.signMessage(message);
+        const signature = await signerState.signMessage(expectedMessage);
         localStorage.setItem('walletSignature', signature);
-        localStorage.setItem('walletMessage', message);
+        localStorage.setItem('walletMessage', expectedMessage);
         localStorage.setItem('walletSignatureAddr', account.toLowerCase());
+        console.log('[Web3Context] Auth signature stored for today');
       } catch (err) {
         // User rejected signature - API calls requiring auth will fail
         console.warn('[Web3Context] Auth signature rejected:', err.message);
       }
     };
     signAuth();
+  }, [signerState, account]);
+
+  // Re-sign when the backend signals that the signature has expired mid-session
+  // (e.g. server restart rotated the day boundary while the user was connected).
+  useEffect(() => {
+    const handler = () => {
+      if (!signerState || !account) return;
+      const message = `Bolcoin Auth: ${account.toLowerCase()} at ${Math.floor(Date.now() / 86400000)}`;
+      signerState.signMessage(message)
+        .then(sig => {
+          localStorage.setItem('walletSignature', sig);
+          localStorage.setItem('walletMessage', message);
+          localStorage.setItem('walletSignatureAddr', account.toLowerCase());
+          console.log('[Web3Context] Re-auth signature stored');
+        })
+        .catch(err => console.warn('[Web3Context] Re-auth rejected:', err.message));
+    };
+    window.addEventListener('wallet-reauth-needed', handler);
+    return () => window.removeEventListener('wallet-reauth-needed', handler);
   }, [signerState, account]);
 
   return {

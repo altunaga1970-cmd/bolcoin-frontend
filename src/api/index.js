@@ -72,6 +72,8 @@ api.interceptors.response.use(
         localStorage.removeItem('walletSignature');
         localStorage.removeItem('walletMessage');
         localStorage.removeItem('walletSignatureAddr');
+        // Notify Web3Context to prompt a fresh MetaMask signature immediately
+        window.dispatchEvent(new CustomEvent('wallet-reauth-needed'));
       }
     }
 
