@@ -67,7 +67,8 @@
       "starting": "INICIANDO",
       "info_rounds": "Rondas cada ~7 min por sala",
       "info_speed": "Bola cada 4.5s",
-      "info_verifiable": "Verificable on-chain"
+      "info_verifiable": "Verificable on-chain",
+      "room_unavailable": "Esta sala no está disponible ahora. Elige otra sala con compra abierta."
     },
     "room": {
       "back_lobby": "Lobby",

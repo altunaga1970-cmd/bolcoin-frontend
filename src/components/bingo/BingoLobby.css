@@ -514,3 +514,24 @@
     gap: 0.5rem;
   }
 }
+
+/* ── Unavailable room notification ── */
+.lobby-blocked-notice {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  color: #fca5a5;
+  border-radius: 8px;
+  padding: 0.65rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 0.75rem;
+  animation: notice-slide-in 0.2s ease;
+}
+
+@keyframes notice-slide-in {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}

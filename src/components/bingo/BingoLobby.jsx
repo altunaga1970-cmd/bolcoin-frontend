@@ -5,7 +5,7 @@
  * Shows badges on rooms where user has active cards.
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useBingoRooms } from '../../hooks/useBingoRooms';
 import { useWeb3 } from '../../contexts/Web3Context';
@@ -19,6 +19,8 @@ function BingoLobby({ onSelectRoom }) {
   const { rooms, isLoading, jackpot, error } = useBingoRooms();
   const { isConnected } = useWeb3();
   const [myRooms, setMyRooms] = useState([]);
+  const [blockedNotice, setBlockedNotice] = useState(null);
+  const noticeTimerRef = useRef(null);
 
   // Fetch user's active rooms
   const fetchMyRooms = useCallback(async () => {
@@ -55,6 +57,25 @@ function BingoLobby({ onSelectRoom }) {
 
   // Rooms where user has active cards (for the "Mis Salas" section)
   const activeUserRooms = rooms.filter(r => myRoomMap[r.roomNumber]);
+
+  // Room entry guard: block unavailable rooms and show an inline notification.
+  // A room is enterable if it's in buying phase with time remaining, OR the user
+  // already has active cards there (to watch the draw or view results).
+  const handleRoomSelect = useCallback((roomNumber, roundId) => {
+    const room = rooms.find(r => r.roomNumber === roomNumber);
+    const hasCards = !!myRoomMap[roomNumber];
+    const canEnter = hasCards || (room?.phase === 'buying' && (room?.countdown || 0) > 0);
+
+    if (!canEnter) {
+      if (noticeTimerRef.current) clearTimeout(noticeTimerRef.current);
+      setBlockedNotice(t('bingo.lobby.room_unavailable'));
+      noticeTimerRef.current = setTimeout(() => setBlockedNotice(null), 4000);
+      return;
+    }
+
+    setBlockedNotice(null);
+    onSelectRoom(roomNumber, roundId);
+  }, [rooms, myRoomMap, onSelectRoom, t]);
 
   if (isLoading && rooms.length === 0) {
     return (
@@ -112,7 +133,7 @@ function BingoLobby({ onSelectRoom }) {
                   key={room.roomNumber}
                   className="my-room-chip"
                   style={{ '--room-color': room.phase === 'buying' ? undefined : undefined, borderColor: getRoomColor(room.roomNumber) }}
-                  onClick={() => onSelectRoom(room.roomNumber, info.roundId)}
+                  onClick={() => handleRoomSelect(room.roomNumber, info.roundId)}
                 >
                   <span className="chip-dot" style={{ background: getRoomColor(room.roomNumber) }}></span>
                   {t('bingo.lobby.room_label', { number: room.roomNumber })}
@@ -124,13 +145,23 @@ function BingoLobby({ onSelectRoom }) {
         </div>
       )}
 
+      {/* Unavailable room notification */}
+      {blockedNotice && (
+        <div className="lobby-blocked-notice" role="alert">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+          {blockedNotice}
+        </div>
+      )}
+
       {/* Room Grid */}
       <div className="lobby-grid">
         {rooms.map(room => (
           <RoomCard
             key={room.roomNumber}
             room={room}
-            onSelect={onSelectRoom}
+            onSelect={handleRoomSelect}
             hasMyCards={!!myRoomMap[room.roomNumber]}
             myCardCount={myRoomMap[room.roomNumber]?.cardCount || 0}
           />
