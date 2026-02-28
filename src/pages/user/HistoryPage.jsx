@@ -3,8 +3,6 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
-const KENO_IS_ONCHAIN = import.meta.env.VITE_KENO_MODE === 'onchain';
-
 import { useWeb3 } from '../../contexts/Web3Context';
 import { Spinner } from '../../components/common';
 import { MainNav } from '../../components/layout';
@@ -256,14 +254,6 @@ function HistoryPage() {
         {tab === 'keno' && (
           <div className="bets-history">
             <h3>🎲 {t('history.tab_keno')}</h3>
-
-            {KENO_IS_ONCHAIN && (
-              <div className="empty-history" style={{ borderBottom: '1px solid rgba(255,255,255,0.04)', paddingBottom: 'var(--spacing-md)' }}>
-                <p style={{ color: 'var(--color-text-muted)', fontSize: 'var(--font-size-sm)' }}>
-                  ⛓ {t('history.keno_onchain_note')}
-                </p>
-              </div>
-            )}
 
             {kenoLoading ? (
               <div className="loading-state"><Spinner /><p>{t('history.loading')}</p></div>
