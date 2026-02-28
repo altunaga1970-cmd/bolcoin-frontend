@@ -517,6 +517,8 @@
     "error_number_sold": "Numero vendido - No disponible para este sorteo",
     "error_max_available": "Monto maximo disponible: ${{max}} USDT",
     "error_max_for_number": "Monto maximo para este numero: ${{max}} USDT",
+    "warn_number_max_reached": "Este número ha alcanzado el máximo permitido para este sorteo. Elige otro número u otro sorteo.",
+    "warn_number_partial": "Solo quedan ${{max}} USDT disponibles para este número en este sorteo. Ajusta el monto o elige otro número.",
     "error_empty_cart": "No hay apuestas en el carrito",
     "error_insufficient_balance": "Balance insuficiente en contrato. Tienes {{balance}} USDT. Deposita mas fondos primero.",
     "error_processing": "Error al procesar las apuestas",

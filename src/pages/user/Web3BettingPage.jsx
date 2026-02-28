@@ -123,7 +123,7 @@ function Web3BettingPage() {
   const { drawId: paramDrawId } = useParams();
 
   const { isConnected, account } = useWeb3();
-  const { error: showError, success: showSuccess } = useToast();
+  const { error: showError, success: showSuccess, warning: showWarning } = useToast();
   const { directBalance, refreshBalance } = useBalance();
 
   const {
@@ -326,20 +326,20 @@ function Web3BettingPage() {
       return;
     }
 
-    // Check on-chain exposure for this number
-    if (isOnChain) {
+    // Check on-chain exposure for this number (per draw)
+    if (isOnChain && selectedDraw.id && !selectedDraw._virtual) {
       try {
         const betNumber = parseInt(numbers, 10);
         const exposure = parseFloat(await getNumberExposure(selectedDraw.id, selectedBetType.id, betNumber));
         const availableAmount = Math.max(0, maxPerNumber - exposure);
 
         if (availableAmount <= 0) {
-          showError(t('betting.error_number_sold'));
+          showWarning(t('betting.warn_number_max_reached'));
           return;
         }
 
         if (betAmount > availableAmount) {
-          showError(t('betting.error_max_for_number', { max: availableAmount.toFixed(2) }));
+          showWarning(t('betting.warn_number_partial', { max: availableAmount.toFixed(2) }));
           return;
         }
       } catch (err) {

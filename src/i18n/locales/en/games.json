@@ -514,6 +514,8 @@
     "error_number_sold": "Number sold - Not available for this draw",
     "error_max_available": "Maximum available amount: ${{max}} USDT",
     "error_max_for_number": "Maximum amount for this number: ${{max}} USDT",
+    "warn_number_max_reached": "This number has reached the maximum allowed for this draw. Choose a different number or draw.",
+    "warn_number_partial": "Only ${{max}} USDT remaining for this number in this draw. Adjust your amount or choose a different number.",
     "error_empty_cart": "No bets in cart",
     "error_insufficient_balance": "Insufficient contract balance. You have {{balance}} USDT. Deposit more funds first.",
     "error_processing": "Error processing bets",

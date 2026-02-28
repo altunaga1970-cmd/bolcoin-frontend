@@ -44,6 +44,30 @@ const BET_TYPE_MAP = { FIJO: 0, CENTENA: 1, PARLE: 2 };
 // Payout status
 const PAYOUT_STATUS = { 0: 'pending', 1: 'paid', 2: 'unpaid', 3: 'refunded' };
 
+// Polygon Amoy requires minimum 25 Gwei priority fee.
+// MetaMask sometimes underestimates on testnet — we enforce a 30 Gwei floor,
+// matching the backend AMOY_GAS_OVERRIDES used by the scheduler.
+const MIN_PRIORITY_FEE = ethers.parseUnits('30', 'gwei');
+
+async function getAmoyGasOverrides(signerOrProvider) {
+  try {
+    const feeData = await signerOrProvider.provider.getFeeData();
+    return {
+      maxPriorityFeePerGas: feeData.maxPriorityFeePerGas > MIN_PRIORITY_FEE
+        ? feeData.maxPriorityFeePerGas
+        : MIN_PRIORITY_FEE,
+      maxFeePerGas: feeData.maxFeePerGas > MIN_PRIORITY_FEE
+        ? feeData.maxFeePerGas
+        : ethers.parseUnits('35', 'gwei'),
+    };
+  } catch {
+    return {
+      maxPriorityFeePerGas: MIN_PRIORITY_FEE,
+      maxFeePerGas: ethers.parseUnits('35', 'gwei'),
+    };
+  }
+}
+
 export function useBolitaContract() {
   const { provider, signer, account } = useWeb3();
   const { tokenAddress: fallbackTokenAddress } = useContract();
@@ -247,15 +271,16 @@ export function useBolitaContract() {
 
     const betTypeNum = typeof betType === 'string' ? BET_TYPE_MAP[betType] : betType;
     const amountRaw = ethers.parseUnits(amount.toString(), TOKEN_DECIMALS);
+    const gasOverrides = await getAmoyGasOverrides(signer);
 
     // Check allowance
     const allowance = await tokenContract.allowance(account, BOLITA_ADDRESS);
     if (allowance < amountRaw) {
-      const approveTx = await tokenContract.approve(BOLITA_ADDRESS, amountRaw);
+      const approveTx = await tokenContract.approve(BOLITA_ADDRESS, amountRaw, gasOverrides);
       await approveTx.wait();
     }
 
-    const tx = await bolitaContract.placeBet(drawId, betTypeNum, betNumber, amountRaw);
+    const tx = await bolitaContract.placeBet(drawId, betTypeNum, betNumber, amountRaw, gasOverrides);
     const receipt = await tx.wait();
 
     // Parse BetPlaced event
@@ -302,14 +327,16 @@ export function useBolitaContract() {
       };
     });
 
+    const gasOverrides = await getAmoyGasOverrides(signer);
+
     // Check allowance for total
     const allowance = await tokenContract.allowance(account, BOLITA_ADDRESS);
     if (allowance < totalAmount) {
-      const approveTx = await tokenContract.approve(BOLITA_ADDRESS, totalAmount);
+      const approveTx = await tokenContract.approve(BOLITA_ADDRESS, totalAmount, gasOverrides);
       await approveTx.wait();
     }
 
-    const tx = await bolitaContract.placeBetsBatch(drawId, betsInput);
+    const tx = await bolitaContract.placeBetsBatch(drawId, betsInput, gasOverrides);
     const receipt = await tx.wait();
 
     // Parse BetPlaced events
