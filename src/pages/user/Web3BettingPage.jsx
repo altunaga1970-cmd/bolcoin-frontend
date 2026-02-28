@@ -215,7 +215,7 @@ function Web3BettingPage() {
           const data = await drawApi.getActive();
           apiDraws = (data?.draws || []).map(d => ({
             ...d,
-            is_open: d.status === 'open',
+            is_open: d.status === 'open' || d.status === 'scheduled',
           }));
         } catch (apiErr) {
           console.error('Error loading draws from API:', apiErr);
@@ -262,7 +262,7 @@ function Web3BettingPage() {
           const data = await drawApi.getActive();
           rawDraws = (data?.draws || []).map(d => ({
             ...d,
-            is_open: d.status === 'open',
+            is_open: d.status === 'open' || d.status === 'scheduled',
           }));
         }
         const openDraws = mergeWithVirtualSlots(rawDraws);
@@ -305,7 +305,7 @@ function Web3BettingPage() {
       return;
     }
 
-    if (!selectedDraw.is_open) {
+    if (selectedDraw._virtual || !selectedDraw.is_open) {
       showError(t('betting.error_draw_not_open'));
       return;
     }
@@ -542,13 +542,13 @@ function Web3BettingPage() {
                     >
                       <div className="draw-header">
                         <span className="draw-number">{draw.draw_number}</span>
-                        <span className={`draw-status ${draw.status}`}>
-                          {draw.status === 'open'
+                        <span className={`draw-status ${draw._virtual ? 'scheduled' : draw.status}`}>
+                          {draw._virtual
+                            ? t('betting.draw_status.scheduled')
+                            : draw.is_open
                             ? t('betting.draw_status.open')
                             : draw.status === 'closed'
                             ? t('betting.draw_status.closed')
-                            : draw.status === 'scheduled'
-                            ? t('betting.draw_status.scheduled')
                             : t('betting.draw_status.completed')}
                         </span>
                       </div>
@@ -832,13 +832,13 @@ function Web3BettingPage() {
                 <div className={`draw-card ${selectedDraw.status}`}>
                   <div className="draw-header">
                     <span className="draw-number">{selectedDraw.draw_number}</span>
-                    <span className={`draw-status ${selectedDraw.status}`}>
-                      {selectedDraw.status === 'open'
+                    <span className={`draw-status ${selectedDraw._virtual ? 'scheduled' : selectedDraw.status}`}>
+                      {selectedDraw._virtual
+                        ? t('betting.draw_status.scheduled')
+                        : selectedDraw.is_open
                         ? t('betting.draw_status.open')
                         : selectedDraw.status === 'closed'
                         ? t('betting.draw_status.closed')
-                        : selectedDraw.status === 'scheduled'
-                        ? t('betting.draw_status.scheduled')
                         : t('betting.draw_status.completed')}
                     </span>
                   </div>
@@ -864,7 +864,12 @@ function Web3BettingPage() {
                       <span className="value">{t('betting.auto_draw')}</span>
                     </div>
 
-                    {selectedDraw.is_open ? (
+                    {selectedDraw._virtual ? (
+                      <div className="detail-row">
+                        <span className="label">{t('betting.status')}</span>
+                        <span className="value closed-status">{t('betting.draw_status.scheduled')}</span>
+                      </div>
+                    ) : selectedDraw.is_open ? (
                       <>
                         <div className="detail-row highlight">
                           <span className="label">{t('betting.status')}</span>
@@ -875,9 +880,7 @@ function Web3BettingPage() {
                       <div className="detail-row">
                         <span className="label">{t('betting.status')}</span>
                         <span className="value closed-status">
-                          {selectedDraw.status === 'scheduled'
-                            ? t('betting.draw_status.scheduled')
-                            : selectedDraw.status === 'closed'
+                          {selectedDraw.status === 'closed'
                             ? t('betting.bets_closed')
                             : t('betting.draw_completed')}
                         </span>
