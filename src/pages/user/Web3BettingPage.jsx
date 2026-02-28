@@ -537,23 +537,6 @@ function Web3BettingPage() {
           <div className="betting-layout">
             {/* Panel izquierdo */}
             <div className="betting-form-section">
-              <div className="balance-section">
-                <div className="balance-display-inline">
-                  <span className="label">{t('betting.available_balance')}</span>
-                  <span className="amount">${parseFloat(balance).toFixed(2)} USDT</span>
-                </div>
-                <small className="balance-hint">{t('betting.balance_hint')}</small>
-                {isOnChain && chainId === 80002 && parseFloat(balance) === 0 && (
-                  <button
-                    className="mint-test-btn"
-                    onClick={handleMintTestTokens}
-                    disabled={isMinting}
-                  >
-                    {isMinting ? 'Acuñando...' : '+ Obtener 100 tUSDT de prueba'}
-                  </button>
-                )}
-              </div>
-
               {/* Sorteos */}
               <div className="form-group">
                 <label>{t('betting.available_draws')}</label>
@@ -613,6 +596,16 @@ function Web3BettingPage() {
                   ))}
                 </div>
               </div>
+
+              {isOnChain && chainId === 80002 && parseFloat(balance) === 0 && (
+                <button
+                  className="mint-test-btn"
+                  onClick={handleMintTestTokens}
+                  disabled={isMinting}
+                >
+                  {isMinting ? 'Acuñando...' : '+ Obtener 100 tUSDT de prueba'}
+                </button>
+              )}
 
               {/* Tipo */}
               <div className="form-group">
