@@ -122,16 +122,15 @@ function Web3BettingPage() {
   const { t } = useTranslation('games');
   const { drawId: paramDrawId } = useParams();
 
-  const { isConnected, account } = useWeb3();
+  const { isConnected } = useWeb3();
   const { error: showError, success: showSuccess, warning: showWarning } = useToast();
-  const { directBalance, refreshBalance } = useBalance();
+  const { balance: contextBalance, offChainBalance, refreshBalance } = useBalance();
 
   const {
     isOnChain,
     getOpenDraws,
     getResolvedDraws,
     getDrawInfo,
-    getTokenBalance,
     getAvailablePool,
     getNumberExposure,
     getMaxExposure,
@@ -144,7 +143,12 @@ function Web3BettingPage() {
     BET_TYPE_MAP
   } = useBolitaContract();
 
-  const [balance, setBalance] = useState('0');
+  // balance: single source of truth from BalanceContext.
+  // On-chain → contextBalance = directBalance.usdtBalance (real tUSDT on wallet).
+  // Off-chain → offChainBalance = DB balance.
+  // No local state needed — context is reactive and always up to date.
+  const balance = isOnChain ? (contextBalance || '0') : (offChainBalance || '0');
+
   const [draws, setDraws] = useState([]);
   const [selectedDraw, setSelectedDraw] = useState(null);
   const [selectedBetType, setSelectedBetType] = useState(BET_TYPES[0]);
@@ -176,24 +180,6 @@ function Web3BettingPage() {
     setIsLoadingDraws(true);
     try {
       let openDraws = [];
-
-      // Balance: prioritize real on-chain USDT balance
-      const directUsdt = parseFloat(directBalance?.usdt || '0');
-      if (directUsdt > 0) {
-        setBalance(directUsdt.toFixed(2));
-      } else if (isOnChain) {
-        const tokenBal = await getTokenBalance();
-        setBalance(tokenBal);
-      } else {
-        // Off-chain fallback: fetch DB balance
-        try {
-          const resp = await api.get('/wallet/balance-by-address', { params: { address: account } });
-          const dbBal = resp.data?.data?.balance || '0';
-          setBalance(dbBal);
-        } catch {
-          setBalance('0');
-        }
-      }
 
       if (isOnChain) {
         // On-chain mode: read draws from smart contract
@@ -245,7 +231,7 @@ function Web3BettingPage() {
     } finally {
       setIsLoadingDraws(false);
     }
-  }, [isConnected, isOnChain, account, getTokenBalance, getOpenDraws, getResolvedDraws, getBetLimits, paramDrawId, showError, t]);
+  }, [isConnected, isOnChain, getOpenDraws, getResolvedDraws, getBetLimits, paramDrawId, showError, t]);
 
   useEffect(() => {
     loadData();
@@ -302,7 +288,7 @@ function Web3BettingPage() {
     try {
       await mintTestTokens('100');
       showSuccess('100 tUSDT acuñados en tu wallet');
-      await loadData();
+      await refreshBalance();
     } catch (err) {
       showError(err?.reason || err?.message || 'Error al acuñar tUSDT');
     } finally {
