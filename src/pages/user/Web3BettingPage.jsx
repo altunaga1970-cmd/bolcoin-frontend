@@ -188,8 +188,11 @@ function Web3BettingPage() {
         // Read all limits from contract in a single call
         const limits = await getBetLimits();
         setPoolBalance(parseFloat(limits.pool));
-        setMaxPerNumber(parseFloat(limits.maxPerNumber));
-        setMaxBetAmount(parseFloat(limits.max));
+        // Floor to INITIAL_MAX_STAKE — contract returns 0 when limits haven't been
+        // configured yet (setBetLimits script not yet run). A 0 maxBetAmount blocks
+        // the amount input entirely, disabling the "add to cart" button.
+        setMaxPerNumber(Math.max(parseFloat(limits.maxPerNumber) || INITIAL_MAX_STAKE, INITIAL_MAX_STAKE));
+        setMaxBetAmount(Math.max(parseFloat(limits.max) || INITIAL_MAX_STAKE, INITIAL_MAX_STAKE));
 
         // Load last 3 resolved draws for results banner
         const resolved = await getResolvedDraws(3);
@@ -431,13 +434,8 @@ function Web3BettingPage() {
           return acc;
         }, {});
 
-        let lastResult = null;
         for (const [drawId, bets] of Object.entries(betsByDraw)) {
-          lastResult = await betApi.placeBets(parseInt(drawId, 10), bets);
-        }
-        // Update balance immediately from API response
-        if (lastResult?.new_balance !== undefined) {
-          setBalance(parseFloat(lastResult.new_balance).toFixed(2));
+          await betApi.placeBets(parseInt(drawId, 10), bets);
         }
       }
 

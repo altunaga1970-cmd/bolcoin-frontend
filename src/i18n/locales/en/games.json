@@ -371,6 +371,7 @@
     "tab_bingo": "Bingo",
     "no_bets": "No La Bolita bets yet",
     "no_keno_history": "No Keno games yet",
+    "keno_onchain_note": "You're playing Keno on-chain. Game results are settled directly on the blockchain and aren't indexed in our database yet — this is a known limitation. Your games are visible on Polygonscan.",
     "no_bingo_history": "No Bingo rounds yet",
     "first_bet": "Play La Bolita",
     "first_keno": "Play Keno",
