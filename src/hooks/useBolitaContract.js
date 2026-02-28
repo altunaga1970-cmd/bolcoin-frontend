@@ -45,27 +45,17 @@ const BET_TYPE_MAP = { FIJO: 0, CENTENA: 1, PARLE: 2 };
 const PAYOUT_STATUS = { 0: 'pending', 1: 'paid', 2: 'unpaid', 3: 'refunded' };
 
 // Polygon Amoy requires minimum 25 Gwei priority fee.
-// MetaMask sometimes underestimates on testnet — we enforce a 30 Gwei floor,
-// matching the backend AMOY_GAS_OVERRIDES used by the scheduler.
+// MetaMask on Amoy does not support eth_maxPriorityFeePerGas (EIP-1559),
+// so calling getFeeData() logs a MetaMask RPC error in the console.
+// We hardcode the floor values directly — 30 Gwei priority / 35 Gwei max.
 const MIN_PRIORITY_FEE = ethers.parseUnits('30', 'gwei');
+const MAX_FEE = ethers.parseUnits('35', 'gwei');
 
-async function getAmoyGasOverrides(signerOrProvider) {
-  try {
-    const feeData = await signerOrProvider.provider.getFeeData();
-    return {
-      maxPriorityFeePerGas: feeData.maxPriorityFeePerGas > MIN_PRIORITY_FEE
-        ? feeData.maxPriorityFeePerGas
-        : MIN_PRIORITY_FEE,
-      maxFeePerGas: feeData.maxFeePerGas > MIN_PRIORITY_FEE
-        ? feeData.maxFeePerGas
-        : ethers.parseUnits('35', 'gwei'),
-    };
-  } catch {
-    return {
-      maxPriorityFeePerGas: MIN_PRIORITY_FEE,
-      maxFeePerGas: ethers.parseUnits('35', 'gwei'),
-    };
-  }
+function getAmoyGasOverrides() {
+  return {
+    maxPriorityFeePerGas: MIN_PRIORITY_FEE,
+    maxFeePerGas: MAX_FEE,
+  };
 }
 
 export function useBolitaContract() {
@@ -264,7 +254,7 @@ export function useBolitaContract() {
     if (!tokenContract || !signer || !account) {
       throw new Error('Wallet no disponible');
     }
-    const gasOverrides = await getAmoyGasOverrides(signer);
+    const gasOverrides = getAmoyGasOverrides();
     const amountRaw = ethers.parseUnits(amount.toString(), TOKEN_DECIMALS);
     const tokenWithSigner = tokenContract.connect(signer);
     const tx = await tokenWithSigner.mint(account, amountRaw, gasOverrides);
@@ -288,7 +278,7 @@ export function useBolitaContract() {
 
     const betTypeNum = typeof betType === 'string' ? BET_TYPE_MAP[betType] : betType;
     const amountRaw = ethers.parseUnits(amount.toString(), TOKEN_DECIMALS);
-    const gasOverrides = await getAmoyGasOverrides(signer);
+    const gasOverrides = getAmoyGasOverrides();
 
     // Check allowance
     const allowance = await tokenContract.allowance(account, BOLITA_ADDRESS);
@@ -344,7 +334,7 @@ export function useBolitaContract() {
       };
     });
 
-    const gasOverrides = await getAmoyGasOverrides(signer);
+    const gasOverrides = getAmoyGasOverrides();
 
     // Check allowance for total
     const allowance = await tokenContract.allowance(account, BOLITA_ADDRESS);

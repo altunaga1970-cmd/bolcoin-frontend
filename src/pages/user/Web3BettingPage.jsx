@@ -342,29 +342,45 @@ function Web3BettingPage() {
       return;
     }
 
-    // Check on-chain exposure for this number (per draw)
-    if (isOnChain && selectedDraw.id && !selectedDraw._virtual) {
-      try {
-        const betNumber = parseInt(numbers, 10);
-        const exposure = parseFloat(await getNumberExposure(selectedDraw.id, selectedBetType.id, betNumber));
-        const availableAmount = Math.max(0, maxPerNumber - exposure);
-
-        if (availableAmount <= 0) {
-          showWarning(t('betting.warn_number_max_reached'));
-          return;
-        }
-
-        if (betAmount > availableAmount) {
-          showWarning(t('betting.warn_number_partial', { max: availableAmount.toFixed(2) }));
-          return;
-        }
-      } catch (err) {
-        console.error('Error checking exposure:', err);
-      }
-    }
-
     const formattedNumber = numbers.padStart(selectedBetType.digits, '0');
     const betNumber = parseInt(formattedNumber, 10);
+
+    // Unified exposure check: on-chain committed + already in cart for this number/type/draw
+    {
+      // 1. On-chain committed exposure (only in on-chain mode)
+      let onChainExposure = 0;
+      if (isOnChain && selectedDraw.id && !selectedDraw._virtual) {
+        try {
+          onChainExposure = parseFloat(
+            await getNumberExposure(selectedDraw.id, selectedBetType.id, betNumber)
+          );
+        } catch (err) {
+          console.error('Error checking on-chain exposure:', err);
+        }
+      }
+
+      // 2. In-cart exposure for this same number/type/draw (not yet submitted)
+      const cartExposure = betCart
+        .filter(b =>
+          b.drawId === selectedDraw.id &&
+          b.game_type === selectedBetType.id &&
+          b.betNumber === betNumber
+        )
+        .reduce((sum, b) => sum + b.amount, 0);
+
+      const totalExposure = onChainExposure + cartExposure;
+      const availableAmount = Math.max(0, maxPerNumber - totalExposure);
+
+      if (availableAmount <= 0) {
+        showWarning(t('betting.warn_number_max_reached'));
+        return;
+      }
+
+      if (betAmount > availableAmount) {
+        showWarning(t('betting.warn_number_partial', { max: availableAmount.toFixed(2) }));
+        return;
+      }
+    }
 
     const betItem = {
       id: Date.now(),
