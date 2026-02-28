@@ -467,7 +467,8 @@
     "draw_status": {
       "open": "ABIERTO",
       "closed": "CERRADO",
-      "completed": "FINALIZADO"
+      "completed": "FINALIZADO",
+      "scheduled": "PRÓXIMO"
     },
     "closes_in": "Cierra en:",
     "bets_open": "Apuestas ABIERTAS",
@@ -509,6 +510,7 @@
     "connect_prompt_desc": "Necesitas conectar MetaMask para realizar apuestas",
     "error_loading": "Error cargando datos",
     "error_select_draw": "Selecciona un sorteo",
+    "error_draw_not_open": "Este sorteo aún no está abierto para apuestas",
     "error_digits": "Ingresa {{digits}} digitos",
     "error_invalid_amount": "Ingresa un monto valido",
     "error_min_amount": "Monto minimo: {{min}} USDT",

@@ -32,6 +32,65 @@ const BACKEND_GAME_TYPE = {
   'PARLE': 'parles'
 };
 
+// Fixed draw schedule (UTC) — mirrors BOLITA_DRAW_TIMES on the backend
+const DRAW_SCHEDULE_UTC = [
+  { hour: 10, minute: 0 },
+  { hour: 15, minute: 0 },
+  { hour: 21, minute: 0 },
+];
+
+/**
+ * Compute the next 3 upcoming draw slots based on the fixed schedule.
+ * Returns virtual draw objects (id prefixed 'virtual-') that are replaced
+ * by real draws when the scheduler creates them.
+ */
+function getNext3Slots() {
+  const slots = [];
+  const now = new Date();
+  for (let dayOffset = 0; dayOffset <= 4 && slots.length < 3; dayOffset++) {
+    for (const { hour, minute } of DRAW_SCHEDULE_UTC) {
+      const d = new Date(Date.UTC(
+        now.getUTCFullYear(), now.getUTCMonth(),
+        now.getUTCDate() + dayOffset,
+        hour, minute, 0, 0
+      ));
+      if (d <= now) continue;
+      const y  = d.getUTCFullYear();
+      const mo = String(d.getUTCMonth() + 1).padStart(2, '0');
+      const dy = String(d.getUTCDate()).padStart(2, '0');
+      const h  = String(d.getUTCHours()).padStart(2, '0');
+      const mi = String(d.getUTCMinutes()).padStart(2, '0');
+      slots.push({
+        id: `virtual-${y}${mo}${dy}-${h}${mi}`,
+        draw_number: `${y}${mo}${dy}-${h}${mi}`,
+        scheduled_time: d.toISOString(),
+        status: 'scheduled',
+        is_open: false,
+        _virtual: true,
+      });
+      if (slots.length === 3) break;
+    }
+  }
+  return slots;
+}
+
+/**
+ * Merge real draws (from API/contract) with the 3 upcoming virtual slots.
+ * Real draws replace virtual slots with the same draw_number.
+ * Always returns exactly 3 slots (plus any extra real draws).
+ */
+function mergeWithVirtualSlots(realDraws) {
+  const virtualSlots = getNext3Slots();
+  const realByNumber = Object.fromEntries(realDraws.map(d => [d.draw_number, d]));
+  const merged = virtualSlots.map(s => realByNumber[s.draw_number] || s);
+  // Include any real draws outside the 3-slot window (edge case: draw open > 72h out)
+  for (const d of realDraws) {
+    if (!merged.find(m => m.draw_number === d.draw_number)) merged.push(d);
+  }
+  merged.sort((a, b) => new Date(a.scheduled_time) - new Date(b.scheduled_time));
+  return merged;
+}
+
 const BET_TYPES = [
   {
     id: 'FIJO',
@@ -136,7 +195,7 @@ function Web3BettingPage() {
 
       if (isOnChain) {
         // On-chain mode: read draws from smart contract
-        openDraws = await getOpenDraws();
+        const chainDraws = await getOpenDraws();
 
         // Read all limits from contract in a single call
         const limits = await getBetLimits();
@@ -147,18 +206,21 @@ function Web3BettingPage() {
         // Load last 3 resolved draws for results banner
         const resolved = await getResolvedDraws(3);
         setResolvedDraws(resolved);
+
+        openDraws = mergeWithVirtualSlots(chainDraws);
       } else {
         // Off-chain mode: read draws from backend API
+        let apiDraws = [];
         try {
           const data = await drawApi.getActive();
-          const apiDraws = (data?.draws || []).map(d => ({
+          apiDraws = (data?.draws || []).map(d => ({
             ...d,
             is_open: d.status === 'open',
           }));
-          openDraws = apiDraws;
         } catch (apiErr) {
           console.error('Error loading draws from API:', apiErr);
         }
+        openDraws = mergeWithVirtualSlots(apiDraws);
         setPoolBalance(1000);
         setMaxPerNumber(INITIAL_MAX_STAKE);
         setMaxBetAmount(INITIAL_MAX_STAKE);
@@ -193,16 +255,17 @@ function Web3BettingPage() {
 
     const interval = setInterval(async () => {
       try {
-        let openDraws = [];
+        let rawDraws = [];
         if (isOnChain) {
-          openDraws = await getOpenDraws();
+          rawDraws = await getOpenDraws();
         } else {
           const data = await drawApi.getActive();
-          openDraws = (data?.draws || []).map(d => ({
+          rawDraws = (data?.draws || []).map(d => ({
             ...d,
             is_open: d.status === 'open',
           }));
         }
+        const openDraws = mergeWithVirtualSlots(rawDraws);
         setDraws(openDraws);
 
         if (selectedDraw) {
@@ -239,6 +302,11 @@ function Web3BettingPage() {
   const addBetToCart = async () => {
     if (!selectedDraw) {
       showError(t('betting.error_select_draw'));
+      return;
+    }
+
+    if (!selectedDraw.is_open) {
+      showError(t('betting.error_draw_not_open'));
       return;
     }
 
@@ -475,7 +543,13 @@ function Web3BettingPage() {
                       <div className="draw-header">
                         <span className="draw-number">{draw.draw_number}</span>
                         <span className={`draw-status ${draw.status}`}>
-                          {draw.status === 'open' ? t('betting.draw_status.open') : draw.status === 'closed' ? t('betting.draw_status.closed') : t('betting.draw_status.completed')}
+                          {draw.status === 'open'
+                            ? t('betting.draw_status.open')
+                            : draw.status === 'closed'
+                            ? t('betting.draw_status.closed')
+                            : draw.status === 'scheduled'
+                            ? t('betting.draw_status.scheduled')
+                            : t('betting.draw_status.completed')}
                         </span>
                       </div>
 
@@ -759,7 +833,13 @@ function Web3BettingPage() {
                   <div className="draw-header">
                     <span className="draw-number">{selectedDraw.draw_number}</span>
                     <span className={`draw-status ${selectedDraw.status}`}>
-                      {selectedDraw.status === 'open' ? t('betting.draw_status.open') : selectedDraw.status === 'closed' ? t('betting.draw_status.closed') : t('betting.draw_status.completed')}
+                      {selectedDraw.status === 'open'
+                        ? t('betting.draw_status.open')
+                        : selectedDraw.status === 'closed'
+                        ? t('betting.draw_status.closed')
+                        : selectedDraw.status === 'scheduled'
+                        ? t('betting.draw_status.scheduled')
+                        : t('betting.draw_status.completed')}
                     </span>
                   </div>
 
@@ -795,7 +875,11 @@ function Web3BettingPage() {
                       <div className="detail-row">
                         <span className="label">{t('betting.status')}</span>
                         <span className="value closed-status">
-                          {selectedDraw.status === 'closed' ? t('betting.bets_closed') : t('betting.draw_completed')}
+                          {selectedDraw.status === 'scheduled'
+                            ? t('betting.draw_status.scheduled')
+                            : selectedDraw.status === 'closed'
+                            ? t('betting.bets_closed')
+                            : t('betting.draw_completed')}
                         </span>
                       </div>
                     )}

@@ -464,7 +464,8 @@
     "draw_status": {
       "open": "OPEN",
       "closed": "CLOSED",
-      "completed": "COMPLETED"
+      "completed": "COMPLETED",
+      "scheduled": "UPCOMING"
     },
     "closes_in": "Closes in:",
     "bets_open": "Bets OPEN",
@@ -506,6 +507,7 @@
     "connect_prompt_desc": "You need to connect MetaMask to place bets",
     "error_loading": "Error loading data",
     "error_select_draw": "Select a draw",
+    "error_draw_not_open": "This draw is not open for bets yet",
     "error_digits": "Enter {{digits}} digits",
     "error_invalid_amount": "Enter a valid amount",
     "error_min_amount": "Minimum amount: {{min}} USDT",
