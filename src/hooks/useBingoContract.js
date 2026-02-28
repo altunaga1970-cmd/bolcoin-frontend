@@ -195,6 +195,7 @@ export function useBingoContract() {
     // Approve 20× the card price so repeat purchases in subsequent rounds
     // don't need a second MetaMask confirmation (critical with the 45s buy window).
     const allowance = await tokenContract.allowance(account, BINGO_ADDRESS);
+    let buyNonce;
     if (allowance < totalCost) {
       callbacks.onApproving?.();
       const approveAmount = priceRaw * BigInt(20); // ~20 cards worth
@@ -202,6 +203,10 @@ export function useBingoContract() {
       const approveTx = await tokenContract.approve(BINGO_ADDRESS, approveAmount, { ...baseGas, nonce: approveNonce });
       try {
         await approveTx.wait();
+        // Approve confirmed at approveNonce — buy must use the next nonce.
+        // Do NOT re-read from chain here: the RPC node's 'latest' block may not
+        // yet reflect the confirmed approve, causing a stale nonce read and NONCE_EXPIRED.
+        buyNonce = approveNonce + 1;
       } catch (waitErr) {
         // NONCE_EXPIRED means a prior tx already consumed this nonce.
         // Re-read allowance: if sufficient the approve went through and we can continue.
@@ -210,18 +215,20 @@ export function useBingoContract() {
           if (updatedAllowance < totalCost) {
             throw waitErr; // approve did NOT go through — surface error to user
           }
-          // else: approve went through on a previous attempt, proceed to buy
+          // A prior approve went through — re-read current chain nonce
+          buyNonce = await getChainNonce();
         } else {
           throw waitErr;
         }
       }
+    } else {
+      buyNonce = await getChainNonce();
     }
 
     // Step 2: Buy cards — wrap separately so caller can distinguish approve vs buy failure
     callbacks.onBuying?.();
     let tx;
     try {
-      const buyNonce = await getChainNonce(); // re-fetch: approve may have advanced the nonce
       tx = await bingoContract.buyCards(roundId, count, { ...baseGas, nonce: buyNonce });
     } catch (err) {
       // Re-throw with context so useBingoGame can show a precise message

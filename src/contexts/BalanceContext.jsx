@@ -36,7 +36,7 @@ const BalanceContext = createContext(null);
  * - contractBalance: Balance combinado para mostrar en UI
  */
 export function BalanceProvider({ children }) {
-  const { isConnected, account } = useWeb3();
+  const { isConnected, account, isAuthReady } = useWeb3();
   const { getContractBalance, getTokenBalance } = useContract();
   const directBalance = useDirectBalance();
   const { isOnChain: isKenoOnChain, getAvailablePool } = useKenoContract();
@@ -261,10 +261,13 @@ export function BalanceProvider({ children }) {
     setError(null);
 
     try {
-      // Cargar ambos balances en paralelo
+      // Cargar ambos balances en paralelo.
+      // Also refresh directBalance (wallet USDT from public RPC) so on-chain
+      // prize payouts are reflected immediately without waiting for next account change.
       const [contract, wallet] = await Promise.all([
         loadContractBalance(),
-        loadWalletBalance()
+        loadWalletBalance(),
+        directBalance.refreshDirectBalance().catch(() => {}),
       ]);
 
       setLastUpdated(new Date());
@@ -305,15 +308,16 @@ export function BalanceProvider({ children }) {
     typeof window !== 'undefined' && window.location.pathname.startsWith('/admin');
 
   /**
-   * Efecto: Cargar balance inicial cuando se conecta
+   * Efecto: Cargar balance inicial cuando se conecta y la firma de auth está lista.
+   * Espera isAuthReady para evitar 401 en la primera llamada a /api/keno/session.
    */
   useEffect(() => {
     if (isAdminRoute()) return; // No cargar balances en admin
 
-    if (isConnected && account) {
+    if (isConnected && account && isAuthReady) {
       console.log('[BalanceContext] Wallet conectada, cargando balance inicial...');
       refreshBalance();
-    } else {
+    } else if (!isConnected) {
       // Limpiar cuando se desconecta
       setContractBalance('0');
       setWalletBalance('0');
@@ -321,7 +325,7 @@ export function BalanceProvider({ children }) {
       setSessionNetResult(0);
       setLastUpdated(null);
     }
-  }, [isConnected, account]); // No incluir refreshBalance para evitar loop
+  }, [isConnected, account, isAuthReady]); // isAuthReady evita 401 en primer request
 
   /**
    * Efecto: Auto-refresh periódico

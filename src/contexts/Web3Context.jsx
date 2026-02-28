@@ -71,6 +71,7 @@ function useWeb3Internal() {
       sessionStorage.removeItem('walletAddress');
       localStorage.removeItem('walletSignature');
       localStorage.removeItem('walletMessage');
+      setIsAuthReady(false);
     }
   }, [account]);
 
@@ -150,6 +151,10 @@ function useWeb3Internal() {
   const [providerState, setProviderState] = React.useState(null);
   const [signerState, setSignerState] = React.useState(null);
 
+  // isAuthReady: true once a valid wallet signature is stored in localStorage.
+  // Used by BalanceContext to avoid API calls before auth headers are ready.
+  const [isAuthReady, setIsAuthReady] = React.useState(false);
+
   // Actualizar provider/signer cuando cambie la conexión o walletClient
   useEffect(() => {
     if (isConnected && walletClient) {
@@ -174,7 +179,11 @@ function useWeb3Internal() {
     const existingSig = localStorage.getItem('walletSignature');
     const existingAddr = localStorage.getItem('walletSignatureAddr');
     const existingMsg = localStorage.getItem('walletMessage');
-    if (existingSig && existingAddr === account.toLowerCase() && existingMsg === expectedMessage) return;
+    if (existingSig && existingAddr === account.toLowerCase() && existingMsg === expectedMessage) {
+      // Signature already valid for today — mark auth ready immediately
+      setIsAuthReady(true);
+      return;
+    }
 
     const signAuth = async () => {
       try {
@@ -183,6 +192,7 @@ function useWeb3Internal() {
         localStorage.setItem('walletMessage', expectedMessage);
         localStorage.setItem('walletSignatureAddr', account.toLowerCase());
         console.log('[Web3Context] Auth signature stored for today');
+        setIsAuthReady(true);
       } catch (err) {
         // User rejected signature - API calls requiring auth will fail
         console.warn('[Web3Context] Auth signature rejected:', err.message);
@@ -203,6 +213,7 @@ function useWeb3Internal() {
           localStorage.setItem('walletMessage', message);
           localStorage.setItem('walletSignatureAddr', account.toLowerCase());
           console.log('[Web3Context] Re-auth signature stored');
+          setIsAuthReady(true);
         })
         .catch(err => console.warn('[Web3Context] Re-auth rejected:', err.message));
     };
@@ -221,6 +232,7 @@ function useWeb3Internal() {
     isConnected,
     isCorrectNetwork,
     isMetaMaskInstalled,
+    isAuthReady,       // true once wallet signature is stored — guards API calls
 
     // Configuración
     supportedChains: SUPPORTED_CHAINS,

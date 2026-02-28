@@ -102,6 +102,32 @@ function calcSyncState(elapsedMs, lineWinnerBall, bingoWinnerBall, totalBalls) {
 }
 
 /**
+ * Extract line/bingo winner ball positions (1-based index).
+ *
+ * Primary:  bingo_cards columns (is_line_winner, line_hit_ball, etc.) —
+ *           set atomically by the resolver alongside bingo_rounds.
+ * Fallback: bingo_rounds.line_winner_ball / bingo_winner_ball columns.
+ *
+ * The fallback is essential in on-chain mode: the API returns only the
+ * current user's cards, so if the winner is a different player the
+ * cardsData loop never finds is_line_winner/is_bingo_winner = true,
+ * leaving lineBall/bingoBall = 0 and causing the animation to draw all
+ * 75 balls instead of stopping at the winner ball.
+ */
+function extractWinnerBalls(cardsData, roundData) {
+  let lineBall = 0;
+  let bingoBall = 0;
+  (cardsData || []).forEach(c => {
+    if (c.is_line_winner && c.line_hit_ball) lineBall = c.line_hit_ball;
+    if (c.is_bingo_winner && c.bingo_hit_ball) bingoBall = c.bingo_hit_ball;
+  });
+  // Fallback to bingo_rounds columns (always set by resolver)
+  if (!lineBall && roundData?.line_winner_ball) lineBall = Number(roundData.line_winner_ball);
+  if (!bingoBall && roundData?.bingo_winner_ball) bingoBall = Number(roundData.bingo_winner_ball);
+  return { lineBall, bingoBall };
+}
+
+/**
  * Generate 75 drawn balls from a VRF random word (deterministic shuffle)
  */
 function generateDrawnBalls(randomWord) {
@@ -380,13 +406,8 @@ export function useBingoGame(roomNumber = null, initialRoundId = null) {
         const balls = roundData?.drawn_balls || roundData?.drawnBalls;
 
         if (roundData && roundData.status === 'resolved' && balls && balls.length > 0) {
-          // Find line/bingo ball positions from cards data
-          let lineBall = 0;
-          let bingoBall = 0;
-          cardsData.forEach(c => {
-            if (c.is_line_winner && c.line_hit_ball) lineBall = c.line_hit_ball;
-            if (c.is_bingo_winner && c.bingo_hit_ball) bingoBall = c.bingo_hit_ball;
-          });
+          // Find line/bingo ball positions (with fallback to bingo_rounds columns)
+          const { lineBall, bingoBall } = extractWinnerBalls(cardsData, roundData);
 
           setDrawnBalls(balls);
           const showUpTo = bingoBall > 0 ? bingoBall : balls.length;
@@ -411,12 +432,7 @@ export function useBingoGame(roomNumber = null, initialRoundId = null) {
           setGameState(BINGO_STATES.RESOLVED);
         } else if (roundData && roundData.status === 'drawing' && balls && balls.length > 0) {
           // Drawing in progress — sync animation from server timestamp
-          let lineBall = 0;
-          let bingoBall = 0;
-          cardsData.forEach(c => {
-            if (c.is_line_winner && c.line_hit_ball) lineBall = c.line_hit_ball;
-            if (c.is_bingo_winner && c.bingo_hit_ball) bingoBall = c.bingo_hit_ball;
-          });
+          const { lineBall, bingoBall } = extractWinnerBalls(cardsData, roundData);
 
           const elapsed = Date.now() - new Date(roundData.draw_started_at).getTime();
           const { ballIndex, phase } = calcSyncState(elapsed, lineBall, bingoBall, balls.length);
@@ -445,8 +461,13 @@ export function useBingoGame(roomNumber = null, initialRoundId = null) {
           if (phase === 'bingo_pause') setGameState(BINGO_STATES.BINGO_ANNOUNCED);
           else if (phase === 'line_pause') setGameState(BINGO_STATES.LINE_ANNOUNCED);
           else setGameState(BINGO_STATES.DRAWING);
-        } else if (roundData && roundData.status === 'closed') {
-          // Round is closed but not yet resolved — poll for resolution
+        } else if (roundData && (
+          roundData.status === 'closed' ||
+          roundData.status === 'vrf_requested' ||
+          roundData.status === 'vrf_fulfilled' ||
+          roundData.status === 'resolving'
+        )) {
+          // Round is closed / on-chain resolving — poll for resolution
           setGameState(BINGO_STATES.WAITING_VRF);
         } else if (roundData && roundData.status === 'open') {
           // Round still open — check if user already has cards
@@ -600,13 +621,7 @@ export function useBingoGame(roomNumber = null, initialRoundId = null) {
 
             const resultsData = detail.results || null;
             const cardsData = detail.cards || [];
-
-            let lineBall = 0;
-            let bingoBall = 0;
-            cardsData.forEach(c => {
-              if (c.is_line_winner && c.line_hit_ball) lineBall = c.line_hit_ball;
-              if (c.is_bingo_winner && c.bingo_hit_ball) bingoBall = c.bingo_hit_ball;
-            });
+            const { lineBall, bingoBall } = extractWinnerBalls(cardsData, roundData);
 
             const elapsed = Date.now() - new Date(roundData.draw_started_at).getTime();
             const { ballIndex, phase } = calcSyncState(elapsed, lineBall, bingoBall, balls.length);
@@ -651,13 +666,7 @@ export function useBingoGame(roomNumber = null, initialRoundId = null) {
           if (balls && balls.length > 0) {
             const resultsData = detail.results || null;
             const cardsData = detail.cards || [];
-
-            let lineBall = 0;
-            let bingoBall = 0;
-            cardsData.forEach(c => {
-              if (c.is_line_winner && c.line_hit_ball) lineBall = c.line_hit_ball;
-              if (c.is_bingo_winner && c.bingo_hit_ball) bingoBall = c.bingo_hit_ball;
-            });
+            const { lineBall, bingoBall } = extractWinnerBalls(cardsData, roundData);
 
             // If we were waiting for VRF and missed 'drawing', start animation as fallback
             if (currentState === BINGO_STATES.WAITING_VRF || currentState === BINGO_STATES.WAITING_CLOSE) {
@@ -787,6 +796,41 @@ export function useBingoGame(roomNumber = null, initialRoundId = null) {
 
     return () => clearInterval(syncInterval);
   }, [drawnBalls, drawStartedAt, lineWinnerBallPos, bingoWinnerBallPos]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // ==========================================================================
+  // REFRESH RESULTS ON RESOLVED — fetch full prize/winner data
+  // ==========================================================================
+  // During 'drawing' the backend redacts prizes and winner addresses to prevent
+  // spoilers during the live animation. When the animation ends and we enter
+  // RESOLVED, re-fetch the round detail to get the full unredacted results.
+
+  useEffect(() => {
+    if (gameState !== BINGO_STATES.RESOLVED) return;
+    const roundId = selectedRoundRef.current?.round_id
+      ?? selectedRoundRef.current?.roundId
+      ?? selectedRoundRef.current?.id;
+    if (!roundId) return;
+
+    bingoApi.getRoundDetail(roundId).then(detail => {
+      if (!detail) return;
+      const roundData = detail.round || detail;
+      if (roundData.status !== 'resolved') return; // not yet resolved on backend, skip
+      const cardsData = detail.cards || [];
+      const { lineBall, bingoBall } = extractWinnerBalls(cardsData, roundData);
+      setResults(prev => ({
+        ...prev,
+        lineWinner:       roundData.line_winner  || null,
+        bingoWinner:      roundData.bingo_winner || null,
+        linePrize:        roundData.line_prize   || 0,
+        bingoPrize:       roundData.bingo_prize  || 0,
+        jackpotWon:       roundData.jackpot_won  || false,
+        jackpotPaid:      roundData.jackpot_paid || 0,
+        lineWinnerBallPos:  lineBall,
+        bingoWinnerBallPos: bingoBall,
+        cards: cardsData,
+      }));
+    }).catch(() => {});
+  }, [gameState]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ==========================================================================
   // MANUAL RESUME / SKIP (user clicks overlay)
