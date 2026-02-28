@@ -105,6 +105,8 @@
       "live_indicator": "EN VIVO",
       "waiting_close": "Esperando cierre de ronda...",
       "waiting_vrf": "Generando sorteo VRF...",
+      "vrf_wait_title": "Sorteo en preparación",
+      "vrf_wait_desc": "Obteniendo número aleatorio verificable. El sorteo comenzará en instantes.",
       "n_winners": "{{count}} ganadores",
       "retry": "Reintentar",
       "line_winner_you": "¡Ganaste el premio LÍNEA!",

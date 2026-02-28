@@ -673,8 +673,17 @@ function BingoRoom({ roomNumber, initialRoundId, onBack }) {
                     />
                   )}
 
-                  {/* Room info when not drawing */}
-                  {!isActive && (
+                  {/* VRF wait panel — shown when round has closed and random number is being fetched */}
+                  {!isActive && gameState === STATES.WAITING_VRF && (
+                    <div className="room-vrf-wait-panel">
+                      <Spinner />
+                      <strong>{t('bingo.room.vrf_wait_title')}</strong>
+                      <p>{t('bingo.room.vrf_wait_desc')}</p>
+                    </div>
+                  )}
+
+                  {/* Room info when not drawing and not waiting for VRF */}
+                  {!isActive && gameState !== STATES.WAITING_VRF && (
                     <div className="room-info-panel">
                       <h4>{t('bingo.room.room_label', { number: roomNumber })}</h4>
                       <div className="info-row"><span>{t('bingo.room.info_card_price')}</span><span>${cardPrice} USDT</span></div>
@@ -696,10 +705,12 @@ function BingoRoom({ roomNumber, initialRoundId, onBack }) {
                 <p>{t('bingo.room.waiting_close')}</p>
               </div>
             )}
-            {gameState === STATES.WAITING_VRF && (
-              <div className="room-waiting">
+            {/* WAITING_VRF with no user cards — centered draw-about-to-start panel */}
+            {gameState === STATES.WAITING_VRF && myCards.length === 0 && (
+              <div className="room-waiting room-vrf-centered">
                 <Spinner />
-                <p>{t('bingo.room.waiting_vrf')}</p>
+                <strong>{t('bingo.room.vrf_wait_title')}</strong>
+                <p>{t('bingo.room.vrf_wait_desc')}</p>
               </div>
             )}
 
