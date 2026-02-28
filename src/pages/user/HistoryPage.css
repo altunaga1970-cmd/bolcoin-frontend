@@ -192,7 +192,62 @@
   color: var(--color-primary);
 }
 
-/* History Filters */
+/* History Tabs */
+.history-tabs {
+  display: flex;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-lg);
+  flex-wrap: wrap;
+}
+
+.history-tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: var(--spacing-sm) var(--spacing-lg);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-full);
+  color: var(--color-text-muted);
+  cursor: pointer;
+  font-weight: 500;
+  font-size: var(--font-size-sm);
+  transition: all 0.2s;
+}
+
+.history-tab:hover {
+  border-color: rgba(255, 215, 0, 0.25);
+  color: var(--color-text-primary);
+}
+
+.history-tab.active {
+  background: rgba(255, 215, 0, 0.08);
+  border-color: rgba(255, 215, 0, 0.35);
+  color: var(--color-primary);
+}
+
+.tab-count {
+  background: rgba(255, 255, 255, 0.07);
+  padding: 1px 7px;
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-family: var(--font-mono);
+}
+
+.history-tab.active .tab-count {
+  background: rgba(255, 215, 0, 0.15);
+}
+
+/* Keno numbers column — smaller font, no monospace letter-spacing */
+.keno-numbers-cell {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0;
+  color: var(--color-text-secondary);
+  max-width: 180px;
+}
+
+/* History Filters (legacy, kept for compatibility) */
 .history-filters {
   display: flex;
   gap: var(--spacing-sm);
