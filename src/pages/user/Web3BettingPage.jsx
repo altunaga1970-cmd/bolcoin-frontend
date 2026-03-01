@@ -188,15 +188,35 @@ function Web3BettingPage() {
         // Read all limits from contract in a single call
         const limits = await getBetLimits();
         setPoolBalance(parseFloat(limits.pool));
-        // Floor to INITIAL_MAX_STAKE — contract returns 0 when limits haven't been
-        // configured yet (setBetLimits script not yet run). A 0 maxBetAmount blocks
-        // the amount input entirely, disabling the "add to cart" button.
-        setMaxPerNumber(Math.max(parseFloat(limits.maxPerNumber) || INITIAL_MAX_STAKE, INITIAL_MAX_STAKE));
-        setMaxBetAmount(Math.max(parseFloat(limits.max) || INITIAL_MAX_STAKE, INITIAL_MAX_STAKE));
+        // Only fall back to INITIAL_MAX_STAKE when contract returns 0 (limits not yet
+        // configured via setBetLimits script). A 0 maxBetAmount would block the amount
+        // input entirely. Real values (including BRM-computed fractions) are used as-is.
+        const rawMaxPerNum = parseFloat(limits.maxPerNumber);
+        const rawMaxBet    = parseFloat(limits.max);
+        setMaxPerNumber(rawMaxPerNum > 0 ? rawMaxPerNum : INITIAL_MAX_STAKE);
+        setMaxBetAmount(rawMaxBet    > 0 ? rawMaxBet    : INITIAL_MAX_STAKE);
 
-        // Load last 3 resolved draws for results banner
+        // Load last 3 resolved draws for results banner.
+        // Fall back to indexer DB data if the contract returns nothing
+        // (e.g. no draws resolved yet, or wallet not fully ready).
         const resolved = await getResolvedDraws(3);
-        setResolvedDraws(resolved);
+        if (resolved.length > 0) {
+          setResolvedDraws(resolved);
+        } else {
+          try {
+            const completedData = await drawApi.getCompleted(1, 3);
+            const completedDraws = (completedData?.draws || [])
+              .filter(d => d.winning_number != null)
+              .map(d => ({
+                id: d.id,
+                draw_number: d.draw_number,
+                winningNumber: Number(d.winning_number),
+                totalPaidOut: parseFloat(d.total_paid_out ?? d.total_payouts_amount ?? 0),
+                betCount: d.bets_count ?? 0,
+              }));
+            setResolvedDraws(completedDraws);
+          } catch (_) { /* non-fatal — banner just won't show */ }
+        }
 
         openDraws = mergeWithVirtualSlots(chainDraws);
       } else {
