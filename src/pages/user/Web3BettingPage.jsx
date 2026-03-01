@@ -215,6 +215,23 @@ function Web3BettingPage() {
         setPoolBalance(1000);
         setMaxPerNumber(INITIAL_MAX_STAKE);
         setMaxBetAmount(INITIAL_MAX_STAKE);
+
+        // Load last 3 completed draws for the results banner
+        try {
+          const completedData = await drawApi.getCompleted(1, 3);
+          const completedDraws = (completedData?.draws || [])
+            .filter(d => d.winning_number != null)
+            .map(d => ({
+              id: d.id,
+              draw_number: d.draw_number,
+              winningNumber: Number(d.winning_number),
+              totalPaidOut: parseFloat(d.total_paid_out ?? d.total_payouts_amount ?? 0),
+              betCount: d.bets_count ?? 0,
+            }));
+          setResolvedDraws(completedDraws);
+        } catch (_) {
+          // Non-fatal — results banner just won't show
+        }
       }
 
       setDraws(openDraws);
@@ -494,7 +511,7 @@ function Web3BettingPage() {
                   <div key={draw.id} className="result-card">
                     <div className="result-card-header">
                       <span className="result-draw-label">{t('betting.recent_results.draw_label')} #{draw.draw_number}</span>
-                      <span className="result-bets-count">{t('betting.recent_results.total_bets', { count: draw.betCount })}</span>
+                      <span className="result-bets-count">{t('betting.recent_results.total_bets', { count: draw.betCount ?? draw.totalBets ?? 0 })}</span>
                     </div>
                     <div className="result-winning-number">
                       {String(draw.winningNumber).padStart(4, '0')}
